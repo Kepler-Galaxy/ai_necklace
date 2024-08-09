@@ -17,8 +17,8 @@
             mimeType: 'audio/webm',
         })
 
-        const socket = new WebSocket('ws://localhost:8000/listen?uid=123&sample_rate=8000&codec=pcm8&channels=1')
-        // const socket = new WebSocket('wss://josancamon19--api-fastapi-app.modal.run/listen')
+        // const socket = new WebSocket('ws://localhost:8000/listen?uid=123&sample_rate=8000&codec=pcm8&channels=1')
+        const socket = new WebSocket('wss://https://equal-magnetic-pheasant.ngrok-free.app/listen?uid=123&sample_rate=8000&codec=pcm8&channels=1')
 
         socket.onopen = () => {
             document.querySelector('#status').textContent = 'Connected'

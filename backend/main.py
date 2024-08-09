@@ -5,10 +5,21 @@ import os
 import firebase_admin
 from fastapi import FastAPI
 from fastapi_utilities import repeat_at
+from dotenv import load_dotenv
 
 from modal import Image, App, asgi_app, Secret
 from routers import workflow, chat, firmware, screenpipe, plugins, memories, transcribe, notifications, speech_profile
 from utils.other.notifications import start_cron_job
+
+load_dotenv()
+
+# List of environment variables to unset due to the socks proxy
+variables_to_unset = [
+    'ALL_PROXY',
+    'all_proxy'
+]
+for var in variables_to_unset:
+    os.environ.pop(var, None)
 
 if os.environ.get('SERVICE_ACCOUNT_JSON'):
     service_account_info = json.loads(os.environ["SERVICE_ACCOUNT_JSON"])
