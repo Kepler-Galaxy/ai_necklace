@@ -1,4 +1,6 @@
 # import numpy as np
+from enum import Enum
+
 import requests
 import torch
 
@@ -16,56 +18,27 @@ model, utils = torch.hub.load(repo_or_dir='snakers4/silero-vad', model='silero_v
 (get_speech_timestamps, save_audio, read_audio, VADIterator, collect_chunks) = utils
 
 
-def is_speech_present(data, vad_iterator, window_size_samples=256):
+class SpeechState(str, Enum):
+    has_speech = 'has_speech'
+    no_speech = 'no_speech'
+
+
+def get_speech_state(data, vad_iterator, window_size_samples=256):
     for i in range(0, len(data), window_size_samples):
         chunk = data[i: i + window_size_samples]
         if len(chunk) < window_size_samples:
             break
         speech_dict = vad_iterator(chunk, return_seconds=False)
         if speech_dict:
-            print(speech_dict)
-            return True
-    return False
+            if 'start' in speech_dict:
+                return SpeechState.has_speech
+            elif 'end' in speech_dict:
+                return SpeechState.no_speech
+
+    # vad_iterator.reset_states()
+    return None
 
 
-def voice_in_bytes(data):
-    # Convert audio bytes to a numpy array
-    audio_array = np.frombuffer(data, dtype=np.int16)
-
-    # Normalize audio to range [-1, 1]
-    audio_tensor = torch.from_numpy(audio_array).float() / 32768.0
-
-    # Ensure the audio is in the correct shape (batch_size, num_channels, num_samples)
-    audio_tensor = audio_tensor.unsqueeze(0).unsqueeze(0)
-
-    # Pass the audio tensor to the VAD model
-    speech_timestamps = get_speech_timestamps(audio_tensor, model)
-
-    # Check if there's voice in the audio
-    if speech_timestamps:
-        print("Voice detected in the audio.")
-    else:
-        print("No voice detected in the audio.")
-
-
-#
-#
-# def speech_probabilities(file_path):
-#     SAMPLING_RATE = 8000
-#     vad_iterator = VADIterator(model, sampling_rate=SAMPLING_RATE)
-#     wav = read_audio(file_path, sampling_rate=SAMPLING_RATE)
-#     speech_probs = []
-#     window_size_samples = 512 if SAMPLING_RATE == 16000 else 256
-#     for i in range(0, len(wav), window_size_samples):
-#         chunk = wav[i: i + window_size_samples]
-#         if len(chunk) < window_size_samples:
-#             break
-#         speech_prob = model(chunk, SAMPLING_RATE).item()
-#         speech_probs.append(speech_prob)
-#     vad_iterator.reset_states()  # reset model states after each audio
-#     print(speech_probs[:10])  # first 10 chunks predicts
-#
-#
 @timeit
 def is_audio_empty(file_path, sample_rate=8000):
     wav = read_audio(file_path)

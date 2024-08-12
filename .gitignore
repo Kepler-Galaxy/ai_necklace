@@ -19,6 +19,7 @@ yarn.lock
 .pub-cache/
 .pub/
 build/
+dist/
 
 # Android specific
 **/android/**/build/
