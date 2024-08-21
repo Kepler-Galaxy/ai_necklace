@@ -1,13 +1,18 @@
 # Setup
 1. Install the google-cloud-sdk `brew install google-cloud-sdk`
     of if you use nix envdir, it should be installed for you
+1. Install the google-cloud-sdk
+	1. `curl -O https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-cli-488.0.0-darwin-arm.tar.gz`
+	2. `tar -xvf google-cloud-cli-488.0.0-darwin-arm.tar.gz`
+	3. `./google-cloud-sdk/install.sh` 
 2. You will need to have your own Google Cloud Project (beyond the scope of this doc…)
     1. You will need to add `Cloud Resource Manager` and `Firebase Management API` in the [Google Cloud API Console](https://console.cloud.google.com/apis/dashboard)
 3. Run the following commands one by one
-	1. `gcloud auth login`,
-	2. `gcloud config set project <project-id>`.
-	3. To be on the safe side, run `gcloud auth application-default login --project <project-id>` as well.
-	4. This should generate the `application_default_credentials.json` file in the `~/.config/gcloud` directory. This file is read automatically by gcloud in Python, so you don’t have to manually add any env for the service account.
+	1. `gcloud init`
+	2. `gcloud auth login`,
+	3. `gcloud config set project <project-id>`.
+	4. To be on the safe side, run `gcloud auth application-default login --project <project-id>` as well.
+	5. This should generate the `application_default_credentials.json` file in the `~/.config/gcloud` directory. This file is read automatically by gcloud in Python, so you don’t have to manually add any env for the service account.
 	5. Replace `<project-id>` with your google cloud project id.
 4. ~~Make sure you have Firebase setup done locally~~
 5. Install Python (use brew if on mac) (or with nix env it will be done for you)
