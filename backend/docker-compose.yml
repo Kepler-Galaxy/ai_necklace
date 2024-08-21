@@ -1,0 +1,19 @@
+version: '3'
+services:
+  backend:
+    image: lightshark/kepler_galaxy_backend:1.0
+    container_name: backend_container
+    ports:
+      - "8080:8080"
+
+  ngrok:
+    image: ngrok/ngrok:latest
+    container_name: ngrok_container
+    depends_on:
+      - backend
+    environment:
+      - NGROK_AUTHTOKEN=${NGROK_AUTHTOKEN}
+      - NGROK_REGION=${NGROK_REGION}
+      - NGROK_ADDR=backend:8080
+    ports:
+      - "4040:4040" # Expose ngrok web interface on port 4040 for monitoring
