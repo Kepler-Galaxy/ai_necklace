@@ -30,7 +30,7 @@ getConnectionStateWidgets(
   if (device == null) {
     return [
       const DeviceAnimationWidget(sizeMultiplier: 0.7),
-      SharedPreferencesUtil().deviceId.isEmpty
+      SharedPreferencesUtil().btDeviceStruct.id == ''
           ? _getNoFriendConnectedYet(context)
           : const ScanningUI(
               string1: 'Looking for Friend wearable',
@@ -77,7 +77,7 @@ getConnectionStateWidgets(
               Text(
                 isWifiDisconnected
                     ? 'No Internet'
-                    : isWebsocketError
+                    : (!isWifiDisconnected && isWebsocketError)
                         ? 'Server Issue'
                         : 'Listening',
                 style: TextStyle(
@@ -94,7 +94,7 @@ getConnectionStateWidgets(
                 textAlign: TextAlign.center,
               ),
               Text(
-                '${device.name} (${device.id.replaceAll(':', '').split('-').last.substring(0, 6)})',
+                '${device.name} (${device.getShortId()})',
                 style: const TextStyle(
                   color: Colors.white,
                   fontSize: 16.0,
@@ -213,8 +213,8 @@ speechProfileWidget(BuildContext context, StateSetter setState, Function restart
                 MixpanelManager().speechProfileCapturePageClicked();
                 bool hasSpeakerProfile = SharedPreferencesUtil().hasSpeakerProfile;
                 await routeToPage(context, const SpeakerIdPage());
-                setState(() {});
                 if (hasSpeakerProfile != SharedPreferencesUtil().hasSpeakerProfile) {
+                  // setState(() {});
                   restartWebSocket();
                 }
               },
@@ -335,7 +335,7 @@ connectionStatusWidgets(
 }
 
 getPhoneMicRecordingButton(VoidCallback recordingToggled, RecordingState state) {
-  if (SharedPreferencesUtil().deviceId.isNotEmpty) return const SizedBox.shrink();
+  if (SharedPreferencesUtil().btDeviceStruct.id.isNotEmpty) return const SizedBox.shrink();
   return Visibility(
     visible: true,
     child: Padding(
