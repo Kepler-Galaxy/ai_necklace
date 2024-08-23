@@ -1,7 +1,7 @@
 version: '3'
 services:
   backend:
-    image: lightshark/kepler_galaxy_backend:1.1
+    image: lightshark/kepler_galaxy_backend:1.2
     # for ali-cloud 
     # image: registry.cn-heyuan.aliyuncs.com/kepler_galaxy/kepler_galaxy:1.0
     container_name: backend_container
