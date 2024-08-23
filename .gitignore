@@ -141,3 +141,4 @@ app/lib/env/prod_env.g.dart
 /app/lib/libobjectbox.dylib
 /app/lib/objectbox-model.json
 backend/.env
+app/.dev.env
