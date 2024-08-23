@@ -62,7 +62,7 @@ def create_memory(
 
 @router.post("/v1/memories/{memory_id}/post-processing", response_model=Memory, tags=['memories'])
 def postprocess_memory(
-        memory_id: str, file: Optional[UploadFile], uid: str = Depends(auth.get_current_user_uid_supabase())
+        memory_id: str, file: Optional[UploadFile], uid: str = Depends(auth.get_current_user_uid_supabase)
 ):
     """
     The objective of this endpoint, is to get the best possible transcript from the audio file.
