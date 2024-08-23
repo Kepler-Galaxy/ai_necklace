@@ -39,6 +39,11 @@ def get_plugins_data(uid: str, include_reviews: bool = False) -> List[Plugin]:
     for plugin in data:
         plugin_dict = plugin
         plugin_dict['enabled'] = plugin['id'] in user_enabled
+        # there is a bug in https://raw.githubusercontent.com/BasedHardware/Omi/main/community-plugins.json
+        # "triggers_on": ["memory_creation", "transcript_processed"] results in 
+        # pydantic validation failure in plugins.append(Plugin(**plugin_dict))
+        if plugin_dict['id'] == "screenpipe":
+            continue
         if include_reviews:
             reviews = get_plugin_reviews(plugin['id'])
             sorted_reviews = sorted(reviews.values(), key=lambda x: datetime.fromisoformat(x['rated_at']), reverse=True)
