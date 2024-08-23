@@ -4,8 +4,8 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
-import 'package:friend_private/utils/analytics/mixpanel.dart';
 import 'package:friend_private/backend/schema/bt_device.dart';
+import 'package:friend_private/utils/analytics/mixpanel.dart';
 import 'package:friend_private/utils/ble/find.dart';
 import 'package:friend_private/widgets/dialog.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -22,7 +22,7 @@ class FindDevicesPage extends StatefulWidget {
   _FindDevicesPageState createState() => _FindDevicesPageState();
 }
 
-class _FindDevicesPageState extends State<FindDevicesPage> with SingleTickerProviderStateMixin {
+class _FindDevicesPageState extends State<FindDevicesPage> {
   List<BTDeviceStruct> deviceList = [];
   late Timer _didNotMakeItTimer;
   late Timer _findDevicesTimer;
@@ -96,9 +96,12 @@ class _FindDevicesPageState extends State<FindDevicesPage> with SingleTickerProv
       List<BTDeviceStruct> orderedDevices = foundDevicesMap.values.toList();
 
       if (orderedDevices.isNotEmpty) {
-        setState(() {
-          deviceList = orderedDevices;
-        });
+        if (mounted) {
+          setState(() {
+            deviceList = orderedDevices;
+          });
+        }
+
         _didNotMakeItTimer.cancel();
       }
     });

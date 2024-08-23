@@ -6,10 +6,10 @@ from typing import List, Optional
 import requests
 
 from database.chat import add_plugin_message
-from models.memory import Memory
+from database.redis_db import get_enabled_plugins, get_plugin_reviews
+from models.memory import Memory, MemorySource
 from models.plugin import Plugin
 from routers.notifications import send_notification
-from utils.redis_utils import get_enabled_plugins, get_plugin_reviews
 
 
 def get_plugin_by_id(plugin_id: str) -> Optional[Plugin]:
@@ -29,7 +29,7 @@ def weighted_rating(plugin):
 
 def get_plugins_data(uid: str, include_reviews: bool = False) -> List[Plugin]:
     # print('get_plugins_data', uid, include_reviews)
-    response = requests.get('https://raw.githubusercontent.com/BasedHardware/Friend/main/community-plugins.json')
+    response = requests.get('https://raw.githubusercontent.com/BasedHardware/Omi/main/community-plugins.json')
     if response.status_code != 200:
         return []
     user_enabled = set(get_enabled_plugins(uid))
@@ -39,6 +39,11 @@ def get_plugins_data(uid: str, include_reviews: bool = False) -> List[Plugin]:
     for plugin in data:
         plugin_dict = plugin
         plugin_dict['enabled'] = plugin['id'] in user_enabled
+        # there is a bug in https://raw.githubusercontent.com/BasedHardware/Omi/main/community-plugins.json
+        # "triggers_on": ["memory_creation", "transcript_processed"] results in 
+        # pydantic validation failure in plugins.append(Plugin(**plugin_dict))
+        if plugin_dict['id'] == "screenpipe":
+            continue
         if include_reviews:
             reviews = get_plugin_reviews(plugin['id'])
             sorted_reviews = sorted(reviews.values(), key=lambda x: datetime.fromisoformat(x['rated_at']), reverse=True)
@@ -71,13 +76,18 @@ def trigger_external_integrations(uid: str, memory: Memory) -> list:
         memory_dict['created_at'] = memory_dict['created_at'].isoformat()
         memory_dict['started_at'] = memory_dict['started_at'].isoformat() if memory_dict['started_at'] else None
         memory_dict['finished_at'] = memory_dict['finished_at'].isoformat() if memory_dict['finished_at'] else None
+
+        # Ignore external data on workflow
+        if memory.source == MemorySource.workflow and 'external_data' in memory_dict:
+            memory_dict['external_data'] = None
+
         url = plugin.external_integration.webhook_url
         if '?' in url:
             url += '&uid=' + uid
         else:
             url += '?uid=' + uid
 
-        response = requests.post(url, json=memory_dict)
+        response = requests.post(url, json=memory_dict)  # TODO: failing?
         if response.status_code != 200:
             print('Plugin integration failed', plugin.id, 'result:', response.content)
             return

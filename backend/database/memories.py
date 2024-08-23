@@ -4,11 +4,17 @@ from typing import List
 from google.cloud import firestore
 from google.cloud.firestore_v1 import FieldFilter
 
-from models.memory import MemoryPhoto
+from models.memory import MemoryPhoto, PostProcessingStatus, PostProcessingModel
+from models.transcript_segment import TranscriptSegment
 from ._client import db
 
 
 def upsert_memory(uid: str, memory_data: dict):
+    if 'audio_base64_url' in memory_data:
+        del memory_data['audio_base64_url']
+    if 'photos' in memory_data:
+        del memory_data['photos']
+
     user_ref = db.collection('users').document(uid)
     memory_ref = user_ref.collection('memories').document(memory_data['id'])
     memory_ref.set(memory_data)
@@ -25,11 +31,38 @@ def get_memories(uid: str, limit: int = 100, offset: int = 0, include_discarded:
         db.collection('users').document(uid).collection('memories')
         .where(filter=FieldFilter('deleted', '==', False))
     )
+
     if not include_discarded:
         memories_ref = memories_ref.where(filter=FieldFilter('discarded', '==', False))
-    memories_ref = memories_ref.order_by('created_at', direction=firestore.Query.DESCENDING)
-    memories_ref = memories_ref.limit(limit).offset(offset)
-    return [doc.to_dict() for doc in memories_ref.stream()]
+        memories_ref = memories_ref.order_by('created_at', direction=firestore.Query.DESCENDING)
+        memories_ref = memories_ref.limit(limit).offset(offset)
+        
+        return [doc.to_dict() for doc in memories_ref.stream()]
+    
+    else:
+        # Calculate the number of each type of memory to retrieve
+        non_discarded_limit = limit // 2
+        discarded_limit = limit - non_discarded_limit
+
+        # Get non-discarded memories
+        non_discarded_ref = memories_ref.where(filter=FieldFilter('deleted', '==', False))
+        non_discarded_ref = non_discarded_ref.where(filter=FieldFilter('discarded', '==', False))
+        non_discarded_ref = non_discarded_ref.order_by('created_at', direction=firestore.Query.DESCENDING)
+        non_discarded_ref = non_discarded_ref.limit(non_discarded_limit).offset(offset)
+        non_discarded_memories = [doc.to_dict() for doc in non_discarded_ref.stream()]
+
+        # Get discarded memories
+        discarded_ref = memories_ref.where(filter=FieldFilter('deleted', '==', False))
+        discarded_ref = discarded_ref.where(filter=FieldFilter('discarded', '==', True))
+        discarded_ref = discarded_ref.order_by('created_at', direction=firestore.Query.DESCENDING)
+        discarded_ref = discarded_ref.limit(discarded_limit).offset(offset)
+        discarded_memories = [doc.to_dict() for doc in discarded_ref.stream()]
+
+        # Combine and sort the lists by 'created_at' in descending order
+        all_memories = non_discarded_memories + discarded_memories
+        all_memories_sorted = sorted(all_memories, key=lambda x: x['created_at'], reverse=True)
+
+        return all_memories_sorted
 
 
 def update_memory(uid: str, memory_id: str, memoy_data: dict):
@@ -102,3 +135,29 @@ def get_memory_photos(uid: str, memory_id: str):
     memory_ref = user_ref.collection('memories').document(memory_id)
     photos_ref = memory_ref.collection('photos')
     return [doc.to_dict() for doc in photos_ref.stream()]
+
+
+# POST PROCESSING
+
+def set_postprocessing_status(
+        uid: str, memory_id: str, status: PostProcessingStatus,
+        model: PostProcessingModel = PostProcessingModel.fal_whisperx
+):
+    user_ref = db.collection('users').document(uid)
+    memory_ref = user_ref.collection('memories').document(memory_id)
+    memory_ref.update({'postprocessing.status': status, 'postprocessing.model': model})
+
+
+def store_model_segments_result(uid: str, memory_id: str, model_name: str, segments: List[TranscriptSegment]):
+    user_ref = db.collection('users').document(uid)
+    memory_ref = user_ref.collection('memories').document(memory_id)
+    segments_ref = memory_ref.collection(model_name)
+    batch = db.batch()
+    for i, segment in enumerate(segments):
+        segment_id = str(uuid.uuid4())
+        segment_ref = segments_ref.document(segment_id)
+        batch.set(segment_ref, segment.dict())
+        if i >= 400:
+            batch.commit()
+            batch = db.batch()
+    batch.commit()
