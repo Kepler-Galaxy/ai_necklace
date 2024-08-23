@@ -9,6 +9,7 @@ dump/
 *.wav
 node_modules
 yarn.lock
+./backend/.env
 
 # General
 .idea/
