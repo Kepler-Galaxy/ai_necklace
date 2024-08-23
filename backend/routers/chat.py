@@ -27,7 +27,7 @@ def filter_messages(messages, plugin_id):
 
 @router.post('/v1/messages', tags=['chat'], response_model=Message)
 def send_message(
-        data: SendMessageRequest, plugin_id: Optional[str] = None, uid: str = Depends(auth.get_current_user_uid)
+        data: SendMessageRequest, plugin_id: Optional[str] = None, uid: str = Depends(auth.get_current_user_uid_supabase)
 ):
     message = Message(id=str(uuid.uuid4()), text=data.text, created_at=datetime.utcnow(), sender='human', type='text')
     chat_db.add_message(uid, message.dict())
@@ -75,12 +75,12 @@ def initial_message_util(uid: str, plugin_id: Optional[str] = None):
 
 
 @router.post('/v1/initial-message', tags=['chat'], response_model=Message)
-def send_message(plugin_id: Optional[str], uid: str = Depends(auth.get_current_user_uid)):
+def send_message(plugin_id: Optional[str], uid: str = Depends(auth.get_current_user_uid_supabase)):
     return initial_message_util(uid, plugin_id)
 
 
 @router.get('/v1/messages', response_model=List[Message], tags=['chat'])
-def get_messages(uid: str = Depends(auth.get_current_user_uid)):
+def get_messages(uid: str = Depends(auth.get_current_user_uid_supabase)):
     messages = chat_db.get_messages(uid, limit=100, include_memories=True)  # for now retrieving first 100 messages
     if not messages:
         return [initial_message_util(uid)]

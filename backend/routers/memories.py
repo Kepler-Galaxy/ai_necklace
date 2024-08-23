@@ -86,7 +86,7 @@ def _process_memory(
 @router.post("/v1/memories", response_model=CreateMemoryResponse, tags=['memories'])
 def create_memory(
         create_memory: CreateMemory, trigger_integrations: bool, language_code: Optional[str] = None,
-        uid: str = Depends(auth.get_current_user_uid)
+        uid: str = Depends(auth.get_current_user_uid_supabase)
 ):
     if not create_memory.transcript_segments and not create_memory.photos:
         raise HTTPException(status_code=400, detail="Transcript segments or photos are required")
@@ -110,7 +110,7 @@ def create_memory(
 
 @router.post('/v1/memories/{memory_id}/reprocess', response_model=Memory, tags=['memories'])
 def reprocess_memory(
-        memory_id: str, language_code: Optional[str] = None, uid: str = Depends(auth.get_current_user_uid)
+        memory_id: str, language_code: Optional[str] = None, uid: str = Depends(auth.get_current_user_uid_supabase)
 ):
     memory = memories_db.get_memory(uid, memory_id)
     if memory is None:
@@ -123,7 +123,7 @@ def reprocess_memory(
 
 
 @router.get('/v1/memories', response_model=List[Memory], tags=['memories'])
-def get_memories(limit: int = 100, offset: int = 0, uid: str = Depends(auth.get_current_user_uid)):
+def get_memories(limit: int = 100, offset: int = 0, uid: str = Depends(auth.get_current_user_uid_supabase)):
     print('get_memories', uid, limit, offset)
     return memories_db.get_memories(uid, limit, offset, include_discarded=True)
 
@@ -136,18 +136,18 @@ def _get_memory_by_id(uid: str, memory_id: str):
 
 
 @router.get("/v1/memories/{memory_id}", response_model=Memory, tags=['memories'])
-def get_memory_by_id(memory_id: str, uid: str = Depends(auth.get_current_user_uid)):
+def get_memory_by_id(memory_id: str, uid: str = Depends(auth.get_current_user_uid_supabase)):
     return _get_memory_by_id(uid, memory_id)
 
 
 @router.get("/v1/memories/{memory_id}/photos", response_model=List[MemoryPhoto], tags=['memories'])
-def get_memory_photos(memory_id: str, uid: str = Depends(auth.get_current_user_uid)):
+def get_memory_photos(memory_id: str, uid: str = Depends(auth.get_current_user_uid_supabase)):
     _get_memory_by_id(uid, memory_id)
     return memories_db.get_memory_photos(uid, memory_id)
 
 
 @router.delete("/v1/memories/{memory_id}", status_code=204, tags=['memories'])
-def delete_memory(memory_id: str, uid: str = Depends(auth.get_current_user_uid)):
+def delete_memory(memory_id: str, uid: str = Depends(auth.get_current_user_uid_supabase)):
     memories_db.delete_memory(uid, memory_id)
     delete_vector(memory_id)
     return {"status": "Ok"}
@@ -219,7 +219,7 @@ def upload_memory_vectors(uid: str, memories: List[Memory]):
 
 
 @router.post('/v1/migration/memories', tags=['v1'])
-def migrate_local_memories(memories: List[dict], uid: str = Depends(auth.get_current_user_uid)):
+def migrate_local_memories(memories: List[dict], uid: str = Depends(auth.get_current_user_uid_supabase)):
     if not memories:
         return {'status': 'ok'}
     memories_vectors = []

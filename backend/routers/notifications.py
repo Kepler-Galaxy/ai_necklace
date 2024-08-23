@@ -13,11 +13,12 @@ router = APIRouter()
 
 
 @router.post('/v1/users/fcm-token')
-def save_token(data: SaveFcmTokenRequest, uid: str = Depends(auth.get_current_user_uid)):
+def save_token(data: SaveFcmTokenRequest, uid: str = Depends(auth.get_current_user_uid_supabase)):
     notification_db.save_token(uid, data.dict())
     return {'status': 'Ok'}
 
 
+# TODO: supabase does not provide the message service (fcm), consider replacing it
 def send_notification(token: str, title: str, body: str, data: dict = None):
     print('send_notification', token, title, body, data)
     notification = messaging.Notification(title=title, body=body)

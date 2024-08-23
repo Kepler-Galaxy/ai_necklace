@@ -72,16 +72,16 @@ def has_speech_profile(uid: str):
 # * Latest endpoints *
 # ********************
 @router.post('/v1/speech-profile/samples', tags=['v1'])
-def upload_sample(file: UploadFile, uid: str = Depends(auth.get_current_user_uid)):
+def upload_sample(file: UploadFile, uid: str = Depends(auth.get_current_user_uid_supabase)):
     return _endpoint1(file, uid)
 
 
 @router.get('/v1/speech-profile/samples', tags=['v1'])
-def my_samples(uid: str = Depends(auth.get_current_user_uid)):
+def my_samples(uid: str = Depends(auth.get_current_user_uid_supabase)):
     return _endpoint2(uid)
 
 
 @router.get('/v2/speech-profile', tags=['v1'])
-def has_speech_profile(uid: str = Depends(auth.get_current_user_uid)):
+def has_speech_profile(uid: str = Depends(auth.get_current_user_uid_supabase)):
     print('has_speech_profile', uid, _has_speech_profile(uid))
     return {'has_profile': _has_speech_profile(uid)}

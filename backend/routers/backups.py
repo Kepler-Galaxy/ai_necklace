@@ -28,7 +28,7 @@ def delete_backup(uid: str):
 
 
 @router.post('/v1/backups', tags=['v1'])
-def backup(data: dict, uid: str):  # Depends(auth.get_current_user_uid)
+def backup(data: dict, uid: str):  # Depends(auth.get_current_user_uid_supabase)
     try:
         data: str = data['data']
         if data == '':
@@ -39,11 +39,11 @@ def backup(data: dict, uid: str):  # Depends(auth.get_current_user_uid)
 
 
 @router.get('/v1/backups', tags=['v1'])
-def get_backup(uid: str):  # Depends(auth.get_current_user_uid)
+def get_backup(uid: str):  # Depends(auth.get_current_user_uid_supabase)
     return {'data': retrieve_user_backup(uid)}
 
 
 @router.delete('/v1/backups', tags=['v1'])
-def delete_backup(uid: str):  # = Depends(auth.get_current_user_uid)
+def delete_backup(uid: str):  # = Depends(auth.get_current_user_uid_supabase)
     delete_backup_storage(uid)
     return 'ok'

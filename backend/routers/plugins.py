@@ -12,7 +12,7 @@ router = APIRouter()
 
 
 @router.post('/v1/plugins/enable')
-def enable_plugin_endpoint(plugin_id: str, uid: str = Depends(auth.get_current_user_uid)):
+def enable_plugin_endpoint(plugin_id: str, uid: str = Depends(auth.get_current_user_uid_supabase)):
     plugin = get_plugin_by_id(plugin_id)
     if not plugin:
         raise HTTPException(status_code=404, detail='Plugin not found')
@@ -26,7 +26,7 @@ def enable_plugin_endpoint(plugin_id: str, uid: str = Depends(auth.get_current_u
 
 
 @router.post('/v1/plugins/disable')
-def disable_plugin_endpoint(plugin_id: str, uid: str = Depends(auth.get_current_user_uid)):
+def disable_plugin_endpoint(plugin_id: str, uid: str = Depends(auth.get_current_user_uid_supabase)):
     plugin = get_plugin_by_id(plugin_id)
     if not plugin:
         raise HTTPException(status_code=404, detail='Plugin not found')
@@ -45,12 +45,12 @@ def get_plugins(uid: str):
 
 
 @router.get('/v2/plugins', tags=['v1'], response_model=List[Plugin])
-def get_plugins(uid: str = Depends(auth.get_current_user_uid)):
+def get_plugins(uid: str = Depends(auth.get_current_user_uid_supabase)):
     return get_plugins_data(uid, include_reviews=True)
 
 
 @router.post('/v1/plugins/review', tags=['v1'])
-def review_plugin(plugin_id: str, data: dict, uid: str = Depends(auth.get_current_user_uid)):
+def review_plugin(plugin_id: str, data: dict, uid: str = Depends(auth.get_current_user_uid_supabase)):
     if 'score' not in data:
         raise HTTPException(status_code=422, detail='Score is required')
 
