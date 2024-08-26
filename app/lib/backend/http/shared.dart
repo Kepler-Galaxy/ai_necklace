@@ -10,11 +10,15 @@ import 'package:instabug_http_client/instabug_http_client.dart';
 import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
 
 Future<String> getAuthHeader() async {
-  DateTime? expiry = DateTime.fromMillisecondsSinceEpoch(SharedPreferencesUtil().tokenExpirationTime);
+  DateTime? expiry = DateTime.fromMillisecondsSinceEpoch(
+      SharedPreferencesUtil().tokenExpirationTime);
+  print(SharedPreferencesUtil().authToken);
   if (SharedPreferencesUtil().authToken == '' ||
       expiry.isBefore(DateTime.now()) ||
       expiry.isAtSameMomentAs(DateTime.fromMillisecondsSinceEpoch(0)) ||
-      (expiry.isBefore(DateTime.now().add(const Duration(minutes: 5))) && expiry.isAfter(DateTime.now()))) {
+      (expiry.isBefore(DateTime.now().add(const Duration(minutes: 5))) &&
+          expiry.isAfter(DateTime.now()))) {
+            
     SharedPreferencesUtil().authToken = await getIdToken() ?? '';
   }
   if (SharedPreferencesUtil().authToken == '') {
@@ -23,6 +27,7 @@ Future<String> getAuthHeader() async {
   return 'Bearer ${SharedPreferencesUtil().authToken}';
 }
 
+// todo: Modify backend to change firebase to authing
 Future<http.Response?> makeApiCall({
   required String url,
   required Map<String, String> headers,

@@ -7,13 +7,26 @@ version: 1.0.25+81
 environment:
   sdk: ">=3.0.0 <4.0.0"
 
+fluwx:
+  app_id: 'wx403785d9d3724b1c'
+  debug_logging: true # Logging in debug mode.
+  android:
+#    interrupt_wx_request: true # Defaults to true.
+#    flutter_activity: 'MainActivity' # Defaults to app's launcher
+  ios:
+    universal_link: https://testdomain.com
+#    scene_delegate: true # Defaults to false.
+#    no_pay: false # Set to false to disable payment.
+#    ignore_security: true # Set to true to disable security seetings.
+
+
 dependencies:
   flutter:
     sdk: flutter
   
   # State management
   provider: ^6.1.2
-
+  fluwx: ^4.5.2
   flutter_localizations:
     sdk: flutter
   archive: ^3.6.1
@@ -79,6 +92,8 @@ dependencies:
   sign_in_with_apple: ^6.1.1
   firebase_core: ^3.2.0
   firebase_auth: ^5.1.2
+  supabase_flutter: ^0.2.9
+  authing_sdk_v3: ^1.0.2
   google_sign_in: ^6.2.1
   location: ^7.0.0
   cached_network_image: ^3.3.1

@@ -35,4 +35,20 @@ final class DevEnv implements EnvFields {
   @override
   @EnviedField(varName: 'GOOGLE_MAPS_API_KEY', obfuscate: true)
   final String? googleMapsApiKey = _DevEnv.googleMapsApiKey;
+
+  @override
+  @EnviedField(varName: 'AUTHING_USER_POOL_Id', obfuscate: true)
+  final String? authingUserPoolId = _DevEnv.authingUserPoolId;
+
+  @override
+  @EnviedField(varName: 'AUTHING_APP_ID', obfuscate: true)
+  final String? authingAppId = _DevEnv.authingAppId;
+
+  @override
+  @EnviedField(varName: 'SUPABASE_URL', obfuscate: true)
+  final String? supabaseUrl = _DevEnv.supabaseUrl;
+
+  @override
+  @EnviedField(varName: 'SUPABASE_ANON_KEY', obfuscate: true)
+  final String? supabaseAnonKey = _DevEnv.supabaseAnonKey;
 }

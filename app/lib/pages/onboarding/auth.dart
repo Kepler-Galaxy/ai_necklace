@@ -2,7 +2,12 @@ import 'dart:io';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/gestures.dart';
+import 'package:authing_sdk_v3/client.dart';
+import 'package:authing_sdk_v3/result.dart';
+import 'package:authing_sdk_v3/options/login_options.dart';
 import 'package:flutter/material.dart';
+import 'package:friend_private/utils/analytics/growthbook.dart';
+import 'package:supabase_flutter/supabase_flutter.dart' as supabase;
 import 'package:friend_private/backend/auth.dart';
 import 'package:friend_private/backend/preferences.dart';
 import 'package:friend_private/services/notification_service.dart';
@@ -23,7 +28,9 @@ class AuthComponent extends StatefulWidget {
 
 class _AuthComponentState extends State<AuthComponent> {
   bool loading = false;
-
+  final TextEditingController _phoneController = TextEditingController();
+  final TextEditingController _codeController = TextEditingController();
+  bool _isCodeSent = false;
   changeLoadingState() => setState(() => loading = !loading);
 
   @override
@@ -45,32 +52,76 @@ class _AuthComponentState extends State<AuthComponent> {
             ),
           ),
           const SizedBox(height: 32),
-          !Platform.isIOS
+          TextField(
+            controller: _phoneController,
+            decoration: InputDecoration(
+              labelText: 'Phone Number',
+              prefixIcon: Icon(Icons.phone),
+            ),
+            keyboardType: TextInputType.phone,
+          ),
+          const SizedBox(height: 16),
+          // Add verification code input
+          TextField(
+            controller: _codeController,
+            decoration: InputDecoration(
+              labelText: 'Verification Code',
+              prefixIcon: Icon(Icons.sms),
+            ),
+            keyboardType: TextInputType.number,
+          ),
+          const SizedBox(height: 16),
+          _isCodeSent
               ? SignInButton(
-                  Buttons.google,
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                  onPressed: loading
-                      ? () {}
-                      : () async {
-                          changeLoadingState();
-                          await signInWithGoogle();
-                          _signIn();
-                          changeLoadingState();
-                        },
+                  Buttons.anonymous,
+                  text: "登录/注册",
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8)),
+                  onPressed: loading ? () {} : _signInWithPhone,
                 )
-              : SignInWithAppleButton(
-                  style: SignInWithAppleButtonStyle.whiteOutlined,
-                  onPressed: loading
-                      ? () {}
-                      : () async {
-                          changeLoadingState();
-                          await signInWithApple();
-                          _signIn();
-                          changeLoadingState();
-                        },
-                  height: 52,
+              : SignInButton(
+                  Buttons.anonymous,
+                  text: "获取验证码",
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8)),
+                  onPressed: loading ? () {} : _sendVerificationCode,
                 ),
+
+          // !Platform.isIOS
+          //     ? SignInButton(
+          //         Buttons.google,
+          //         padding:
+          //             const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          //         shape: RoundedRectangleBorder(
+          //             borderRadius: BorderRadius.circular(8)),
+          //         onPressed: loading
+          //             ? () {}
+          //             : () async {
+          //                 changeLoadingState();
+          //                 await signInWithGoogle();
+          //                 _signIn();
+          //                 changeLoadingState();
+          //               },
+          //       )
+          //     : SignInButton(
+          //         Buttons.apple,
+          //         padding:
+          //             const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          //         shape: RoundedRectangleBorder(
+          //             borderRadius: BorderRadius.circular(8)),
+          //         onPressed: loading
+          //             ? () {}
+          //             : () async {
+          //                 changeLoadingState();
+          //                 await signInWithApple();
+          //                 _signIn();
+          //                 changeLoadingState();
+          //               },
+          //       ),
           const SizedBox(height: 16),
           RichText(
             textAlign: TextAlign.center,
@@ -81,7 +132,9 @@ class _AuthComponentState extends State<AuthComponent> {
                 TextSpan(
                   text: 'Terms of service',
                   style: const TextStyle(decoration: TextDecoration.underline),
-                  recognizer: TapGestureRecognizer()..onTap = () => _launchUrl('https://basedhardware.com/terms'),
+                  recognizer: TapGestureRecognizer()
+                    ..onTap =
+                        () => _launchUrl('https://basedhardware.com/terms'),
                 ),
                 const TextSpan(text: ' and '),
                 TextSpan(
@@ -100,6 +153,92 @@ class _AuthComponentState extends State<AuthComponent> {
     );
   }
 
+// Send verification code to the user's phone
+  Future<void> _sendVerificationCode() async {
+    changeLoadingState();
+
+    String phone = _phoneController.text.trim();
+    if (phone.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please enter a phone number.')),
+      );
+      changeLoadingState();
+      return;
+    }
+
+    try {
+      AuthResult result = await AuthClient.sendSms(phone, "CHANNEL_LOGIN");
+      if (result.statusCode == 200) {
+        setState(() {
+          _isCodeSent = true;
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Verification code sent.')),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to send code: ${result.message}')),
+        );
+      }
+    } catch (e) {
+      _isCodeSent = false;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error: $e')),
+      );
+    } finally {
+      changeLoadingState();
+    }
+  }
+
+  // Sign in or register with phone number and verification code
+  Future<void> _signInWithPhone() async {
+    changeLoadingState();
+
+    String phone = _phoneController.text.trim();
+    String code = _codeController.text.trim();
+
+    if (phone.isEmpty || code.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+            content: Text('Please enter both phone number and code.')),
+      );
+      changeLoadingState();
+      return;
+    }
+
+    try {
+      LoginOptions opt = LoginOptions();
+      opt.scope = "openid profile phone offline_access";
+      AuthResult result = await AuthClient.loginByPhoneCode(
+        phone,
+        code,
+        null,
+        opt,
+      );
+      print(result.data.toString());
+      if (result.statusCode == 200 && result.user != null) {
+        // 登录成功
+        SharedPreferencesUtil().uid = result.user!.id;
+        SharedPreferencesUtil().authToken = result.user!.accessToken;
+        SharedPreferencesUtil().email = result.user!.email;
+        int nowTime = DateTime.now().millisecondsSinceEpoch;
+        int expires_in = result.data["expires_in"] * 1000;
+        SharedPreferencesUtil().tokenExpirationTime = nowTime + expires_in;
+        widget.onSignIn();
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to sign in: ${result.message}')),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error: $e')),
+      );
+    } finally {
+      changeLoadingState();
+    }
+  }
+
   void _signIn() async {
     String? token;
     try {
@@ -109,7 +248,8 @@ class _AuthComponentState extends State<AuthComponent> {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
         content: Text('Failed to retrieve firebase token, please try again.'),
       ));
-      CrashReporting.reportHandledCrash(e, stackTrace, level: NonFatalExceptionLevel.error);
+      CrashReporting.reportHandledCrash(e, stackTrace,
+          level: NonFatalExceptionLevel.error);
       return;
     }
     debugPrint('Token: $token');
@@ -119,9 +259,11 @@ class _AuthComponentState extends State<AuthComponent> {
         user = FirebaseAuth.instance.currentUser!;
       } catch (e, stackTrace) {
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-          content: Text('Unexpected error signing in, Firebase error, please try again.'),
+          content: Text(
+              'Unexpected error signing in, Firebase error, please try again.'),
         ));
-        CrashReporting.reportHandledCrash(e, stackTrace, level: NonFatalExceptionLevel.error);
+        CrashReporting.reportHandledCrash(e, stackTrace,
+            level: NonFatalExceptionLevel.error);
         return;
       }
       String newUid = user.uid;

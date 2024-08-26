@@ -35,4 +35,20 @@ final class ProdEnv implements EnvFields {
   @override
   @EnviedField(varName: 'GOOGLE_MAPS_API_KEY', obfuscate: true)
   final String? googleMapsApiKey = _ProdEnv.googleMapsApiKey;
+
+  @override
+  @EnviedField(varName: 'AUTHING_USER_POOL_Id', obfuscate: true)
+  final String? authingUserPoolId = _ProdEnv.authingUserPoolId;
+
+  @override
+  @EnviedField(varName: 'AUTHING_APP_ID', obfuscate: true)
+  final String? authingAppId = _ProdEnv.authingAppId;
+
+  @override
+  @EnviedField(varName: 'SUPABASE_URL', obfuscate: true)
+  final String? supabaseUrl = _ProdEnv.supabaseUrl;
+
+  @override
+  @EnviedField(varName: 'SUPABASE_ANON_KEY', obfuscate: true)
+  final String? supabaseAnonKey = _ProdEnv.supabaseAnonKey;
 }
