@@ -36,7 +36,6 @@ for var in variables_to_unset:
     os.environ.pop(var, None)
 
 
-
 from modal import Image, App, asgi_app, Secret
 from routers import workflow, chat, firmware, screenpipe, plugins, memories, transcribe, notifications, speech_profile
 from utils.other.notifications import start_cron_job
