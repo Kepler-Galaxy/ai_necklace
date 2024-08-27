@@ -30,7 +30,6 @@ from modal import Image, App, asgi_app, Secret, Cron
 from routers import workflow, chat, firmware, screenpipe, plugins, memories, transcribe, notifications, speech_profile, \
     agents, facts, users, postprocessing
 
-
 from modal import Image, App, asgi_app, Secret
 from routers import workflow, chat, firmware, screenpipe, plugins, memories, transcribe, notifications, speech_profile
 from utils.other.notifications import start_cron_job

@@ -6,6 +6,8 @@ from fastapi import Header, HTTPException
 from fastapi import Request
 from firebase_admin import auth
 from firebase_admin.auth import InvalidIdTokenError
+from utils.authing.auth_client import AuthenticationClient
+from loguru import logger
 
 
 def get_current_user_uid(authorization: str = Header(None), provider: str = Header(None)):
@@ -22,15 +24,26 @@ def get_current_user_uid(authorization: str = Header(None), provider: str = Head
         # 如果使用的authing
 
         if provider == 'authing':
-            pass
+            data = AuthenticationClient(
+                app_id=os.environ.get('AUTHING_APP_ID'),
+                app_secret=os.environ.get('AUTHING_APP_SECRET'),
+                app_host=os.environ.get('AUTHING_APP_HOST'),
+                redirect_uri=os.environ.get('AUTHING_REDIRECT_URI'),
+                access_token=token,
+            ).get_profile(True, True, True)
+            if data.get("statusCode", "500") != 200:
+                raise HTTPException(status_code=401, detail="Invalid authorization token")
+            uid = data.get('data', {}).get('userId', "")
+            logger.info(f'get_current_user_uid: {uid}')
+            return uid
         else:
             decoded_token = auth.verify_id_token(token)
-            print('get_current_user_uid', decoded_token['uid'])
+            logger.info(f'get_current_user_uid: {uid}')
             return decoded_token['uid']
     except InvalidIdTokenError as e:
         if os.getenv('LOCAL_DEVELOPMENT') == 'true':
             return '123'
-        print(e)
+        logger.error(e)
         raise HTTPException(status_code=401, detail="Invalid authorization token")
 
 
