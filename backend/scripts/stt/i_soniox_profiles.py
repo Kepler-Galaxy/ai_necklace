@@ -1,6 +1,7 @@
 import os
 import subprocess
 
+import loguru
 from pydub import AudioSegment
 
 os.environ['SONIOX_API_KEY'] = ''
@@ -9,7 +10,7 @@ os.environ['SONIOX_API_KEY'] = ''
 def add_speaker():
     result = subprocess.run(['python', '-m', 'soniox.manage_speakers', '--add_speaker', '--speaker_name', 'test_1'])
     completed = result.returncode == 0
-    print('add_speaker:', result)
+    loguru.Logger.info({"add_speaker": result})
     return completed
 
 

@@ -1,6 +1,7 @@
 import asyncio
 import concurrent.futures
 from datetime import datetime
+from loguru import logger
 
 import pytz
 
@@ -9,7 +10,7 @@ from routers.notifications import send_notification
 
 
 async def start_cron_job():
-    print('start_cron_job')
+    logger.info("start_cron_job")
     await send_daily_notification()
 
 

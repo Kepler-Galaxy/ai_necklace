@@ -1,11 +1,29 @@
 import asyncio
 import json
 import os
+from loguru import logger
+import sys
 
 import firebase_admin
 from fastapi import FastAPI
 from fastapi_utilities import repeat_at
 from dotenv import load_dotenv
+
+
+def serialize(record):
+    subset = {
+        "timestamp": record["time"].timestamp(),
+        "message": record["message"],
+        "level": record["level"].name,
+        "file": record["file"].name,
+        "context": record["extra"],
+    }
+    return json.dumps(subset)
+
+
+def patching(record):
+    record["extra"]["serialized"] = serialize(record)
+
 
 # load env
 load_dotenv()
@@ -16,6 +34,8 @@ variables_to_unset = [
 ]
 for var in variables_to_unset:
     os.environ.pop(var, None)
+
+
 
 from modal import Image, App, asgi_app, Secret
 from routers import workflow, chat, firmware, screenpipe, plugins, memories, transcribe, notifications, speech_profile
