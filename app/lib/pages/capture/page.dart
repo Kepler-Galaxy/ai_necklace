@@ -19,6 +19,7 @@ import 'package:friend_private/pages/capture/location_service.dart';
 import 'package:friend_private/pages/capture/logic/openglass_mixin.dart';
 import 'package:friend_private/pages/capture/widgets/widgets.dart';
 import 'package:friend_private/pages/home/page.dart';
+import 'package:friend_private/utils/analytics/mixpanel.dart';
 import 'package:friend_private/utils/audio/wav_bytes.dart';
 import 'package:friend_private/utils/ble/communication.dart';
 import 'package:friend_private/utils/enums.dart';
@@ -314,6 +315,7 @@ class CapturePageState extends State<CapturePage>
 
       // TODO: store anyways something temporal and retry once connected again.
     }
+    if (memory != null) MixpanelManager().memoryCreated(memory);
 
     if (memory != null) widget.addMemory(memory);
     if (memory != null && !memory.failed && file != null && segments.isNotEmpty && !memory.discarded) {
