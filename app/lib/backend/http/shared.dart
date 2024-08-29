@@ -18,7 +18,6 @@ Future<String> getAuthHeader() async {
       expiry.isAtSameMomentAs(DateTime.fromMillisecondsSinceEpoch(0)) ||
       (expiry.isBefore(DateTime.now().add(const Duration(minutes: 5))) &&
           expiry.isAfter(DateTime.now()))) {
-            
     SharedPreferencesUtil().authToken = await getIdToken() ?? '';
   }
   if (SharedPreferencesUtil().authToken == '') {
@@ -44,9 +43,10 @@ Future<http.Response?> makeApiCall({
     }
     if (url.contains(Env.apiBaseUrl!)) {
       headers['Authorization'] = await getAuthHeader();
+      headers['Provider'] = 'authing';
       // headers['Authorization'] = ''; // set admin key + uid here for testing
     }
-
+    debugPrint('Url $url');
     final client = InstabugHttpClient();
 
     if (method == 'POST') {

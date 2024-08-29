@@ -38,7 +38,8 @@ Future<bool> _init() async {
     url: Env.supabaseUrl,
     anonKey: Env.supabaseAnonKey,
   );
-
+  debugPrint("===============================");
+  debugPrint(Env.apiBaseUrl);
   Authing.init(Env.authingUserPoolId!, Env.authingAppId!);
   if (F.env == Environment.prod) {
     await Firebase.initializeApp(
