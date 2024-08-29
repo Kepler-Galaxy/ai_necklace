@@ -3,6 +3,8 @@ import os
 
 import firebase_admin
 from fastapi import FastAPI
+from dotenv import load_dotenv
+load_dotenv()
 
 from modal import Image, App, asgi_app, Secret, Cron
 from routers import workflow, chat, firmware, plugins, memories, transcribe, notifications, speech_profile, \
