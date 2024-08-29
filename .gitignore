@@ -11,6 +11,10 @@ dump/
 node_modules
 yarn.lock
 
+# Only tracks software in this repo
+Friend/
+OpenGlass/
+
 # General
 .idea/
 .dart_tool/
@@ -138,6 +142,7 @@ backend/scripts/rag/visualizations/
 
 backend/google-credentials.json
 backend/google-credentials-dev.json
+backend/credentials.json
 
 startup-script.sh
 /app/lib/firebase_options_dev.dart
