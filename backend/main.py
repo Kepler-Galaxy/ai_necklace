@@ -27,8 +27,9 @@ def patching(record):
 load_dotenv()
 
 from modal import Image, App, asgi_app, Secret, Cron
+
 from routers import workflow, chat, firmware, plugins, memories, transcribe, notifications, speech_profile, \
-    agents, facts, users, processing_memories, trends, sdcard
+    agents, facts, users, processing_memories, trends, sdcard, diary
 from utils.other.notifications import start_cron_job
 
 if os.environ.get('SERVICE_ACCOUNT_JSON'):
@@ -56,6 +57,7 @@ app.include_router(trends.router)
 
 app.include_router(firmware.router)
 app.include_router(sdcard.router)
+app.include_router(diary.router)
 
 modal_app = App(
     name='backend',

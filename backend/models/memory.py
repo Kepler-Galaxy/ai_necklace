@@ -158,7 +158,7 @@ class Memory(BaseModel):
     processing_memory_id: Optional[str] = None
 
     @staticmethod
-    def memories_to_string(memories: List['Memory']) -> str:
+    def memories_to_string(memories: List['Memory'], include_action_items = True) -> str:
         result = []
         for i, memory in enumerate(memories):
             if isinstance(memory, dict):
@@ -169,7 +169,7 @@ class Memory(BaseModel):
                           f"{str(memory.structured.title).capitalize()}\n"
                           f"{str(memory.structured.overview).capitalize()}\n")
 
-            if memory.structured.action_items:
+            if include_action_items and memory.structured.action_items:
                 memory_str += "Action Items:\n"
                 for item in memory.structured.action_items:
                     memory_str += f"- {item.description}\n"
