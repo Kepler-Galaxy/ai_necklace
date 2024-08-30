@@ -1,0 +1,7 @@
+// A memory summary page replaces the chat page, with a back-array returns to the main page.
+// memory summary page can be refreshed when the summarization duration changes. 
+// This page first calls filter_memories_by_date() from backend/database/memories.py to fetch memories in the timerange
+// Then the generation stage is a combination of jobs in app and backend
+// 1) For image rendering, app generates a list of [(lat, lon): catergory], send it to backend, backend returns an image by calling AMAP APIs to map all catergory memories to their placeIDs
+// 2) For per catergory memory summarization, app generate {catergory: [memories]}, background will first fetch if RAG has anything to add for each catergory, then llm will generate an event flow to describe the progress of this catergory
+// After the two APIs are returned, the page will be refreshed.
