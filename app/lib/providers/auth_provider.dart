@@ -140,11 +140,9 @@ class AuthenticationProvider extends BaseProvider {
       debugPrint('Token: $token');
       return token;
     } catch (e, stackTrace) {
-      AppSnackbar.showSnackbarError(
-          'Failed to retrieve firebase token, please try again.');
+      AppSnackbar.showSnackbarError('Failed to retrieve firebase token, please try again.');
 
-      CrashReporting.reportHandledCrash(e, stackTrace,
-          level: NonFatalExceptionLevel.error);
+      CrashReporting.reportHandledCrash(e, stackTrace, level: NonFatalExceptionLevel.error);
 
       return null;
     }
