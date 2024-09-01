@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:math';
 
+import 'package:authing_sdk_v3/client.dart';
 import 'package:crypto/crypto.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -129,18 +130,9 @@ listenAuthTokenChanges() {
 }
 
 Future<String?> getIdToken() async {
-  try {
-    IdTokenResult? newToken = await FirebaseAuth.instance.currentUser?.getIdTokenResult(true);
-    if (newToken?.token != null) {
-      SharedPreferencesUtil().uid = FirebaseAuth.instance.currentUser!.uid;
-      SharedPreferencesUtil().tokenExpirationTime = newToken?.expirationTime?.millisecondsSinceEpoch ?? 0;
-      SharedPreferencesUtil().authToken = newToken?.token ?? '';
-    }
-    return newToken?.token;
-  } catch (e) {
-    print(e);
-    return SharedPreferencesUtil().authToken;
-  }
+  debugPrint(AuthClient.currentUser?.accessToken);
+
+  return SharedPreferencesUtil().authToken;
 }
 
 Future<void> signOut(BuildContext context) async {
@@ -154,3 +146,5 @@ Future<void> signOut(BuildContext context) async {
 }
 
 bool isSignedIn() => FirebaseAuth.instance.currentUser != null;
+
+bool isSignedInAuthing() => SharedPreferencesUtil().authToken != "";

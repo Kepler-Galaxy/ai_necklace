@@ -28,7 +28,7 @@ class _OnboardingWrapperState extends State<OnboardingWrapper> with TickerProvid
     _controller = TabController(length: 5, vsync: this);
     _controller!.addListener(() => setState(() {}));
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      if (isSignedIn()) {
+      if (isSignedInAuthing()) {
         // && !SharedPreferencesUtil().onboardingCompleted
         _goNext();
       }

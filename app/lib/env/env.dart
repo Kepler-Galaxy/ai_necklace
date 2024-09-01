@@ -25,6 +25,10 @@ abstract class Env {
   static String? get growthbookApiKey => _instance.growthbookApiKey;
 
   static String? get googleMapsApiKey => _instance.googleMapsApiKey;
+
+  static String? get authingUserPoolId => _instance.authingUserPoolId;
+
+  static String? get authingAppId => _instance.authingAppId;
 }
 
 abstract class EnvFields {
@@ -41,4 +45,7 @@ abstract class EnvFields {
   String? get growthbookApiKey;
 
   String? get googleMapsApiKey;
+
+  String? get authingUserPoolId;
+  String? get authingAppId;
 }
