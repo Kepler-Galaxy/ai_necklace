@@ -54,10 +54,11 @@ Future<bool> _init() async {
   await ObjectBoxUtil.init();
   await MixpanelManager.init();
 
-  listenAuthTokenChanges();
+  // 如何替换
+  // listenAuthTokenChanges();
   bool isAuth = false;
   try {
-    isAuth = (await getIdToken()) != null;
+    isAuth = (await getIdToken()) != "";
   } catch (e) {} // if no connect this will fail
 
   if (isAuth) MixpanelManager().identify();

@@ -208,7 +208,8 @@ class _AuthComponentState extends State<AuthComponent> {
 
     try {
       LoginOptions opt = LoginOptions();
-      opt.scope = "openid profile phone offline_access";
+      opt.scope =
+          "openid profile username email phone offline_access roles external_id extended_fields tenant_id";
       AuthResult result = await AuthClient.loginByPhoneCode(
         phone,
         code,
@@ -218,12 +219,16 @@ class _AuthComponentState extends State<AuthComponent> {
       print(result.data.toString());
       if (result.statusCode == 200 && result.user != null) {
         // 登录成功
-        SharedPreferencesUtil().uid = result.user!.id;
         SharedPreferencesUtil().authToken = result.user!.accessToken;
-        SharedPreferencesUtil().email = result.user!.email;
         int nowTime = DateTime.now().millisecondsSinceEpoch;
         int expires_in = result.data["expires_in"] * 1000;
         SharedPreferencesUtil().tokenExpirationTime = nowTime + expires_in;
+
+        AuthResult userInfo = await AuthClient.getCurrentUser();
+        print(userInfo.data.toString());
+        SharedPreferencesUtil().uid = userInfo.data["userId"] ?? "";
+        SharedPreferencesUtil().email = userInfo.user!.email;
+
         widget.onSignIn();
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
