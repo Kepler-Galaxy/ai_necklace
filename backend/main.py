@@ -1,9 +1,29 @@
 import json
 import os
+from loguru import logger
+import sys
 
 import firebase_admin
 from fastapi import FastAPI
 from dotenv import load_dotenv
+
+
+def serialize(record):
+    subset = {
+        "timestamp": record["time"].timestamp(),
+        "message": record["message"],
+        "level": record["level"].name,
+        "file": record["file"].name,
+        "context": record["extra"],
+    }
+    return json.dumps(subset)
+
+
+def patching(record):
+    record["extra"]["serialized"] = serialize(record)
+
+
+# load env
 load_dotenv()
 
 from modal import Image, App, asgi_app, Secret, Cron
