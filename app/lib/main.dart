@@ -41,11 +41,9 @@ Future<bool> _init() async {
 
   Authing.init(Env.authingUserPoolId!, Env.authingAppId!);
   if (F.env == Environment.prod) {
-    await Firebase.initializeApp(
-        options: prod.DefaultFirebaseOptions.currentPlatform, name: 'prod');
+    await Firebase.initializeApp(options: prod.DefaultFirebaseOptions.currentPlatform, name: 'prod');
   } else {
-    await Firebase.initializeApp(
-        options: dev.DefaultFirebaseOptions.currentPlatform, name: 'dev');
+    await Firebase.initializeApp(options: dev.DefaultFirebaseOptions.currentPlatform, name: 'dev');
   }
 
   await NotificationService.instance.initialize();
@@ -100,8 +98,7 @@ void main() async {
           );
         }
         FlutterError.onError = (FlutterErrorDetails details) {
-          Zone.current.handleUncaughtError(
-              details.exception, details.stack ?? StackTrace.empty);
+          Zone.current.handleUncaughtError(details.exception, details.stack ?? StackTrace.empty);
         };
         Instabug.setColorTheme(ColorTheme.dark);
         runApp(MyApp(isAuth: isAuth));
@@ -121,12 +118,10 @@ class MyApp extends StatefulWidget {
   @override
   State<MyApp> createState() => _MyAppState();
 
-  static _MyAppState of(BuildContext context) =>
-      context.findAncestorStateOfType<_MyAppState>()!;
+  static _MyAppState of(BuildContext context) => context.findAncestorStateOfType<_MyAppState>()!;
 
   // The navigator key is necessary to navigate using static methods
-  static final GlobalKey<NavigatorState> navigatorKey =
-      GlobalKey<NavigatorState>();
+  static final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 }
 
 class _MyAppState extends State<MyApp> {
@@ -150,13 +145,10 @@ class _MyAppState extends State<MyApp> {
             update: (BuildContext context, value, MessageProvider? previous) =>
                 (previous?..updatePluginProvider(value)) ?? MessageProvider(),
           ),
-          ChangeNotifierProxyProvider2<MemoryProvider, MessageProvider,
-              CaptureProvider>(
+          ChangeNotifierProxyProvider2<MemoryProvider, MessageProvider, CaptureProvider>(
             create: (context) => CaptureProvider(),
-            update: (BuildContext context, memory, message,
-                    CaptureProvider? previous) =>
-                (previous?..updateProviderInstances(memory, message)) ??
-                CaptureProvider(),
+            update: (BuildContext context, memory, message, CaptureProvider? previous) =>
+                (previous?..updateProviderInstances(memory, message)) ?? CaptureProvider(),
           ),
           ChangeNotifierProxyProvider<CaptureProvider, DeviceProvider>(
             create: (context) => DeviceProvider(),
@@ -165,15 +157,13 @@ class _MyAppState extends State<MyApp> {
           ),
           ChangeNotifierProxyProvider<DeviceProvider, OnboardingProvider>(
             create: (context) => OnboardingProvider(),
-            update: (BuildContext context, value,
-                    OnboardingProvider? previous) =>
+            update: (BuildContext context, value, OnboardingProvider? previous) =>
                 (previous?..setDeviceProvider(value)) ?? OnboardingProvider(),
           ),
           ListenableProvider(create: (context) => HomeProvider()),
           ChangeNotifierProxyProvider<DeviceProvider, SpeechProfileProvider>(
             create: (context) => SpeechProfileProvider(),
-            update: (BuildContext context, value,
-                    SpeechProfileProvider? previous) =>
+            update: (BuildContext context, value, SpeechProfileProvider? previous) =>
                 (previous?..setProvider(value)) ?? SpeechProfileProvider(),
           ),
         ],
@@ -201,30 +191,22 @@ class _MyAppState extends State<MyApp> {
                   ),
                   snackBarTheme: SnackBarThemeData(
                     backgroundColor: Colors.grey.shade900,
-                    contentTextStyle: const TextStyle(
-                        fontSize: 16,
-                        color: Colors.white,
-                        fontWeight: FontWeight.w500),
+                    contentTextStyle: const TextStyle(fontSize: 16, color: Colors.white, fontWeight: FontWeight.w500),
                   ),
                   textTheme: TextTheme(
-                    titleLarge:
-                        const TextStyle(fontSize: 18, color: Colors.white),
-                    titleMedium:
-                        const TextStyle(fontSize: 16, color: Colors.white),
-                    bodyMedium:
-                        const TextStyle(fontSize: 14, color: Colors.white),
-                    labelMedium:
-                        TextStyle(fontSize: 12, color: Colors.grey.shade200),
+                    titleLarge: const TextStyle(fontSize: 18, color: Colors.white),
+                    titleMedium: const TextStyle(fontSize: 16, color: Colors.white),
+                    bodyMedium: const TextStyle(fontSize: 14, color: Colors.white),
+                    labelMedium: TextStyle(fontSize: 12, color: Colors.grey.shade200),
                   ),
                   textSelectionTheme: const TextSelectionThemeData(
                     cursorColor: Colors.white,
                     selectionColor: Colors.deepPurple,
                   )),
               themeMode: ThemeMode.dark,
-              home:
-                  (SharedPreferencesUtil().onboardingCompleted && widget.isAuth)
-                      ? const HomePageWrapper()
-                      : const OnboardingWrapper(),
+              home: (SharedPreferencesUtil().onboardingCompleted && widget.isAuth)
+                  ? const HomePageWrapper()
+                  : const OnboardingWrapper(),
             ),
           );
         });

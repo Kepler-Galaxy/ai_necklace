@@ -159,11 +159,9 @@ class AuthenticationProvider extends BaseProvider {
       try {
         user = FirebaseAuth.instance.currentUser!;
       } catch (e, stackTrace) {
-        AppSnackbar.showSnackbarError(
-            'Unexpected error signing in, Firebase error, please try again.');
+        AppSnackbar.showSnackbarError('Unexpected error signing in, Firebase error, please try again.');
 
-        CrashReporting.reportHandledCrash(e, stackTrace,
-            level: NonFatalExceptionLevel.error);
+        CrashReporting.reportHandledCrash(e, stackTrace, level: NonFatalExceptionLevel.error);
         return;
       }
       String newUid = user.uid;
@@ -171,8 +169,7 @@ class AuthenticationProvider extends BaseProvider {
       MixpanelManager().identify();
       onSignIn();
     } else {
-      AppSnackbar.showSnackbarError(
-          'Unexpected error signing in, please try again');
+      AppSnackbar.showSnackbarError('Unexpected error signing in, please try again');
     }
   }
 
