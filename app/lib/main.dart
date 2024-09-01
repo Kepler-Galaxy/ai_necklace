@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:authing_sdk_v3/authing.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -52,6 +53,9 @@ Future<bool> _init() async {
   await ServiceManager.instance().start();
 
   // Firebase
+  ble.FlutterBluePlus.setLogLevel(ble.LogLevel.info, color: true);
+
+  Authing.init(Env.authingUserPoolId!, Env.authingAppId!);
   if (F.env == Environment.prod) {
     await Firebase.initializeApp(options: prod.DefaultFirebaseOptions.currentPlatform, name: 'prod');
   } else {
@@ -69,9 +73,12 @@ Future<bool> _init() async {
   await SharedPreferencesUtil.init();
   await MixpanelManager.init();
   if (Env.gleapApiKey != null) Gleap.initialize(token: Env.gleapApiKey!);
+
+  // TODO: replace by authing
+  // listenAuthTokenChanges();
   bool isAuth = false;
   try {
-    isAuth = (await getIdToken()) != null;
+    isAuth = (await getIdToken()) != "";
   } catch (e) {} // if no connect this will fail
 
   if (isAuth) MixpanelManager().identify();

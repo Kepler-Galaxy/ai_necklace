@@ -2,6 +2,7 @@ import asyncio
 import concurrent.futures
 from datetime import datetime
 from datetime import time
+from loguru import logger
 
 import pytz
 
@@ -15,7 +16,7 @@ from utils.notifications import send_notification, send_bulk_notification
 
 async def start_cron_job():
     if should_run_job():
-        print('start_cron_job')
+        logger.info("start_cron_job")
         await send_daily_notification()
         await send_daily_summary_notification()
 

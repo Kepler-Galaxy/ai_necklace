@@ -47,4 +47,10 @@ final class ProdEnv implements EnvFields {
   @override
   @EnviedField(varName: 'INTERCOM_ANDROID_API_KEY', obfuscate: true)
   final String? intercomAndroidApiKey = _ProdEnv.intercomAndroidApiKey;
+  @EnviedField(varName: 'AUTHING_USER_POOL_Id', obfuscate: true)
+  final String? authingUserPoolId = _ProdEnv.authingUserPoolId;
+
+  @override
+  @EnviedField(varName: 'AUTHING_APP_ID', obfuscate: true)
+  final String? authingAppId = _ProdEnv.authingAppId;
 }

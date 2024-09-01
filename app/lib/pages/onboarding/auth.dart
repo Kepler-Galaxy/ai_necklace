@@ -1,7 +1,11 @@
 import 'dart:io';
 
+import 'package:authing_sdk_v3/client.dart';
+import 'package:authing_sdk_v3/result.dart';
+import 'package:authing_sdk_v3/options/login_options.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:friend_private/utils/analytics/growthbook.dart';
 import 'package:friend_private/providers/auth_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:sign_in_button/sign_in_button.dart';
@@ -28,8 +32,8 @@ class _AuthComponentState extends State<AuthComponent> {
             children: [
               Center(
                 child: SizedBox(
-                  height: 24,
-                  width: 24,
+                  height: 16,
+                  width: 16,
                   child: provider.loading
                       ? const CircularProgressIndicator(
                           valueColor: AlwaysStoppedAnimation(Colors.white),
@@ -37,24 +41,51 @@ class _AuthComponentState extends State<AuthComponent> {
                       : null,
                 ),
               ),
-              const SizedBox(height: 32),
-              !Platform.isIOS
+              const SizedBox(height: 16),
+              TextField(
+                controller: provider.phoneController,
+                decoration: InputDecoration(
+                  labelText: 'Phone Number',
+                  prefixIcon: Icon(Icons.phone),
+                ),
+                keyboardType: TextInputType.phone,
+              ),
+              const SizedBox(height: 16),
+              // Add verification code input
+              TextField(
+                controller: provider.codeController,
+                decoration: InputDecoration(
+                  labelText: 'Verification Code',
+                  prefixIcon: Icon(Icons.sms),
+                ),
+                keyboardType: TextInputType.number,
+              ),
+              const SizedBox(height: 16),
+              provider.isCodeSent
                   ? SignInButton(
-                      Buttons.google,
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                      onPressed: () => provider.onGoogleSignIn(widget.onSignIn),
+                      Buttons.anonymous,
+                      text: "登录/注册",
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 8),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8)),
+                      onPressed: () => provider.onVerificationCodeSignIn(
+                          context, widget.onSignIn),
                     )
-                  : SignInWithAppleButton(
-                      style: SignInWithAppleButtonStyle.whiteOutlined,
-                      onPressed: () => provider.onAppleSignIn(widget.onSignIn),
-                      height: 52,
+                  : SignInButton(
+                      Buttons.anonymous,
+                      text: "获取验证码",
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 8),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8)),
+                      onPressed: () => provider.sendVerificationCode(context),
                     ),
               const SizedBox(height: 16),
               RichText(
                 textAlign: TextAlign.center,
                 text: TextSpan(
-                  style: const TextStyle(color: Colors.white, fontSize: 12),
+                  style: const TextStyle(color: Colors.white, fontSize: 8),
                   children: [
                     const TextSpan(text: 'By Signing in, you agree to our\n'),
                     TextSpan(
