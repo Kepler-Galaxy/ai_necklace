@@ -42,7 +42,7 @@ Future<String> getAuthHeader() async {
     SharedPreferencesUtil().authToken = await getIdToken() ?? '';
   }
   if (SharedPreferencesUtil().authToken == '') {
-    showErrorDialog("No auth token found");
+    // showErrorDialog("No auth token found");
     throw Exception('No auth token found');
   }
   return 'Bearer ${SharedPreferencesUtil().authToken}';
@@ -65,6 +65,10 @@ Future<http.Response?> makeApiCall({
     if (url.contains(Env.apiBaseUrl!)) {
       headers['Authorization'] = await getAuthHeader();
       headers['Provider'] = 'authing';
+      // No token skipped the request
+      if (headers['Authorization'] == "" || headers["Authorization"] == null) {
+        return null;
+      }
       // headers['Authorization'] = ''; // set admin key + uid here for testing
     }
 
@@ -85,7 +89,7 @@ Future<http.Response?> makeApiCall({
     }
   } catch (e, stackTrace) {
     debugPrint('HTTP request failed: $e, $stackTrace');
-    showErrorDialog('HTTP request failed: $e');
+    // showErrorDialog('HTTP request failed: $e');
     CrashReporting.reportHandledCrash(
       e,
       stackTrace,
