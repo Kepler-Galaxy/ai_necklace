@@ -42,8 +42,8 @@ class _AuthComponentState extends State<AuthComponent> {
         children: [
           Center(
             child: SizedBox(
-              height: 24,
-              width: 24,
+              height: 16,
+              width: 16,
               child: loading
                   ? const CircularProgressIndicator(
                       valueColor: AlwaysStoppedAnimation(Colors.white),
@@ -51,7 +51,7 @@ class _AuthComponentState extends State<AuthComponent> {
                   : null,
             ),
           ),
-          const SizedBox(height: 32),
+          const SizedBox(height: 16),
           TextField(
             controller: _phoneController,
             decoration: InputDecoration(
@@ -126,7 +126,7 @@ class _AuthComponentState extends State<AuthComponent> {
           RichText(
             textAlign: TextAlign.center,
             text: TextSpan(
-              style: const TextStyle(color: Colors.white, fontSize: 12),
+              style: const TextStyle(color: Colors.white, fontSize: 8),
               children: [
                 const TextSpan(text: 'By Signing in, you agree to our\n'),
                 TextSpan(
