@@ -16,7 +16,8 @@ abstract class Env {
   static String? get mixpanelProjectToken => _instance.mixpanelProjectToken;
 
   // static String? get apiBaseUrl => _instance.apiBaseUrl;
-  static String? get apiBaseUrl => 'https://equal-magnetic-pheasant.ngrok-free.app/';
+  static String? get apiBaseUrl =>
+      'https://equal-magnetic-pheasant.ngrok-free.app/';
   // static String? get apiBaseUrl => _instance.apiBaseUrl;
   // static String? get apiBaseUrl => 'https://based-hardware-development--backened-dev-api.modal.run/';
   // static String? get apiBaseUrl => 'https://camel-lucky-reliably.ngrok-free.app/';
@@ -25,6 +26,10 @@ abstract class Env {
   static String? get growthbookApiKey => _instance.growthbookApiKey;
 
   static String? get googleMapsApiKey => _instance.googleMapsApiKey;
+
+  static String? get authingUserPoolId => _instance.authingUserPoolId;
+
+  static String? get authingAppId => _instance.authingAppId;
 }
 
 abstract class EnvFields {
@@ -41,4 +46,7 @@ abstract class EnvFields {
   String? get growthbookApiKey;
 
   String? get googleMapsApiKey;
+
+  String? get authingUserPoolId;
+  String? get authingAppId;
 }

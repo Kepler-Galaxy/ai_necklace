@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:math';
 
+import 'package:authing_sdk_v3/client.dart';
 import 'package:crypto/crypto.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -11,9 +12,11 @@ import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 /// Generates a cryptographically secure random nonce, to be included in a
 /// credential request.
 String generateNonce([int length = 32]) {
-  const charset = '0123456789ABCDEFGHIJKLMNOPQRSTUVXYZabcdefghijklmnopqrstuvwxyz-._';
+  const charset =
+      '0123456789ABCDEFGHIJKLMNOPQRSTUVXYZabcdefghijklmnopqrstuvwxyz-._';
   final random = Random.secure();
-  return List.generate(length, (_) => charset[random.nextInt(charset.length)]).join();
+  return List.generate(length, (_) => charset[random.nextInt(charset.length)])
+      .join();
 }
 
 /// Returns the sha256 hash of [input] in hex notation.
@@ -32,7 +35,10 @@ Future<UserCredential> signInWithApple() async {
   final nonce = sha256ofString(rawNonce);
   // Request credential for the currently signed in Apple account.
   final appleCredential = await SignInWithApple.getAppleIDCredential(
-    scopes: [AppleIDAuthorizationScopes.email, AppleIDAuthorizationScopes.fullName],
+    scopes: [
+      AppleIDAuthorizationScopes.email,
+      AppleIDAuthorizationScopes.fullName
+    ],
     nonce: nonce,
   );
 
@@ -53,7 +59,8 @@ Future<UserCredential> signInWithApple() async {
 
   // Sign in the user with Firebase. If the nonce we generated earlier does
   // not match the nonce in `appleCredential.identityToken`, sign in will fail.
-  UserCredential userCred = await FirebaseAuth.instance.signInWithCredential(oauthCredential);
+  UserCredential userCred =
+      await FirebaseAuth.instance.signInWithCredential(oauthCredential);
   var user = FirebaseAuth.instance.currentUser!;
   if (appleCredential.givenName != null) {
     user.updateProfile(displayName: SharedPreferencesUtil().fullName);
@@ -78,7 +85,8 @@ Future<UserCredential?> signInWithGoogle() async {
     final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
     print('Google User: $googleUser');
     // Obtain the auth details from the request
-    final GoogleSignInAuthentication? googleAuth = await googleUser?.authentication;
+    final GoogleSignInAuthentication? googleAuth =
+        await googleUser?.authentication;
     print('Google Auth: $googleAuth');
 
     // Create a new credential
@@ -118,7 +126,8 @@ listenAuthTokenChanges() {
       // debugPrint('User is signed in!'); // FIXME, triggered too many times.
       try {
         if (SharedPreferencesUtil().authToken.isEmpty ||
-            DateTime.now().millisecondsSinceEpoch > SharedPreferencesUtil().tokenExpirationTime) {
+            DateTime.now().millisecondsSinceEpoch >
+                SharedPreferencesUtil().tokenExpirationTime) {
           await getIdToken();
         }
       } catch (e) {
@@ -129,18 +138,9 @@ listenAuthTokenChanges() {
 }
 
 Future<String?> getIdToken() async {
-  try {
-    IdTokenResult? newToken = await FirebaseAuth.instance.currentUser?.getIdTokenResult(true);
-    if (newToken?.token != null) {
-      SharedPreferencesUtil().uid = FirebaseAuth.instance.currentUser!.uid;
-      SharedPreferencesUtil().tokenExpirationTime = newToken?.expirationTime?.millisecondsSinceEpoch ?? 0;
-      SharedPreferencesUtil().authToken = newToken?.token ?? '';
-    }
-    return newToken?.token;
-  } catch (e) {
-    print(e);
-    return SharedPreferencesUtil().authToken;
-  }
+  debugPrint(AuthClient.currentUser?.accessToken);
+
+  return SharedPreferencesUtil().authToken;
 }
 
 Future<void> signOut(BuildContext context) async {
@@ -154,3 +154,5 @@ Future<void> signOut(BuildContext context) async {
 }
 
 bool isSignedIn() => FirebaseAuth.instance.currentUser != null;
+
+bool isSignedInAuthing() => SharedPreferencesUtil().authToken != "";
