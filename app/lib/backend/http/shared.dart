@@ -1,13 +1,35 @@
 import 'dart:convert';
+import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:friend_private/backend/auth.dart';
 import 'package:friend_private/backend/preferences.dart';
 import 'package:friend_private/env/env.dart';
+import 'package:friend_private/main.dart';
 import 'package:http/http.dart' as http;
 import 'package:instabug_flutter/instabug_flutter.dart';
 import 'package:instabug_http_client/instabug_http_client.dart';
 import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
+
+void showErrorDialog(String errorMessage) {
+  showDialog(
+    context: MyApp.navigatorKey.currentContext!,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: Text('Error'),
+        content: Text(errorMessage),
+        actions: <Widget>[
+          TextButton(
+            child: Text('OK'),
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+          ),
+        ],
+      );
+    },
+  );
+}
 
 Future<String> getAuthHeader() async {
   DateTime? expiry = DateTime.fromMillisecondsSinceEpoch(SharedPreferencesUtil().tokenExpirationTime);
@@ -43,9 +65,15 @@ Future<http.Response?> makeApiCall({
     }
     if (url.contains(Env.apiBaseUrl!)) {
       headers['Authorization'] = await getAuthHeader();
+      headers['Provider'] = 'authing';
+      // No token skipped the request
+      if (headers['Authorization'] == "" || headers["Authorization"] == null) {
+        return null;
+      }
       // headers['Authorization'] = ''; // set admin key + uid here for testing
     }
 
+    debugPrint('Url $url');
     final client = InstabugHttpClient();
 
     if (method == 'POST') {
@@ -63,6 +91,7 @@ Future<http.Response?> makeApiCall({
     }
   } catch (e, stackTrace) {
     debugPrint('HTTP request failed: $e, $stackTrace');
+    // showErrorDialog('HTTP request failed: $e');
     CrashReporting.reportHandledCrash(
       e,
       stackTrace,
@@ -94,6 +123,7 @@ dynamic extractContentFromResponse(
     return data['choices'][0]['message']['content'];
   } else {
     debugPrint('Error fetching data: ${response?.statusCode}');
+    showErrorDialog('Error fetching data: ${response?.statusCode}');
     // TODO: handle error, better specially for script migration
     CrashReporting.reportHandledCrash(
       Exception('Error fetching data: ${response?.statusCode}'),

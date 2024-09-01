@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:math';
 
+import 'package:authing_sdk_v3/client.dart';
 import 'package:crypto/crypto.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -12,9 +13,11 @@ import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 /// Generates a cryptographically secure random nonce, to be included in a
 /// credential request.
 String generateNonce([int length = 32]) {
-  const charset = '0123456789ABCDEFGHIJKLMNOPQRSTUVXYZabcdefghijklmnopqrstuvwxyz-._';
+  const charset =
+      '0123456789ABCDEFGHIJKLMNOPQRSTUVXYZabcdefghijklmnopqrstuvwxyz-._';
   final random = Random.secure();
-  return List.generate(length, (_) => charset[random.nextInt(charset.length)]).join();
+  return List.generate(length, (_) => charset[random.nextInt(charset.length)])
+      .join();
 }
 
 /// Returns the sha256 hash of [input] in hex notation.
@@ -36,7 +39,10 @@ Future<UserCredential?> signInWithApple() async {
 
     debugPrint('Requesting Apple credential...');
     final appleCredential = await SignInWithApple.getAppleIDCredential(
-      scopes: [AppleIDAuthorizationScopes.email, AppleIDAuthorizationScopes.fullName],
+      scopes: [
+        AppleIDAuthorizationScopes.email,
+        AppleIDAuthorizationScopes.fullName
+      ],
       nonce: nonce,
     );
 
@@ -44,8 +50,10 @@ Future<UserCredential?> signInWithApple() async {
     debugPrint('Email: ${appleCredential.email ?? "null"}');
     debugPrint('Given Name: ${appleCredential.givenName ?? "null"}');
     debugPrint('Family Name: ${appleCredential.familyName ?? "null"}');
-    debugPrint('Identity Token: ${appleCredential.identityToken != null ? 'Present' : 'Null'}');
-    debugPrint('Authorization Code: ${appleCredential.authorizationCode.isNotEmpty ? 'Present' : 'Null'}');
+    debugPrint(
+        'Identity Token: ${appleCredential.identityToken != null ? 'Present' : 'Null'}');
+    debugPrint(
+        'Authorization Code: ${appleCredential.authorizationCode.isNotEmpty ? 'Present' : 'Null'}');
 
     if (appleCredential.identityToken == null) {
       throw Exception('Apple Sign In failed - no identity token received.');
@@ -65,7 +73,8 @@ Future<UserCredential?> signInWithApple() async {
 
     // Sign in the user with Firebase.
     debugPrint('Attempting to sign in with Firebase...');
-    UserCredential userCred = await FirebaseAuth.instance.signInWithCredential(oauthCredential);
+    UserCredential userCred =
+        await FirebaseAuth.instance.signInWithCredential(oauthCredential);
     debugPrint('Firebase sign-in successful.');
 
     // Update user profile and local storage
@@ -84,7 +93,8 @@ Future<UserCredential?> signInWithApple() async {
     } else {
       var nameParts = user.displayName?.split(' ');
       SharedPreferencesUtil().givenName = nameParts?[0] ?? '';
-      SharedPreferencesUtil().familyName = nameParts?[nameParts.length - 1] ?? '';
+      SharedPreferencesUtil().familyName =
+          nameParts?[nameParts.length - 1] ?? '';
     }
     if (SharedPreferencesUtil().email.isEmpty) {
       SharedPreferencesUtil().email = user.email ?? '';
@@ -96,12 +106,14 @@ Future<UserCredential?> signInWithApple() async {
   } on FirebaseAuthException catch (e) {
     debugPrint('FirebaseAuthException: ${e.code} - ${e.message}');
     if (e.code == 'invalid-credential') {
-      debugPrint('Please check Firebase console configuration for Apple Sign In.');
+      debugPrint(
+          'Please check Firebase console configuration for Apple Sign In.');
     }
     return null;
   } catch (e) {
     debugPrint('Error during Apple Sign In: $e');
-    Logger.handle(e, null, message: 'An error occurred while signing in. Please try again later.');
+    Logger.handle(e, null,
+        message: 'An error occurred while signing in. Please try again later.');
     return null;
   }
 }
@@ -113,7 +125,8 @@ Future<UserCredential?> signInWithGoogle() async {
     final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
     print('Google User: $googleUser');
     // Obtain the auth details from the request
-    final GoogleSignInAuthentication? googleAuth = await googleUser?.authentication;
+    final GoogleSignInAuthentication? googleAuth =
+        await googleUser?.authentication;
     print('Google Auth: $googleAuth');
 
     // Create a new credential
@@ -139,37 +152,16 @@ Future<UserCredential?> signInWithGoogle() async {
     return result;
   } catch (e) {
     debugPrint('Failed to sign in with Google: $e');
-    Logger.handle(e, null, message: 'An error occurred while signing in. Please try again later.');
+    Logger.handle(e, null,
+        message: 'An error occurred while signing in. Please try again later.');
     return null;
   }
 }
 
 Future<String?> getIdToken() async {
-  try {
-    IdTokenResult? newToken = await FirebaseAuth.instance.currentUser?.getIdTokenResult(true);
-    if (newToken?.token != null) {
-      var user = FirebaseAuth.instance.currentUser!;
-      SharedPreferencesUtil().uid = user.uid;
-      SharedPreferencesUtil().tokenExpirationTime = newToken?.expirationTime?.millisecondsSinceEpoch ?? 0;
-      SharedPreferencesUtil().authToken = newToken?.token ?? '';
-      if (SharedPreferencesUtil().email.isEmpty) {
-        SharedPreferencesUtil().email = user.email ?? '';
-      }
+  debugPrint(AuthClient.currentUser?.accessToken);
 
-      if (SharedPreferencesUtil().givenName.isEmpty) {
-        SharedPreferencesUtil().givenName = user.displayName?.split(' ')[0] ?? '';
-        if ((user.displayName?.split(' ').length ?? 0) > 1) {
-          SharedPreferencesUtil().familyName = user.displayName?.split(' ')[1] ?? '';
-        } else {
-          SharedPreferencesUtil().familyName = '';
-        }
-      }
-    }
-    return newToken?.token;
-  } catch (e) {
-    print(e);
-    return SharedPreferencesUtil().authToken;
-  }
+  return SharedPreferencesUtil().authToken;
 }
 
 Future<void> signOut() async {
@@ -195,3 +187,5 @@ Future<void> updateGivenName(String fullName) async {
     await user.updateProfile(displayName: fullName);
   }
 }
+
+bool isSignedInAuthing() => SharedPreferencesUtil().authToken != "";

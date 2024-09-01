@@ -24,6 +24,9 @@ abstract class Env {
   static String? get googleMapsApiKey => _instance.googleMapsApiKey;
 
   static String? get gleapApiKey => _instance.gleapApiKey;
+  static String? get authingUserPoolId => _instance.authingUserPoolId;
+
+  static String? get authingAppId => _instance.authingAppId;
 }
 
 abstract class EnvFields {
@@ -40,4 +43,6 @@ abstract class EnvFields {
   String? get googleMapsApiKey;
 
   String? get gleapApiKey;
+  String? get authingUserPoolId;
+  String? get authingAppId;
 }
