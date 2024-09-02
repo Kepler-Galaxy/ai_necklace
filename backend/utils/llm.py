@@ -535,3 +535,37 @@ def new_facts_extractor(
     except Exception as e:
         # print(f'Error extracting new facts: {e}')
         return []
+
+# **********************************
+# ************* Diary **************
+# **********************************
+
+def obtain_diary(user_name: str, user_facts: List[Fact], topic_to_memories: dict[str, List[Memory]]) -> str:
+    string_parts = []
+    for topic, memories in topic_to_memories.items():
+        string_parts.append("Topic ${topic} with the following memories: ")
+        string_parts.append(Memory.memories_to_string(memories))
+    topic_conversations = ''.join(string_parts)
+
+    prompt = f"""
+    
+    You are a personal assisstant, that helps people to track the progess on different topics based on his/her solo conversation or conversation with others. Help him/her to see the meaning of these concrete works, and encourage him/her to take concrete actions to live better.
+    You are advising {user_name} right now, this is what you know about {user_name}: {Fact.get_facts_as_str(user_facts)}
+    
+    
+    The following are a list of ${user_name}'s conversations on different topics, each topic has a few conversations with the transcripts and a slight summary.
+    Note that the transcripts are recorded by a careless recorder and contains a lot of errors. Words are recorded incorrectly due to similar pronunciation. so figure out what might be the true transcript with your own judgement.
+
+    {user_name} wants to get a description of the following:
+    In the first paragraph, describe what happens from first person perspective in time ascending order topic by topic.
+    In the second paragraph, point out precisely what are the main achievements.
+    In the third paragraph, list out a plan for {user_name} to complete the short term tasks efficiently.
+    Finish the final paragraph with a few sentences to point out the meaning of {user_name}'s concrete works. If you see any connection, help {user_name} to connect the dots between short term goals and life long goals. Encourage {user_name} to live a happy, authentic and brave life.
+  
+    your reponse should be in Chinese. Between 200 words to 1000 words. in plain text without markdown, just like writting a diary.
+    ```
+    ${topic_conversations}
+    ```
+    """.replace('    ', '').strip()
+    print(prompt)
+    return llm.invoke(prompt).content
