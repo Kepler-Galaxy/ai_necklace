@@ -4,6 +4,7 @@ from typing import Optional
 from pydantic import BaseModel, Field
 from database._client import document_id_from_seed
 from utils.diary.process_diary import generate_diary_for_uid
+from models.memory import Memory
 
 class Diary(BaseModel):
     footprint_jpeg: Optional[str] = Field(description="The serialized content of the footprint jpeg")
@@ -29,13 +30,15 @@ class DiaryDB(Diary):
     # # TODO: should add diary status?
 
     @staticmethod
-    def from_memories(uid: str, memory_ids: list[str]) -> 'DiaryDB':
+    def from_memories(uid: str, memories: list[Memory]) -> 'DiaryDB':
+        memory_ids=[memory['id'] for memory in memories]
+
         return DiaryDB(
             id=document_id_from_seed(uid.join(memory_ids)),
             uid=uid,
             created_at=datetime.utcnow(),
             updated_at=datetime.utcnow(),
-            memory_ids=memory_ids,
+            memory_ids = memory_ids,
             footprint_jpeg="",
-            content = generate_diary_for_uid(uid, memory_ids)
+            content = generate_diary_for_uid(uid, memories)
         )
