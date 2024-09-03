@@ -10,7 +10,7 @@ from database.redis_db import cache_user_name
 from database.users import *
 from models.other import Person, CreatePerson
 from utils.other import endpoints as auth
-from utils.other.storage import delete_all_memory_recordings, get_user_person_speech_samples, \
+from utils.other.cos_storage import delete_all_memory_recordings, get_user_person_speech_samples, \
     delete_user_person_speech_samples
 
 router = APIRouter()
