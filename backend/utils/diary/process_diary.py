@@ -1,16 +1,14 @@
 from typing import List, Dict
 
 from models.memory import Memory
-from database.memories import get_memories_by_id
-from database.facts import get_facts
-from database.auth import get_user_name
 from utils.llm import obtain_diary
+from utils.memories.facts import get_prompt_data
+from loguru import logger
 
-def _get_categorized_memories_by_ids(uid: str, memory_ids: List[str]) -> Dict[str, List[Memory]]:
+def _get_categorized_memories(memories: list[Memory.dict]) -> Dict[str, List[Memory.dict]]:
     category_to_memories = {}
-    memories = get_memories_by_id(uid, memory_ids)
     for memory in memories:
-        category = memory.structured.category.value
+        category = memory['structured']['category']
         if category not in category_to_memories:
             category_to_memories[category] = []
 
@@ -18,9 +16,11 @@ def _get_categorized_memories_by_ids(uid: str, memory_ids: List[str]) -> Dict[st
 
     return category_to_memories
 
-def generate_diary_for_uid(uid: str, memory_ids: list[str]) -> str:
-    user_name = get_user_name(uid)
-    user_facts = get_facts(uid)
-    category_to_memories = _get_categorized_memories_by_ids(uid, memory_ids)
+def generate_diary_for_uid(uid: str, memories: list[Memory.dict]) -> str:
+    user_name, user_facts = get_prompt_data(uid)
+    category_to_memories = _get_categorized_memories(memories)
 
-    return obtain_diary(user_name, user_facts, category_to_memories)
+    result = obtain_diary(user_name, user_facts, category_to_memories)
+    logger.info(result)
+
+    return result
