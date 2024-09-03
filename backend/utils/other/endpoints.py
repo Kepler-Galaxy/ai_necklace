@@ -38,7 +38,9 @@ def get_current_user_uid(authorization: str = Header(None), provider: str = Head
             return uid
         else:
             decoded_token = auth.verify_id_token(token)
-            logger.info(f'get_current_user_uid: {decoded_token['uid']}')
+            if decoded_token.get("uid", None) == None:
+                raise HTTPException(status_code=401, detail="Invalid authorization token")
+            logger.info(f'get_current_user_uid: {decoded_token["uid"]}')
             return decoded_token['uid']
     except InvalidIdTokenError as e:
         if os.getenv('LOCAL_DEVELOPMENT') == 'true':
