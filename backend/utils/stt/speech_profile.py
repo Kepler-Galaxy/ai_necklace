@@ -5,7 +5,7 @@ from typing import List
 import requests
 from pydub import AudioSegment
 
-from utils.other.storage import get_profile_audio_if_exists, get_additional_profile_recordings, get_user_people_ids, \
+from utils.other.cos_storage import get_profile_audio_if_exists, get_additional_profile_recordings, get_user_people_ids, \
     get_user_person_speech_samples
 
 

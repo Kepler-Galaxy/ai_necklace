@@ -10,7 +10,7 @@ from database.users import get_person
 from models.memory import Memory
 from models.other import UploadProfile
 from utils.other import endpoints as auth
-from utils.other.storage import upload_profile_audio, get_profile_audio_if_exists, get_memory_recording_if_exists, \
+from utils.other.cos_storage import upload_profile_audio, get_profile_audio_if_exists, get_memory_recording_if_exists, \
     upload_additional_profile_audio, delete_additional_profile_audio, get_additional_profile_recordings, \
     upload_user_person_speech_sample, delete_user_person_speech_sample, get_user_person_speech_samples, \
     delete_speech_sample_for_people
