@@ -2,6 +2,7 @@ import os
 import threading
 import time
 from queue import Queue
+from loguru import logger
 
 import requests
 
@@ -15,7 +16,7 @@ def get_rps():
             rps = int(input("Enter the number of requests per second (RPS): "))
             rps_queue.put(rps)
         except ValueError:
-            print("Please enter a valid number.")
+            logger.error("Please enter a valid number.")
 
 
 def transcribe_worker(file_path, url, response_queue):
@@ -38,7 +39,7 @@ def transcribe():
     while True:
         if not rps_queue.empty():
             rps = rps_queue.get()
-            print(f"Running with {rps} RPS... Press 'S' to stop.")
+            logger.info(f"Running with {rps} RPS... Press 'S' to stop.")
             while True:
                 start_time = time.time()
                 threads = []
@@ -69,8 +70,8 @@ def transcribe():
                     success_rate = 0
                     avg_response_time = 0
 
-                print(f"Success rate: {success_rate:.2f}%")
-                print(f"Average response time: {avg_response_time:.2f} seconds")
+                logger.info(f"Success rate: {success_rate:.2f}%")
+                logger.info(f"Average response time: {avg_response_time:.2f} seconds")
 
 
 def stop_script():

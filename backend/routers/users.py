@@ -2,7 +2,7 @@ import threading
 import uuid
 from datetime import datetime
 from typing import List
-
+from loguru import logger
 from fastapi import APIRouter, Depends, HTTPException
 
 import database.facts as facts_db
@@ -92,7 +92,7 @@ def get_single_person(
 
 @router.get('/v1/users/people', tags=['v1'], response_model=List[Person])
 def get_all_people(include_speech_samples: bool = True, uid: str = Depends(auth.get_current_user_uid)):
-    print('get_all_people', include_speech_samples)
+    logger.info(uid, 'get_all_people', include_speech_samples)
     people = get_people(uid)
     if include_speech_samples:
         def single(person):

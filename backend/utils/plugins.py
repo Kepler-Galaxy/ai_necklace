@@ -2,6 +2,7 @@ import threading
 import uuid
 from datetime import datetime
 from typing import List, Optional
+from loguru import logger
 
 import requests
 
@@ -85,10 +86,10 @@ def trigger_external_integrations(uid: str, memory: Memory) -> list:
 
         response = requests.post(url, json=memory_dict)  # TODO: failing?
         if response.status_code != 200:
-            print('Plugin integration failed', plugin.id, 'result:', response.content)
+            logger.error('Plugin integration failed', plugin.id, 'result:', response.content)
             return
 
-        print('response', response.json())
+        logger.info('response', response.json())
         if message := response.json().get('message', ''):
             results[plugin.id] = message
 
@@ -135,16 +136,16 @@ def trigger_realtime_integrations(uid: str, token: str, segments: List[dict]) ->
         try:
             response = requests.post(url, json=payload)
             if response.status_code != 200:
-                print('Plugin integration failed', plugin.id, 'result:', response.content)
+                logger.error('Plugin integration failed', plugin.id, 'result:', response.content)
                 return
 
             response_data = response.json()
-            print('response', response_data)
+            logger.info('response', response_data)
             if message := response_data.get('message', ''):
                 send_plugin_notification(token, plugin.id, message)
                 results[plugin.id] = message
         except Exception as e:
-            print(f"Plugin integration error: {e}")
+            logger.error(f"Plugin integration error: {e}")
             return
 
     for plugin in filtered_plugins:

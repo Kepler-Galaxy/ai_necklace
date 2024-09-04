@@ -3,6 +3,7 @@ import os
 import requests
 import torch
 from fastapi import HTTPException
+from loguru import logger
 from pydub import AudioSegment
 
 torch.set_num_threads(1)
@@ -44,17 +45,17 @@ def vad_is_empty(file_path, return_segments: bool = False):
             segments = response.json()
             if return_segments:
                 return segments
-            print('vad_is_empty', len(segments) == 0)  # compute % of empty files in someway
+            logger.info('vad_is_empty', len(segments) == 0)  # compute % of empty files in someway
             return len(segments) == 0  # but also check likelyhood of silence if only 1 segment?
     except Exception as e:
-        print('vad_is_empty', e)
+        logger.error('vad_is_empty', e)
         if return_segments:
             return []
         return False
 
 
 def apply_vad_for_speech_profile(file_path: str):
-    print('apply_vad_for_speech_profile', file_path)
+    logger.info('apply_vad_for_speech_profile', file_path)
     voice_segments = vad_is_empty(file_path, return_segments=True)
     if len(voice_segments) == 0:  # TODO: front error on post-processing, audio sent is bad.
         raise HTTPException(status_code=400, detail="Audio is empty")

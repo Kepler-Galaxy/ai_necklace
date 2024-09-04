@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException
-
+from loguru import logger
 import database.memories as memories_db
 from database.vector_db import delete_vector
 from models.memory import *
@@ -81,7 +81,7 @@ def reprocess_memory(
 
 @router.get('/v1/memories', response_model=List[Memory], tags=['memories'])
 def get_memories(limit: int = 100, offset: int = 0, uid: str = Depends(auth.get_current_user_uid)):
-    print('get_memories', uid, limit, offset)
+    logger.info(uid, "get_memories", limit, offset)
     return memories_db.get_memories(uid, limit, offset, include_discarded=True)
 
 
@@ -132,7 +132,7 @@ def set_assignee_memory_segment(
 
     :return: The updated memory.
     """
-    print('set_assignee_memory_segment', memory_id, segment_idx, assign_type, value, use_for_speech_training, uid)
+    logger.info(uid, "set_assignee_memory_segment", memory_id, segment_idx, assign_type, value,)
     memory = _get_memory_by_id(uid, memory_id)
     memory = Memory(**memory)
 
@@ -148,7 +148,7 @@ def set_assignee_memory_segment(
         memory.transcript_segments[segment_idx].is_user = False
         memory.transcript_segments[segment_idx].person_id = value
     else:
-        print(assign_type)
+        logger.error(uid, "set_assignee_memory_segment", "Invalid assign type", assign_type)
         raise HTTPException(status_code=400, detail="Invalid assign type")
 
     memories_db.update_memory_segments(uid, memory_id, [segment.dict() for segment in memory.transcript_segments])

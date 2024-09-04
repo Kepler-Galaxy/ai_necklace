@@ -4,6 +4,7 @@ import time
 from fastapi import APIRouter
 from fastapi.websockets import (WebSocketDisconnect, WebSocket)
 from starlette.websockets import WebSocketState
+from loguru import logger
 
 from database.redis_db import get_user_speech_profile, get_user_speech_profile_duration
 from utils.stt.streaming import process_audio_dg, send_initial_file
@@ -59,13 +60,12 @@ async def _websocket_util(
         websocket: WebSocket, uid: str, language: str = 'en', sample_rate: int = 8000, codec: str = 'pcm8',
         channels: int = 1, include_speech_profile: bool = True,
 ):
-    print('websocket_endpoint', uid, language, sample_rate, codec, channels, include_speech_profile)
-
+    logger.info(uid, 'Websocket connected', language, sample_rate, codec, channels, include_speech_profile)
     # Check: Why do we need try-catch around websocket.accept?
     try:
         await websocket.accept()
     except RuntimeError as e:
-        print(e)
+        logger.error(uid, 'Websocket error', e)
         # Should not close here, maybe used by deepgram
         # await websocket.close()
         return
@@ -77,7 +77,7 @@ async def _websocket_util(
         if language == 'en' and codec == 'opus' and include_speech_profile:
             speech_profile = get_user_speech_profile(uid)
             duration = get_user_speech_profile_duration(uid)
-            print('speech_profile', len(speech_profile), duration)
+            logger.info(uid, 'speech_profile', len(speech_profile), duration)
             if duration:
                 duration += 10
         else:
@@ -90,7 +90,7 @@ async def _websocket_util(
             await send_initial_file(speech_profile, transcript_socket)
 
     except Exception as e:
-        print(f"Initial processing error: {e}")
+        logger.error(uid, 'Initial processing error: ', e)
         await websocket.close()
         return
 
@@ -116,7 +116,7 @@ async def _websocket_util(
                 if elapsed_seconds > duration or not socket2:
                     socket1.send(audio_buffer)
                     if socket2:
-                        print('Killing socket2')
+                        logger.info(uid, 'Killing socket2')
                         socket2.finish()
                         socket2 = None
                 else:
@@ -125,9 +125,9 @@ async def _websocket_util(
                 audio_buffer = bytearray()
 
         except WebSocketDisconnect:
-            print("WebSocket disconnected")
+            logger.warning(uid, 'WebSocket disconnected')
         except Exception as e:
-            print(f'Could not process audio: error {e}')
+            logger.error(uid, 'Could not process audio: error ', e)
         finally:
             websocket_active = False
             socket1.finish()
@@ -145,9 +145,9 @@ async def _websocket_util(
                 else:
                     break
         except WebSocketDisconnect:
-            print("WebSocket disconnected")
+            logger.warning(uid, 'WebSocket disconnected')
         except Exception as e:
-            print(f'Heartbeat error: {e}')
+            logger.error(uid, 'Heartbeat error: ', e)
         finally:
             websocket_active = False
 
@@ -156,14 +156,14 @@ async def _websocket_util(
         heartbeat_task = asyncio.create_task(send_heartbeat())
         await asyncio.gather(receive_task, heartbeat_task)
     except Exception as e:
-        print(f"Error during WebSocket operation: {e}")
+        logger.error(uid, 'Error during WebSocket operation: ', e)
     finally:
         websocket_active = False
         if websocket.client_state == WebSocketState.CONNECTED:
             try:
                 await websocket.close()
             except Exception as e:
-                print(f"Error closing WebSocket: {e}")
+                logger.error(uid, 'Error closing WebSocket: ', e)
 
 
 @router.websocket("/listen")

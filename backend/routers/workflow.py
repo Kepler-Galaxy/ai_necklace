@@ -3,6 +3,7 @@ from typing import Annotated, List
 from datetime import datetime, timedelta
 from fastapi import APIRouter, Header
 from fastapi import Request, HTTPException
+from loguru import logger
 import models.memory as memory_models
 import models.integrations as integration_models
 import database.memories as memories_db
@@ -56,5 +57,5 @@ def get_memory(request: Request, uid: str, api_key: Annotated[str | None, Header
     # max 12
     limit = min(limit, 12)
 
-    print('get_memories', uid, limit)
+    logger.info(uid, f'get_memories {limit}')
     return memories_db.get_memories(uid, limit, 0, include_discarded=False)

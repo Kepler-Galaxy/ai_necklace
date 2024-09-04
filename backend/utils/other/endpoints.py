@@ -101,7 +101,7 @@ def timeit(func):
     def measure_time(*args, **kw):
         start_time = time.time()
         result = func(*args, **kw)
-        print("Processing time of %s(): %.2f seconds."
+        logger.info("Processing time of %s(): %.2f seconds."
               % (func.__qualname__, time.time() - start_time))
         return result
 

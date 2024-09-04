@@ -4,6 +4,7 @@ import threading
 import time
 
 from fastapi import APIRouter, Depends, HTTPException, UploadFile
+from loguru import logger
 from pydub import AudioSegment
 
 import database.memories as memories_db
@@ -42,11 +43,11 @@ def postprocess_memory(
     memory_data = _get_memory_by_id(uid, memory_id)
     memory = Memory(**memory_data)
     if memory.discarded:
-        print('postprocess_memory: Memory is discarded')
+        logger.error(uid, "postprocess_memory", "Memory discarded", memory_id)
         raise HTTPException(status_code=400, detail="Memory is discarded")
 
     if memory.postprocessing is not None and memory.postprocessing.status != PostProcessingStatus.not_started:
-        print(f'postprocess_memory: Memory can\'t be post-processed again {memory.postprocessing.status}')
+        logger.error(uid, "postprocess_memory", "Memory can't be post-processed again", memory.postprocessing.status)
         raise HTTPException(status_code=400, detail="Memory can't be post-processed again")
 
     file_path = f"_temp/{memory_id}_{file.filename}"
@@ -56,7 +57,7 @@ def postprocess_memory(
     aseg = AudioSegment.from_wav(file_path)
     if aseg.duration_seconds < 10:  # TODO: validate duration more accurately, segment.last.end - segment.first.start - 10
         # TODO: fix app, sometimes audio uploaded is wrong, is too short.
-        print('postprocess_memory: Audio duration is too short, seems wrong.')
+        logger.error(uid, "postprocess_memory", "Audio duration is too short, seems wrong.")
         memories_db.set_postprocessing_status(uid, memory.id, PostProcessingStatus.canceled)
         raise HTTPException(status_code=500, detail="Audio duration is too short, seems wrong.")
 
@@ -72,7 +73,7 @@ def postprocess_memory(
             aseg = aseg[max(0, (start - 1) * 1000):min((end + 1) * 1000, aseg.duration_seconds * 1000)]
             aseg.export(file_path, format="wav")
     except Exception as e:
-        print(e)
+        logger.error(uid, "postprocess_memory", "Error vad_segments", e)
 
     try:
         aseg = AudioSegment.from_wav(file_path)
@@ -89,7 +90,7 @@ def postprocess_memory(
         # if new transcript is 90% shorter than the original, cancel post-processing, smth wrong with audio or FAL
         count = len(''.join([segment.text.strip() for segment in memory.transcript_segments]))
         new_count = len(''.join([segment.text.strip() for segment in fal_segments]))
-        print('Prev characters count:', count, 'New characters count:', new_count)
+        logger.info(uid, 'Prev characters count:', count, 'New characters count:', new_count)
 
         fal_failed = not fal_segments or new_count < (count * 0.85)
 
@@ -122,7 +123,7 @@ def postprocess_memory(
         if emotional_feedback:
             asyncio.run(_process_user_emotion(uid, memory.language, memory, [signed_url]))
     except Exception as e:
-        print(e)
+        logger.error(uid, "postprocess_memory", "Error", e)
         memories_db.set_postprocessing_status(uid, memory.id, PostProcessingStatus.failed, fail_reason=str(e))
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -140,7 +141,7 @@ def _delete_postprocessing_audio(file_path):
 
 async def _process_user_emotion(uid: str, language_code: str, memory: Memory, urls: [str]):
     if not any(segment.is_user for segment in memory.transcript_segments):
-        print(f"_process_user_emotion skipped for {memory.id}")
+        logger.info(uid, f"_process_user_emotion skipped for {memory.id}")
         return
 
     process_user_emotion(uid, language_code, memory, urls)

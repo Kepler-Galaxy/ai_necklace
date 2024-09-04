@@ -1,8 +1,8 @@
 import os
 import subprocess
 
-import loguru
 from pydub import AudioSegment
+from loguru import logger
 
 os.environ['SONIOX_API_KEY'] = ''
 
@@ -10,14 +10,14 @@ os.environ['SONIOX_API_KEY'] = ''
 def add_speaker():
     result = subprocess.run(['python', '-m', 'soniox.manage_speakers', '--add_speaker', '--speaker_name', 'test_1'])
     completed = result.returncode == 0
-    loguru.Logger.info({"add_speaker": result})
+    logger.info({"add_speaker": result})
     return completed
 
 
 def remove_speaker():
     result = subprocess.run(['python', '-m', 'soniox.manage_speakers', '--remove_speaker', '--speaker_name', 'test_1'])
     completed = result.returncode == 0
-    print('remove_speaker:', result)
+    logger.info('remove_speaker:', result)
     return completed
 
 
@@ -29,7 +29,7 @@ def remove_training_sample():
         ]
     )
     completed = result.returncode == 0
-    print('remove_training_sample:', result)
+    logger.info('remove_training_sample:', result)
     return completed
 
 
@@ -57,14 +57,14 @@ def train_speaker_profile():
         ]
     )
     completed = result.returncode == 0
-    print('train_speaker_profile:', result)
+    logger.info('train_speaker_profile:', result)
     return completed
 
 
 def speaker_exists(uid: str):
     result = subprocess.run(['python', '-m', 'soniox.manage_speakers', '--list'], capture_output=True)
     exists: bool = f"'name': '{uid}'" in str(result.stdout)
-    print(f'speaker {uid} exists:', exists)
+    logger.info(f'speaker {uid} exists:', exists)
     return exists
 
 
