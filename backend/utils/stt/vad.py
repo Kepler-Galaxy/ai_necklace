@@ -58,6 +58,7 @@ def apply_vad_for_speech_profile(file_path: str):
     logger.info('apply_vad_for_speech_profile', file_path)
     voice_segments = vad_is_empty(file_path, return_segments=True)
     if len(voice_segments) == 0:  # TODO: front error on post-processing, audio sent is bad.
+        logger.error("Audio is empty")
         raise HTTPException(status_code=400, detail="Audio is empty")
     joined_segments = []
     for i, segment in enumerate(voice_segments):

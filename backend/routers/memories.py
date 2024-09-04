@@ -37,6 +37,7 @@ def create_memory(
     TODO: Should receive raw segments by deepgram, instead of the beautified ones? and get beautified on read?
     """
     if not create_memory.transcript_segments and not create_memory.photos:
+        logger.error(uid, "No transcript segments or photos provided")
         raise HTTPException(status_code=400, detail="Transcript segments or photos are required")
 
     geolocation = create_memory.geolocation

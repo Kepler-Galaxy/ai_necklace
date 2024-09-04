@@ -2,6 +2,7 @@ from typing import List
 
 import requests
 from fastapi import APIRouter, HTTPException, Depends
+from loguru import logger
 
 from models.plugin import Plugin
 from utils.other import endpoints as auth
@@ -19,6 +20,7 @@ def enable_plugin_endpoint(plugin_id: str, uid: str = Depends(auth.get_current_u
     if plugin.works_externally() and plugin.external_integration.setup_completed_url:
         res = requests.get(plugin.external_integration.setup_completed_url + f'?uid={uid}')
         if res.status_code != 200 or not res.json().get('is_setup_completed', False):
+            logger.error(uid, 'Plugin setup is not completed')
             raise HTTPException(status_code=400, detail='Plugin setup is not completed')
 
     enable_plugin(uid, plugin_id)
@@ -52,6 +54,7 @@ def get_plugins(uid: str = Depends(auth.get_current_user_uid)):
 @router.post('/v1/plugins/review', tags=['v1'])
 def review_plugin(plugin_id: str, data: dict, uid: str = Depends(auth.get_current_user_uid)):
     if 'score' not in data:
+        logger.error(uid, 'No score provided')
         raise HTTPException(status_code=422, detail='Score is required')
 
     plugin = next(filter(lambda x: x.id == plugin_id, get_plugins_data(uid)), None)

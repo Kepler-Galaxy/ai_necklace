@@ -69,6 +69,7 @@ def rate_limit_custom(endpoint: str, request: Request, requests_per_window: int,
             remaining = requests_per_window - 1  # Reset the counter for the new window
             timestamp = current_time
         elif remaining == 0:
+            logger.error("Too Many Requests")
             raise HTTPException(status_code=429, detail="Too Many Requests")
 
         remaining -= 1

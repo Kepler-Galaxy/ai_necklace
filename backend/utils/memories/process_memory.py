@@ -41,6 +41,7 @@ def _get_structured(
                 return structured, False
 
             # not workflow memory source support
+            logger.error(uid, 'Invalid workflow memory source')
             raise HTTPException(status_code=400, detail='Invalid workflow memory source')
 
         # from OpenGlass
@@ -60,6 +61,7 @@ def _get_structured(
     except Exception as e:
         logger.error(e)
         if retries == 2:
+            logger.error(uid, f"Error processing memory, retrying {retries} times, please try again later")
             raise HTTPException(status_code=500, detail="Error processing memory, please try again later")
         return _get_structured(uid, language_code, memory, force_process, retries + 1)
 
