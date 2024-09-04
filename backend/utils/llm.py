@@ -535,3 +535,31 @@ def new_facts_extractor(
     except Exception as e:
         # print(f'Error extracting new facts: {e}')
         return []
+
+# **********************************
+# ************* Diary **************
+# **********************************
+
+def obtain_diary(user_name: str, user_facts: List[Fact], topic_to_memories: dict[str, List[Memory]]) -> str:
+    string_parts = []
+    for topic, memories in topic_to_memories.items():
+        string_parts.append(f'Topic {topic} with the following memories: \n')
+        string_parts.append(Memory.memories_to_string(memories, include_action_items=False)+"\n")
+    topic_conversations = ''.join(string_parts)
+
+    prompt = f"""
+    
+    You are a personal assisstant, that helps people to keep diary. This diary will be used by the owner in the future to examine what happened in the past days, to highlight the achievements in work and life challenges, and to celebrate the happy and leisurely time spent with friends or family.
+    You are serving {user_name} right now, this is what you know about {user_name}: {Fact.get_facts_as_str(user_facts)}
+    
+    
+    The following are {user_name}'s memory on different topics, each topic has a few memories with its transcripts and a summary.
+    Note that the transcripts are recorded by a careless recorder and contains a lot of errors. Words are recorded incorrectly due to similar pronunciation. so figure out what might be the real transcript with your own judgement.
+  
+    your reponse should be in Chinese. Between 200 words to 1000 words. in plain text without markdown, just like writting a diary.
+    ```
+    ${topic_conversations}
+    ```
+    """.replace('    ', '').strip()
+    print(prompt)
+    return llm.invoke(prompt).content

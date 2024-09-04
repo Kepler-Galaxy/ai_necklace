@@ -28,10 +28,8 @@ load_dotenv()
 
 from modal import Image, App, asgi_app, Secret, Cron
 from routers import workflow, chat, firmware, screenpipe, plugins, memories, transcribe, notifications, speech_profile, \
-    agents, facts, users, postprocessing
+    agents, facts, users, postprocessing, diary
 
-from modal import Image, App, asgi_app, Secret
-from routers import workflow, chat, firmware, screenpipe, plugins, memories, transcribe, notifications, speech_profile
 from utils.other.notifications import start_cron_job
 
 if os.environ.get('SERVICE_ACCOUNT_JSON'):
@@ -57,6 +55,7 @@ app.include_router(agents.router)
 app.include_router(users.router)
 
 app.include_router(firmware.router)
+app.include_router(diary.router)
 
 modal_app = App(
     name='backend',
