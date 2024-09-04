@@ -8,7 +8,7 @@ from routers.speech_profile import expand_speech_profile
 from utils.memories.location import get_google_maps_location
 from utils.memories.process_memory import process_memory
 from utils.other import endpoints as auth
-from utils.other.storage import get_memory_recording_if_exists, \
+from utils.other.cos_storage import get_memory_recording_if_exists, \
     delete_additional_profile_audio, delete_speech_sample_for_people
 from utils.plugins import trigger_external_integrations
 
