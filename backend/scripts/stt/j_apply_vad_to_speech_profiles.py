@@ -12,7 +12,7 @@ load_dotenv('../../.env')
 os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = '../../' + os.getenv('GOOGLE_APPLICATION_CREDENTIALS')
 
 from database._client import get_users_uid
-from utils.other.storage import get_profile_audio_if_exists, upload_profile_audio
+from utils.other.cos_storage import get_profile_audio_if_exists, upload_profile_audio
 
 
 def execute():

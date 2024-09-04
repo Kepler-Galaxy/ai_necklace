@@ -96,6 +96,7 @@ image = (
     .pip_install("requests")
     .pip_install("google-cloud-storage")
     .pip_install("redis")
+    .pip_install("cos-python-sdk-v5")
 )
 
 os.makedirs('_temp', exist_ok=True)
