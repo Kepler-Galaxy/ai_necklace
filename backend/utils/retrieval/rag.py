@@ -1,6 +1,7 @@
 import threading
 from collections import Counter, defaultdict
 from typing import List, Tuple
+from loguru import logger
 
 from database.memories import filter_memories_by_date, get_memories_by_id
 from database.vector_db import query_vectors
@@ -13,7 +14,7 @@ from utils.llm import requires_context, retrieve_context_topics, retrieve_contex
 
 def retrieve_for_topic(uid: str, topic: str, start_timestamp, end_timestamp, k: int, memories_id) -> List[str]:
     result = query_vectors(topic, uid, starts_at=start_timestamp, ends_at=end_timestamp, k=k)
-    print('retrieve_for_topic', topic, [start_timestamp, end_timestamp], 'found:', len(result), 'vectors')
+    logger.info('retrieve_for_topic', topic, [start_timestamp, end_timestamp], 'found:', len(result), 'vectors')
     for memory_id in result:
         memories_id[memory_id].append(topic)
     return result
@@ -46,7 +47,7 @@ def retrieve_memories_for_topics(uid: str, topics: List[str], dates_range: List)
 
 
 def get_better_memory_chunk(memory: Memory, topics: List[str], context_data: dict) -> str:
-    print('get_better_memory_chunk', memory.id, topics)
+    logger.info('get_better_memory_chunk', memory.id, topics)
     conversation = TranscriptSegment.segments_as_string(memory.transcript_segments, include_timestamps=True)
     if num_tokens_from_string(conversation) < 250:
         return Memory.memories_to_string([memory])
@@ -66,7 +67,7 @@ def retrieve_rag_context(
 
     topics = retrieve_context_topics(prev_messages)
     dates_range = retrieve_context_dates(prev_messages)
-    print('retrieve_rag_context', topics, dates_range)
+    logger.info('retrieve_rag_context', topics, dates_range)
     if not topics and len(dates_range) != 2:
         return '', []
 
@@ -111,7 +112,7 @@ def retrieve_rag_context(
 
 def retrieve_rag_memory_context(uid: str, memory: Memory) -> Tuple[str, List[Memory]]:
     topics = retrieve_memory_context_params(memory)
-    print('retrieve_memory_rag_context', topics)
+    logger.info('retrieve_memory_rag_context', topics)
     if not topics:
         return '', []
 

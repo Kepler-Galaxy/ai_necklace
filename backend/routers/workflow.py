@@ -3,6 +3,7 @@ from typing import Annotated, List
 from datetime import datetime, timedelta, timezone
 from fastapi import APIRouter, Header
 from fastapi import Request, HTTPException
+from loguru import logger
 import models.memory as memory_models
 import models.integrations as integration_models
 import database.memories as memories_db
@@ -16,6 +17,7 @@ router = APIRouter()
 @router.post('/v1/integrations/workflow/memories', response_model=integration_models.EmptyResponse, tags=['integration', 'workflow', 'memories'])
 def create_memory(request: Request, uid: str, api_key: Annotated[str | None, Header()], create_memory: memory_models.WorkflowCreateMemory):
     if api_key != os.getenv('WORKFLOW_API_KEY'):
+        logger.error(uid, "Invalid API Key")
         raise HTTPException(status_code=401, detail="Invalid API Key")
 
     # Time
@@ -51,10 +53,11 @@ def create_memory(request: Request, uid: str, api_key: Annotated[str | None, Hea
 @router.get('/v1/integrations/workflow/memories', response_model=List[memory_models.Memory], tags=['integration', 'workflow', 'memories'])
 def get_memory(request: Request, uid: str, api_key: Annotated[str | None, Header()], limit: int = 1):
     if api_key != os.getenv('WORKFLOW_API_KEY'):
+        logger.error(uid, "Invalid API Key")
         raise HTTPException(status_code=401, detail="Invalid API Key")
 
     # max 12
     limit = min(limit, 12)
 
-    print('get_memories', uid, limit)
+    logger.info(uid, f'get_memories {limit}')
     return memories_db.get_memories(uid, limit, 0, include_discarded=False)

@@ -2,6 +2,7 @@ import asyncio
 import os
 import time
 from typing import List
+from loguru import logger
 
 import websockets
 from deepgram import DeepgramClient, DeepgramClientOptions, LiveTranscriptionEvents, ListenWebSocketClient
@@ -78,7 +79,7 @@ async def send_initial_file_path(file_path: str, transcript_socket_async_send):
 
 
 async def send_initial_file(data: List[List[int]], transcript_socket):
-    print('send_initial_file2')
+    logger.info('send_initial_file2')
     start = time.time()
     # Reading and sending in chunks
     for i in range(0, len(data)):
@@ -86,8 +87,7 @@ async def send_initial_file(data: List[List[int]], transcript_socket):
         # print('Uploading', chunk)
         transcript_socket.send(bytes(chunk))
         await asyncio.sleep(0.00005)  # if it takes too long to transcribe
-
-    print('send_initial_file', time.time() - start)
+    logger.info('send_initial_file', time.time() - start)
 
 
 deepgram = DeepgramClient(os.getenv('DEEPGRAM_API_KEY'), DeepgramClientOptions(options={"keepalive": "true"}))
@@ -140,9 +140,9 @@ async def process_audio_dg(
         stream_transcript(segments, stream_id)
 
     def on_error(self, error, **kwargs):
-        print(f"Error: {error}")
+        logger.error(error)
 
-    print("Connecting to Deepgram")  # Log before connection attempt
+    logger.info("Connecting to Deepgram")  # Log before connection attempt
     return connect_to_deepgram(on_message, on_error, language, sample_rate, channels)
 
 
@@ -204,9 +204,10 @@ def connect_to_deepgram(on_message, on_error, language: str, sample_rate: int, c
             encoding='linear16'
         )
         result = dg_connection.start(options)
-        print('Deepgram connection started:', result)
+        logger.info('Deepgram connection started', result)
         return dg_connection
     except Exception as e:
+        logger.error('Could not open socket: ', e)
         raise Exception(f'Could not open socket: {e}')
 
 

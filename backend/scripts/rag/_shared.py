@@ -2,7 +2,7 @@ import json
 import os
 # noinspection PyUnresolvedReferences
 from typing import List
-
+from loguru import logger
 # noinspection PyUnresolvedReferences
 import numpy as np
 # noinspection PyUnresolvedReferences
@@ -42,7 +42,8 @@ def query_vectors(query: str, uid: str, k: int = 1000) -> List[str]:
     data = []
     for item in xc['matches']:
         data.append([item['id'].replace(f'{uid}-', ''), item['values']])
-    print('Found:', len(data), 'vectors')
+
+    logger.info('Found:', len(data), 'vectors')
     return data
 
 
@@ -130,4 +131,4 @@ def generate_html_visualization(fig, file_name: str = 'embedding_visualization.h
     with open(file_name, 'w') as f:
         f.write(html_content)
 
-    print(f"HTML file '{file_name}' has been generated.")
+    logger.info(f"HTML file '{file_name}' has been generated.")

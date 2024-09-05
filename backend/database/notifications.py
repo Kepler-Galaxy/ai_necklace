@@ -1,5 +1,5 @@
 import asyncio
-
+from loguru import logger
 from google.cloud.firestore_v1.base_query import FieldFilter
 from google.cloud.firestore import DELETE_FIELD
 from ._client import db
@@ -59,7 +59,7 @@ async def get_users_in_timezones(timezones: list[str], filter: str):
                         chunk_users.append(token)
 
             except Exception as e:
-                print(f"Error querying chunk {chunk}: {e}")
+                logger.error(f"Error querying chunk {chunk}", e)
             return chunk_users
 
         return await asyncio.to_thread(sync_query)

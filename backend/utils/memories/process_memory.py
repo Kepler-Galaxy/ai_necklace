@@ -6,7 +6,7 @@ from datetime import timezone
 from typing import Union, Tuple
 
 from fastapi import HTTPException
-
+from loguru import logger
 import database.facts as facts_db
 import database.memories as memories_db
 import database.notifications as notification_db
@@ -43,6 +43,7 @@ def _get_structured(
                 return structured, False
 
             # not workflow memory source support
+            logger.error(uid, 'Invalid workflow memory source')
             raise HTTPException(status_code=400, detail='Invalid workflow memory source')
 
         # from OpenGlass
@@ -60,8 +61,9 @@ def _get_structured(
 
         return get_transcript_structure(memory.get_transcript(False), memory.started_at, language_code), False
     except Exception as e:
-        print(e)
+        logger.error(e)
         if retries == 2:
+            logger.error(uid, f"Error processing memory, retrying {retries} times, please try again later")
             raise HTTPException(status_code=500, detail="Error processing memory, please try again later")
         return _get_structured(uid, language_code, memory, force_process, retries + 1)
 
@@ -122,7 +124,7 @@ def _extract_facts(uid: str, memory: Memory):
     parsed_facts = []
     for fact in new_facts:
         parsed_facts.append(FactDB.from_fact(fact, uid, memory.id, memory.structured.category))
-        print('_extract_facts:', fact.category.value.upper(), '|', fact.content)
+        logger.info('fact:', fact.category.value.upper(), '~', fact.content)
     facts_db.save_facts(uid, [fact.dict() for fact in parsed_facts])
 
 
@@ -146,13 +148,13 @@ def process_memory(uid: str, language_code: str, memory: Union[Memory, CreateMem
         threading.Thread(target=_extract_trends, args=(memory,)).start()
 
     memories_db.upsert_memory(uid, memory.dict())
-    print('process_memory memory.id=', memory.id)
+    logger.info('process_memory memory.id=', memory.id)
 
     return memory
 
 
 def process_user_emotion(uid: str, language_code: str, memory: Memory, urls: [str]):
-    print('process_user_emotion memory.id=', memory.id)
+    logger.info('process_user_emotion memory.id=', memory.id)
 
     # save task
     now = datetime.now()
@@ -170,12 +172,12 @@ def process_user_emotion(uid: str, language_code: str, memory: Memory, urls: [st
     ok = get_hume().request_user_expression_mersurement(urls)
     if "error" in ok:
         err = ok["error"]
-        print(err)
+        logger.error(err)
         return
     job = ok["result"]
     request_id = job.id
     if not request_id or len(request_id) == 0:
-        print(f"Can not request users feeling. uid: {uid}")
+        logger.warning(f"Can not request users feeling. uid: {uid}")
         return
 
     # update task
@@ -189,7 +191,7 @@ def process_user_emotion(uid: str, language_code: str, memory: Memory, urls: [st
 def process_user_expression_measurement_callback(provider: str, request_id: str, callback: HumeJobCallbackModel):
     support_providers = [TaskActionProvider.HUME]
     if provider not in support_providers:
-        print(f"Provider is not supported. {provider}")
+        logger.warning(f"Provider is not supported. {provider}")
         return
 
     # Get task
@@ -197,12 +199,12 @@ def process_user_expression_measurement_callback(provider: str, request_id: str,
     if provider == TaskActionProvider.HUME:
         task_action = TaskAction.HUME_MERSURE_USER_EXPRESSION
     if len(task_action) == 0:
-        print("Task action is empty")
+        logger.info("Task action is empty")
         return
 
     task_data = tasks_db.get_task_by_action_request(task_action, request_id)
     if task_data is None:
-        print(f"Task not found. Action: {task_action}, Request ID: {request_id}")
+        logger.warning(f"Task not found. Action: {task_action}, Request ID: {request_id}")
         return
 
     task = Task(**task_data)
@@ -214,12 +216,12 @@ def process_user_expression_measurement_callback(provider: str, request_id: str,
     elif callback.status == "FAILED":
         task_status = TaskStatus.ERROR
     else:
-        print(f"Not support status {callback.status}")
+        logger.warning(f"Not support status {callback.status}")
         return
 
     # Not changed
     if task_status == task.status:
-        print("Task status are synced")
+        logger.info("Task status are synced")
         return
 
     task.status = task_status
@@ -228,7 +230,7 @@ def process_user_expression_measurement_callback(provider: str, request_id: str,
 
     # done or not
     if task.status != TaskStatus.DONE:
-        print(f"Task is not done yet. Uid: {task.user_uid}, task_id: {task.id}, status: {task.status}")
+        logger.warning(f"Task is not done yet. Uid: {task.user_uid}, task_id: {task.id}, status: {task.status}")
         return
 
     uid = task.user_uid
@@ -241,16 +243,16 @@ def process_user_expression_measurement_callback(provider: str, request_id: str,
     # Memory
     memory_data = memories_db.get_memory(uid, task.memory_id)
     if memory_data is None:
-        print(f"Memory is not found. Uid: {uid}. Memory: {task.memory_id}")
+        logger.warning(f"Memory is not found. Uid: {uid}. Memory: {task.memory_id}")
         return
 
     memory = Memory(**memory_data)
 
     # Get prediction
     predictions = callback.predictions
-    print(predictions)
+    logger.warning(predictions)
     if len(predictions) == 0 or len(predictions[0].emotions) == 0:
-        print(f"Can not predict user's expression. Uid: {uid}")
+        logger.warning(f"Can not predict user's expression. Uid: {uid}")
         return
 
     # Filter users emotions only
@@ -260,18 +262,18 @@ def process_user_expression_measurement_callback(provider: str, request_id: str,
     # print(users_frames)
 
     if len(users_frames) == 0:
-        print(f"User time frames are empty. Uid: {uid}")
+        logger.warning(f"User time frames are empty. Uid: {uid}")
         return
 
     users_predictions = []
     for prediction in predictions:
         for uf in users_frames:
-            print(uf, prediction.time)
+            logger.info(uf, prediction.time)
             if uf[0] <= prediction.time[0] and prediction.time[1] <= uf[1]:
                 users_predictions.append(prediction)
                 break
     if len(users_predictions) == 0:
-        print(f"Predictions are filtered by user transcript segments. Uid: {uid}")
+        logger.info(f"Predictions are filtered by user transcript segments. Uid: {uid}")
         return
 
     # Top emotions
@@ -284,11 +286,11 @@ def process_user_expression_measurement_callback(provider: str, request_id: str,
     if len(emotion_filters) > 0:
         emotions = filter(lambda emotion: emotion in emotion_filters, emotions)
     if len(emotions) == 0:
-        print(f"Can not extract users emmotion. uid: {uid}")
+        logger.warning(f"Can not extract users emmotion. uid: {uid}")
         return
 
     emotion = ','.join(emotions)
-    print(f"Emotion Uid: {uid} {emotion}")
+    logger.info(f"Emotion Uid: {uid} {emotion}")
 
     # Ask llms about notification content
     title = "Omi"
@@ -297,13 +299,13 @@ def process_user_expression_measurement_callback(provider: str, request_id: str,
     response: str = obtain_emotional_message(uid, memory, context_str, emotion)
     message = response
 
-    print(title)
-    print(message)
+    logger.info(title)
+    logger.info(message)
 
     # Send the notification
     token = notification_db.get_token_only(uid)
     if token is None:
-        print(f"User token is none. Uid: {uid}")
+        logger.warning(f"User token is none. Uid: {uid}")
         return
 
     send_notification(token, title, message, None)

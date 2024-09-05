@@ -1,8 +1,8 @@
 import uuid
 from datetime import datetime, timezone
 from typing import List, Optional
-
 from fastapi import APIRouter, Depends, HTTPException
+from loguru import logger
 
 import database.chat as chat_db
 from models.chat import Message, SendMessageRequest, MessageSender
@@ -15,13 +15,13 @@ router = APIRouter()
 
 
 def filter_messages(messages, plugin_id):
-    print('filter_messages', len(messages), plugin_id)
+    logger.info(f'filter_messages: {messages}', plugin_id)
     collected = []
     for message in messages:
         if message.sender == MessageSender.ai and message.plugin_id != plugin_id:
             break
         collected.append(message)
-    print('filter_messages output:', len(collected))
+    logger.info(f'filter_messages: {collected}')
     return collected
 
 

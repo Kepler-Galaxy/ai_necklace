@@ -2,7 +2,7 @@ import threading
 import uuid
 from datetime import datetime, timezone
 from typing import List
-
+from loguru import logger
 from fastapi import APIRouter, Depends, HTTPException
 
 from database.users import *
@@ -79,6 +79,7 @@ def get_single_person(
 ):
     person = get_person(uid, person_id)
     if not person:
+        logger.error(uid, "Person not found")
         raise HTTPException(status_code=404, detail="Person not found")
     if include_speech_samples:
         person['speech_samples'] = get_user_person_speech_samples(uid, person['id'])
@@ -87,7 +88,7 @@ def get_single_person(
 
 @router.get('/v1/users/people', tags=['v1'], response_model=List[Person])
 def get_all_people(include_speech_samples: bool = True, uid: str = Depends(auth.get_current_user_uid)):
-    print('get_all_people', include_speech_samples)
+    logger.info(uid, 'get_all_people', include_speech_samples)
     people = get_people(uid)
     if include_speech_samples:
         def single(person):

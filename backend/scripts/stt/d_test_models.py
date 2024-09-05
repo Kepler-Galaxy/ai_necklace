@@ -4,6 +4,7 @@ import torch
 from dotenv import load_dotenv
 
 from scripts.c_generate_models import get_speaker_embedding
+from loguru import logger
 
 load_dotenv('../.env')
 os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = '../' + os.getenv('GOOGLE_APPLICATION_CREDENTIALS')
@@ -53,7 +54,7 @@ def test_results(model_path: str = 'reference_embedding.pt'):
     result.append(round(sum(scores) / len(scores), 2))
 
     threshold = (result[1] + result[2]) / 2
-    print('Threshold:', threshold, '\nDistance:', abs(result[1] - result[2]))
+    logger.info('Threshold:', threshold, '\nDistance:', abs(result[1] - result[2]))
     scores = []
     samples_path = 'data/validation_3/cleaned/'
     for file in os.listdir(samples_path):

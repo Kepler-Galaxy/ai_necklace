@@ -3,6 +3,7 @@ import re
 
 import httpx
 from fastapi import APIRouter, HTTPException
+from loguru import logger
 
 router = APIRouter()
 
@@ -22,6 +23,7 @@ async def get_latest_version(device: int):
         }
         response = await client.get(url, headers=headers)
         if response.status_code != 200:
+            logger.error(f"Failed to fetch latest release: {response.status_code}")
             raise HTTPException(status_code=response.status_code, detail="Failed to fetch latest release")
         releases = response.json()
         latest_release = None
@@ -40,6 +42,7 @@ async def get_latest_version(device: int):
                     if release.get("published_at") > latest_release.get("published_at"):
                         latest_release = release
         if not latest_release:
+            logger.error("No latest release found for the device")
             raise HTTPException(status_code=404, detail="No latest release found for the device")
         release_data = latest_release
         kv = extract_key_value_pairs(release_data.get("body"))
@@ -50,6 +53,7 @@ async def get_latest_version(device: int):
                 asset = a
                 break
         if not asset:
+            logger.error("No OTA zip found in the release")
             raise HTTPException(status_code=500, detail="No OTA zip found in the release")
         return {
             "version": kv.get("release_firmware_version"),

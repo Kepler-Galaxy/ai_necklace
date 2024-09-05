@@ -3,6 +3,7 @@ from typing import Optional
 
 from fastapi import APIRouter, UploadFile, Depends, HTTPException
 from pydub import AudioSegment
+from loguru import logger
 
 from database.memories import get_memory
 from database.redis_db import store_user_speech_profile, store_user_speech_profile_duration, get_user_speech_profile, \
@@ -40,8 +41,10 @@ def get_speech_profile(uid: str = Depends(auth.get_current_user_uid)):
 @router.post('/v3/upload-bytes', tags=['v3'])
 def upload_profile(data: UploadProfile, uid: str = Depends(auth.get_current_user_uid)):
     if data.duration < 10:
+        logger.error("Audio duration is too short", data.duration)
         raise HTTPException(status_code=400, detail="Audio duration is too short")
     if data.duration > 120:
+        logger.error("Audio duration is too long", data.duration)
         raise HTTPException(status_code=400, detail="Audio duration is too long")
 
     store_user_speech_profile(uid, data.bytes)
@@ -58,9 +61,11 @@ def upload_profile(file: UploadFile, uid: str = Depends(auth.get_current_user_ui
 
     aseg = AudioSegment.from_wav(file_path)
     if aseg.frame_rate != 16000:
+        logger.error(uid, f"Invalid codec, must be opus 16khz, but it's {aseg.frame_rate}")
         raise HTTPException(status_code=400, detail="Invalid codec, must be opus 16khz.")
 
     if aseg.duration_seconds < 5 or aseg.duration_seconds > 120:
+        logger.error(uid, "Audio duration is invalid", aseg.duration_seconds)
         raise HTTPException(status_code=400, detail="Audio duration is invalid")
 
     apply_vad_for_speech_profile(file_path)
@@ -77,27 +82,31 @@ def upload_profile(file: UploadFile, uid: str = Depends(auth.get_current_user_ui
 def expand_speech_profile(
         memory_id: str, uid: str, segment_idx: int, assign_type: str, person_id: Optional[str] = None
 ):
-    print('expand_speech_profile', memory_id, uid, segment_idx, assign_type, person_id)
+    logger.info(uid, "Expanding speech profile", memory_id, segment_idx, assign_type, person_id)
     if assign_type == 'is_user':
         profile_path = get_profile_audio_if_exists(uid)
         if not profile_path:  # TODO: validate this in front
+            logger.error(uid, "Speech profile not found")
             raise HTTPException(status_code=404, detail="Speech profile not found")
         os.remove(profile_path)
     else:
         if not get_person(uid, person_id):
+            logger.error(uid, "Person not found")
             raise HTTPException(status_code=404, detail="Person not found")
 
     memory_recording_path = get_memory_recording_if_exists(uid, memory_id)
     if not memory_recording_path:
+        logger.error(uid, "Memory recording not found")
         raise HTTPException(status_code=404, detail="Memory recording not found")
 
     memory = get_memory(uid, memory_id)
     if not memory:
+        logger.error(uid, "Memory not found")
         raise HTTPException(status_code=404, detail="Memory not found")
 
     memory = Memory(**memory)
     segment = memory.transcript_segments[segment_idx]
-    print('expand_speech_profile', segment)
+    logger.info(uid, "Processing segment", segment)
     aseg = AudioSegment.from_wav(memory_recording_path)
     segment_aseg = aseg[segment.start * 1000:segment.end * 1000]
     os.remove(memory_recording_path)
@@ -122,7 +131,7 @@ def expand_speech_profile(
 def delete_extra_speech_profile_sample(
         memory_id: str, segment_idx: int, person_id: Optional[str] = None, uid: str = Depends(auth.get_current_user_uid)
 ):
-    print('delete_extra_speech_profile_sample', memory_id, segment_idx, person_id, uid)
+    logger.info(uid, "Deleting speech profile sample", memory_id, segment_idx, person_id)
     file_name = f'{memory_id}_segment_{segment_idx}.wav'
     if person_id == 'null':
         person_id = None

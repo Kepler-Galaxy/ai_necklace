@@ -1,6 +1,7 @@
 import os
 
 import requests
+from loguru import logger
 
 
 def execute():
@@ -13,7 +14,7 @@ def execute():
         if file.endswith('.wav'):
             files = {'file': open(file, 'rb')}
             response = requests.post(f'http://localhost:8000/samples/upload?uid={speaker_id}', files=files)
-            print(response.json())
+            logger.info(response.json())
 
 
 if __name__ == '__main__':

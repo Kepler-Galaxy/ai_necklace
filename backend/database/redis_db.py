@@ -1,6 +1,7 @@
 import os
 from datetime import datetime, timezone
 from typing import List
+from loguru import logger
 
 import redis
 
@@ -19,7 +20,7 @@ def try_catch_decorator(func):
         try:
             return func(*args, **kwargs)
         except Exception as e:
-            print(f'Error calling {func.__name__}', e)
+            logger.error(f'Error calling {func.__name__}', e)
             return None
 
     return wrapper

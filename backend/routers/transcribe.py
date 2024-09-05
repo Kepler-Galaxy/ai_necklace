@@ -8,6 +8,7 @@ from fastapi import APIRouter
 from fastapi.websockets import WebSocketDisconnect, WebSocket
 from pydub import AudioSegment
 from starlette.websockets import WebSocketState
+from loguru import logger
 
 import database.memories as memories_db
 import database.processing_memories as processing_memories_db
@@ -86,7 +87,7 @@ async def _websocket_util(
         channels: int = 1, include_speech_profile: bool = True, new_memory_watch: bool = False,
         # stt_service: STTService = STTService.deepgram,
 ):
-    print('websocket_endpoint', uid, language, sample_rate, codec, channels, include_speech_profile, new_memory_watch)
+    logger.info('websocket_endpoint', uid, language, sample_rate, codec, channels, include_speech_profile, new_memory_watch)
 
     if language == 'en':
         stt_service = STTService.soniox
@@ -96,7 +97,9 @@ async def _websocket_util(
     try:
         await websocket.accept()
     except RuntimeError as e:
-        print(e)
+        logger.error(uid, 'Websocket error', e)
+        # Should not close here, maybe used by deepgram
+        # await websocket.close()
         return
 
     session_id = str(uuid.uuid4())
@@ -276,10 +279,10 @@ async def _websocket_util(
                 # audio_buffer = audio_buffer[window_size_bytes:]
 
         except WebSocketDisconnect:
-            print("WebSocket disconnected")
+            logger.warning(uid, 'WebSocket disconnected')
         except Exception as e:
-            print(f'Could not process audio: error {e}')
             websocket_close_code = 1011
+            logger.error(uid, 'Could not process audio: error ', e)
         finally:
             websocket_active = False
             if dg_socket1:
@@ -311,10 +314,10 @@ async def _websocket_util(
                     websocket_close_code = 1001
                     websocket_active = False
         except WebSocketDisconnect:
-            print("WebSocket disconnected")
+            logger.warning(uid, 'WebSocket disconnected')
         except Exception as e:
-            print(f'Heartbeat error: {e}')
             websocket_close_code = 1011
+            logger.error(uid, 'Heartbeat error: ', e)
         finally:
             websocket_active = False
 
@@ -545,7 +548,7 @@ async def _websocket_util(
             await asyncio.gather(receive_task, heartbeat_task)
 
     except Exception as e:
-        print(f"Error during WebSocket operation: {e}")
+        logger.error(uid, 'Error during WebSocket operation: ', e)
     finally:
         websocket_active = False
         memory_watching = False
@@ -559,7 +562,7 @@ async def _websocket_util(
             try:
                 await websocket.close(code=websocket_close_code)
             except Exception as e:
-                print(f"Error closing WebSocket: {e}")
+                logger.error(uid, 'Error closing WebSocket: ', e)
 
 
 @router.websocket("/listen")

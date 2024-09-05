@@ -2,6 +2,7 @@ import base64
 import mimetypes
 
 import requests
+from loguru import logger
 
 url = "https://api.pyannote.ai/v1/diarize"
 API_KEY = ""
@@ -31,7 +32,7 @@ def diarize():
         'url': file_to_base64_url('data/more/18-45-32-069108.wav'),
     }
     response = requests.post(url, headers=headers, json=data)
-    print(response.json())
+    logger.info(response.json())
 
 
 def voiceprint():
@@ -41,7 +42,7 @@ def voiceprint():
         "url": file_to_base64_url('pyannote_void.wav'),
     }
     response = requests.request("POST", url, json=payload, headers=headers)
-    print(response.json())
+    logger.info(response.json())
 
 
 def voice_identification():
