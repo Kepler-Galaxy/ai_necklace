@@ -43,8 +43,8 @@ async def send_daily_summary_notification():
 
         await _send_bulk_summary_notification(user_in_time_zone)
     except Exception as e:
-        print(e)
-        print("Error sending message:", e)
+        logger.error(e)
+        logger.error("Error sending message:", e)
         return None
 
 
@@ -88,17 +88,16 @@ async def send_daily_notification():
 
         await _send_notification_for_time(morning_target_time, morning_alert_title, morning_alert_body)
 
-
     except Exception as e:
-        print(e)
-        print("Error sending message:", e)
+        logger.error(e)
+        logger.error("Error sending message:", e)
         return None
 
 
 async def _send_notification_for_time(target_time: str, title: str, body: str):
     user_in_time_zone = await _get_users_in_timezone(target_time)
     if not user_in_time_zone:
-        print("No users found in time zone")
+        logger.warning("No users found in time zone")
         return None
     await send_bulk_notification(user_in_time_zone, title, body)
     return user_in_time_zone

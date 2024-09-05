@@ -1,7 +1,7 @@
 import uuid
 from datetime import datetime, timezone
 from typing import Dict
-
+from loguru import logger
 from _shared import *
 from models.chat import Message
 from models.memory import Memory
@@ -144,7 +144,7 @@ def generate_visualization(
         topics: List[str], memories: List[Memory], file_path: str = 'embedding_visualization_multi_topic.html'
 ):
     # TODO: combine in single function
-    print('topics', topics)
+    logger.info('topics', topics)
     os.makedirs('visualizations/', exist_ok=True)
     file_path = os.path.join('visualizations/', file_path)
 

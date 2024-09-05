@@ -3,6 +3,7 @@ import os
 import torch
 import torchaudio
 from speechbrain.inference.speaker import SpeakerRecognition
+from loguru import logger
 
 verification = SpeakerRecognition.from_hparams(
     source="speechbrain/spkrec-ecapa-voxceleb",
@@ -38,7 +39,7 @@ def train(result_path: str, audio_paths):
     # print(audio_paths)
     reference_embedding = create_reference_embedding(audio_paths)
     torch.save(reference_embedding, result_path)
-    print('Reference embedding saved')
+    logger.info('Reference embedding saved')
 
 
 if __name__ == '__main__':

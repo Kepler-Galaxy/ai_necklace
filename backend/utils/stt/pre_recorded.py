@@ -2,6 +2,7 @@ import base64
 import mimetypes
 from collections import defaultdict
 from typing import List
+from loguru import logger
 
 import fal_client
 
@@ -38,7 +39,7 @@ def base64_to_file(base64_url, file_path):
 
 @timeit
 def fal_whisperx(audio_url: str, speakers_count: int = None, attempts: int = 0) -> List[dict]:
-    print('fal_whisperx', audio_url, speakers_count, attempts)
+    logger.info('fal_whisperx', audio_url, speakers_count, attempts)
 
     try:
         # TODO: this appear to be terrible at speech profile, without passing num_speakers
@@ -63,7 +64,7 @@ def fal_whisperx(audio_url: str, speakers_count: int = None, attempts: int = 0) 
             raise Exception('No chunks found')
         return words
     except Exception as e:
-        print(e)
+        logger.error(e)
         return fal_whisperx(audio_url, speakers_count, attempts + 1) if attempts < 2 else []
 
 

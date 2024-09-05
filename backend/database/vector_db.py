@@ -1,7 +1,7 @@
 import os
 from datetime import datetime, timezone
 from typing import List
-
+from loguru import logger
 from pinecone import Pinecone
 
 from models.memory import Memory
@@ -28,7 +28,7 @@ def _get_data(uid: str, memory_id: str, vector: List[float]):
 
 def upsert_vector(uid: str, memory: Memory, vector: List[float]):
     res = index.upsert(vectors=[_get_data(uid, memory.id, vector)], namespace="ns1")
-    print('upsert_vector', res)
+    logger.info('upsert_vector', res)
 
 
 def upsert_vectors(
@@ -39,7 +39,7 @@ def upsert_vectors(
         zip(memories, vectors)
     ]
     res = index.upsert(vectors=data, namespace="ns1")
-    print('upsert_vectors', res)
+    logger.info('upsert_vectors', res)
 
 
 def query_vectors(query: str, uid: str, starts_at: int = None, ends_at: int = None, k:int = 5) -> List[str]:

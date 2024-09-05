@@ -6,6 +6,7 @@ import os
 import fal_client
 from groq import Groq
 from openai import OpenAI
+from loguru import logger
 
 from utils.other.endpoints import timeit
 
@@ -34,10 +35,10 @@ def execute():
             temperature=0.0
         )
         segments = transcription.json()
-        print(segments)
+        logger.info(segments)
         data = json.loads(segments).get('segments', [])
         for segment in data:
-            print(segment['start'], segment['end'], segment['text'])
+            logger.info(segment['start'], segment['end'], segment['text'])
 
 
 @timeit
@@ -102,7 +103,7 @@ def file_to_base64_url(file_path):
 def fal():
     handler = fal_client.submit("fal-ai/wizper", arguments={"audio_url": file_to_base64_url(filename)})
     result = handler.get()
-    print(result.get('text', ''))
+    logger.info(result.get('text', ''))
     return result.get('text', '')
 
 
@@ -129,7 +130,7 @@ def fal_whisperx():
         chunk['start'] = chunk['timestamp'][0]
         chunk['end'] = chunk['timestamp'][1]
         del chunk['timestamp']
-        print(chunk)
+        logger.info(chunk)
     return chunks
 
 
@@ -159,12 +160,12 @@ def retrieve_proper_segment_points(file_path):
 if __name__ == '__main__':
     # execute()
     files = sorted(os.listdir('../audioSamples'), key=lambda x: x)
-    print('Files:', files)
+    logger.info('Files:', files)
     for path in os.listdir('../audioSamples'):
         filename = f'../audioSamples/{path}'
         transcription = execute_groq()
         # transcription = fal()
-        print(diarization(transcription))
+        logger.info(diarization(transcription))
     # fal_whisperx()
     # has_audio()
     # print(retrieve_proper_segment_points(filename))

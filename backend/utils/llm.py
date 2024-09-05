@@ -1,5 +1,6 @@
 from datetime import datetime
 from typing import List, Optional
+from loguru import logger
 
 import tiktoken
 from langchain_core.output_parsers import PydanticOutputParser
@@ -66,7 +67,7 @@ def should_discard_memory(transcript: str) -> bool:
         return response.discard
 
     except Exception as e:
-        print(f'Error determining memory discard: {e}')
+        logger.error(f'Error determining memory discard: {e}')
         return False
 
 
@@ -357,7 +358,7 @@ def qa_rag(uid: str, context: str, messages: List[Message], plugin: Optional[Plu
     ```
     Answer:
     """.replace('    ', '').strip()
-    print(prompt)
+    logger.info(prompt)
     return llm.invoke(prompt).content
 
 
@@ -385,7 +386,7 @@ def retrieve_memory_context_params(memory: Memory) -> List[str]:
         response: TopicsContext = with_parser.invoke(prompt)
         return response.topics
     except Exception as e:
-        print(f'Error determining memory discard: {e}')
+        logger.error(f'Error determining memory discard: {e}')
         return []
 
 
