@@ -2,7 +2,7 @@ import datetime
 import json
 import os
 from typing import List
-
+from loguru import logger
 from google.cloud import storage
 from google.oauth2 import service_account
 
@@ -56,7 +56,7 @@ def delete_additional_profile_audio(uid: str, file_name: str) -> None:
     bucket = storage_client.bucket(speech_profiles_bucket)
     blob = bucket.blob(f'{uid}/additional_profile_recordings/{file_name}')
     if blob.exists():
-        print('delete_additional_profile_audio deleting', file_name)
+        logger.info('delete_additional_profile_audio deleting', file_name)
         blob.delete()
 
 
@@ -97,7 +97,7 @@ def delete_speech_sample_for_people(uid: str, file_name: str) -> None:
     blobs = bucket.list_blobs(prefix=f'{uid}/people_profiles/')
     for blob in blobs:
         if file_name in blob.name:
-            print('delete_speech_sample_for_people deleting', blob.name)
+            logger.info('delete_speech_sample_for_people deleting', blob.name)
             blob.delete()
 
 
@@ -163,7 +163,7 @@ def upload_memory_recording(file_path: str, uid: str, memory_id: str):
 
 
 def get_memory_recording_if_exists(uid: str, memory_id: str) -> str:
-    print('get_memory_recording_if_exists', uid, memory_id)
+    logger.info('get_memory_recording_if_exists', uid, memory_id)
     bucket = storage_client.bucket(memories_recordings_bucket)
     path = f'{uid}/{memory_id}.wav'
     blob = bucket.blob(path)

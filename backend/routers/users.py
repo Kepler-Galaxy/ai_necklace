@@ -2,7 +2,7 @@ import threading
 import uuid
 from datetime import datetime
 from typing import List
-
+from loguru import logger
 from fastapi import APIRouter, Depends, HTTPException
 
 import database.facts as facts_db
@@ -45,8 +45,10 @@ def delete_permission_and_recordings(uid: str = Depends(auth.get_current_user_ui
 @router.patch('/v1/users/name', tags=['users'])  # TODO: shouldn't need params, instead should retrieve auth values
 def edit_user_name_in_facts(prev: str, new: str, uid: str = Depends(auth.get_current_user_uid)):
     if len(new.split(' ')) > 1:
+        logger.error(uid, 'Name must be a single word', new)
         raise HTTPException(status_code=400, detail='Name must be a single word')
     if len(new) < 2 or len(new) > 40:
+        logger.error(uid, 'Name must be between 3 and 40 characters', new)
         raise HTTPException(status_code=400, detail='Name must be between 3 and 40 characters')
 
     cache_user_name(uid, new.capitalize())
@@ -84,6 +86,7 @@ def get_single_person(
 ):
     person = get_person(uid, person_id)
     if not person:
+        logger.error(uid, "Person not found")
         raise HTTPException(status_code=404, detail="Person not found")
     if include_speech_samples:
         person['speech_samples'] = get_user_person_speech_samples(uid, person['id'])
@@ -92,7 +95,7 @@ def get_single_person(
 
 @router.get('/v1/users/people', tags=['v1'], response_model=List[Person])
 def get_all_people(include_speech_samples: bool = True, uid: str = Depends(auth.get_current_user_uid)):
-    print('get_all_people', include_speech_samples)
+    logger.info(uid, 'get_all_people', include_speech_samples)
     people = get_people(uid)
     if include_speech_samples:
         def single(person):

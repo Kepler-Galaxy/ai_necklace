@@ -1,6 +1,7 @@
 import json
 from datetime import datetime
 from typing import List, Optional
+from loguru import logger
 
 import tiktoken
 from langchain_core.output_parsers import PydanticOutputParser
@@ -66,7 +67,7 @@ def should_discard_memory(transcript: str) -> bool:
         return response.discard
 
     except Exception as e:
-        print(f'Error determining memory discard: {e}')
+        logger.error(f'Error determining memory discard: {e}')
         return False
 
 
@@ -138,7 +139,7 @@ def transcript_user_speech_fix(prev_transcript: str, new_transcript: str) -> int
         # new_transcript = new_transcript[first_user_appears:min(first_user_appears + 10000, len(new_transcript))]
         # further improvement
 
-    print(f'transcript_user_speech_fix prev_transcript: {len(prev_transcript)} new_transcript: {len(new_transcript)}')
+    logger.info(f'transcript_user_speech_fix prev_transcript: {len(prev_transcript)} new_transcript: {len(new_transcript)}')
     prompt = f'''
     You will be given a previous transcript and a improved transcript, previous transcript has the user voice identified, but the improved transcript does not have it.
     Your task is to determine on the improved transcript, which speaker id corresponds to the user voice, based on the previous transcript.
@@ -425,7 +426,7 @@ def qa_rag(
     ```
     Answer:
     """.replace('    ', '').strip()
-    print(prompt)
+    logger.info(prompt)
     return llm.invoke(prompt).content
 
 
@@ -453,7 +454,7 @@ def retrieve_memory_context_params(memory: Memory) -> List[str]:
         response: TopicsContext = with_parser.invoke(prompt)
         return response.topics
     except Exception as e:
-        print(f'Error determining memory discard: {e}')
+        logger.error(f'Error determining memory discard: {e}')
         return []
 
 
