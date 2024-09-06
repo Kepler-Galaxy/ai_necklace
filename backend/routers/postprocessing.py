@@ -13,7 +13,7 @@ from models.memory import *
 from routers.memories import _get_memory_by_id
 from utils.memories.process_memory import process_memory, process_user_emotion
 from utils.other import endpoints as auth
-from utils.other.storage import upload_postprocessing_audio, \
+from utils.other.cos_storage import upload_postprocessing_audio, \
     delete_postprocessing_audio, upload_memory_recording
 from utils.stt.pre_recorded import fal_whisperx, fal_postprocessing
 from utils.stt.speech_profile import get_speech_profile_matching_predictions
