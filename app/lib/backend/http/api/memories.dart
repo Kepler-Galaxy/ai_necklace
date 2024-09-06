@@ -79,7 +79,10 @@ Future<ServerMemory?> memoryPostProcessing(File file, String memoryId) async {
     Uri.parse('${Env.apiBaseUrl}v1/memories/$memoryId/post-processing?emotional_feedback=$optEmotionalFeedback'),
   );
   request.files.add(await http.MultipartFile.fromPath('file', file.path, filename: basename(file.path)));
-  request.headers.addAll({'Authorization': await getAuthHeader()});
+  request.headers.addAll({
+    'Authorization': await getAuthHeader(),
+    'Provider': 'authing'
+  });
 
   try {
     var streamedResponse = await request.send();
