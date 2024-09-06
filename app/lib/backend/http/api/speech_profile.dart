@@ -49,12 +49,16 @@ Future<bool> uploadProfileBytes(List<List<int>> bytes, int duration) async {
 }
 
 Future<bool> uploadProfile(File file) async {
+  // TODO: Unified api call
   var request = http.MultipartRequest(
     'POST',
     Uri.parse('${Env.apiBaseUrl}v3/upload-audio'),
   );
   request.files.add(await http.MultipartFile.fromPath('file', file.path, filename: basename(file.path)));
-  request.headers.addAll({'Authorization': await getAuthHeader()});
+  request.headers.addAll({
+    'Authorization': await getAuthHeader(),
+    'Provider': 'authing'
+  });
 
   try {
     var streamedResponse = await request.send();
