@@ -10,7 +10,9 @@ from pyannote.audio import Pipeline
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 vad = Pipeline.from_pretrained(
     "pyannote/voice-activity-detection",
-    use_auth_token=os.getenv('HUGGINGFACE_TOKEN')
+    #TODO(yiqi): need to figure out how to use Secret to pass in 
+    # HuggingFace token, right now it doesn't work
+    use_auth_token="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"
 ).to(device)
 
 app = App(name='vad')

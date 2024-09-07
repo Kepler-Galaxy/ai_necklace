@@ -144,6 +144,8 @@ backend/scripts/rag/visualizations/
 backend/google-credentials.json
 backend/google-credentials-dev.json
 backend/credentials.json
+backend/docker-compose-dev.yml
+backend/modal/vad_modal_fix.py
 
 startup-script.sh
 /app/lib/firebase_options_dev.dart

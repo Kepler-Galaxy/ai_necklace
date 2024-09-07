@@ -22,6 +22,7 @@ import 'package:friend_private/utils/ble/connected.dart';
 import 'package:friend_private/utils/memories/process.dart';
 import 'package:friend_private/utils/websockets.dart';
 import 'package:uuid/uuid.dart';
+import 'package:friend_private/utils/other/string_utils.dart';
 
 class SpeechProfileProvider extends ChangeNotifier with MessageNotifierMixin {
   DeviceProvider? deviceProvider;
@@ -31,7 +32,7 @@ class SpeechProfileProvider extends ChangeNotifier with MessageNotifierMixin {
   bool loading = false;
   BTDeviceStruct? device;
 
-  final targetWordsCount = 70;
+  final targetWordsCount = 210;
   final maxDuration = 90;
   StreamSubscription<OnConnectionStateChangedEvent>? connectionStateListener;
   List<TranscriptSegment> segments = [];
@@ -168,11 +169,15 @@ class SpeechProfileProvider extends ChangeNotifier with MessageNotifierMixin {
     );
   }
 
+  int getWordsCount() {
+    String text = segments.map((e) => e.text).join(' ').trim();
+    return wordsCount(text);
+  }
+
   _handleCompletion(bool isFromOnboarding) async {
     if (uploadingProfile || profileCompleted) return;
-    String text = segments.map((e) => e.text).join(' ').trim();
-    int wordsCount = text.split(' ').length;
-    percentageCompleted = (wordsCount / targetWordsCount).clamp(0, 1);
+    int wordCount = getWordsCount();
+    percentageCompleted = (wordCount / targetWordsCount).clamp(0, 1);
     notifyListeners();
     if (percentageCompleted == 1) {
       await finalize(isFromOnboarding);
@@ -188,9 +193,8 @@ class SpeechProfileProvider extends ChangeNotifier with MessageNotifierMixin {
       notifyError('INVALID_RECORDING');
     }
 
-    String text = segments.map((e) => e.text).join(' ').trim();
-    if (text.split(' ').length < (targetWordsCount / 2)) {
-      // 25 words
+    if (getWordsCount() < (targetWordsCount / 2).round()) {
+      // 35 words (half of targetWordsCount)
       notifyError('TOO_SHORT');
     }
     uploadingProfile = true;
@@ -243,7 +247,8 @@ class SpeechProfileProvider extends ChangeNotifier with MessageNotifierMixin {
       var speakerToWords = segments.fold<Map<int, int>>(
         {},
         (previousValue, element) {
-          previousValue[element.speakerId] = (previousValue[element.speakerId] ?? 0) + element.text.split(' ').length;
+          previousValue[element.speakerId] =
+              (previousValue[element.speakerId] ?? 0) + wordsCount(element.text);
           return previousValue;
         },
       );
@@ -272,13 +277,13 @@ class SpeechProfileProvider extends ChangeNotifier with MessageNotifierMixin {
 
   void updateProgressMessage() {
     text = segments.map((e) => e.text).join(' ').trim();
-    int wordsCount = text.split(' ').length;
+    int wordCount = getWordsCount();
     message = 'Keep speaking until you get 100%.';
-    if (wordsCount > 10) {
+    if (wordCount > 10) {
       message = 'Keep going, you are doing great';
-    } else if (wordsCount > 25) {
+    } else if (wordCount > 25) {
       message = 'Great job, you are almost there';
-    } else if (wordsCount > 40) {
+    } else if (wordCount > 40) {
       message = 'So close, just a little more';
     }
     notifyListeners();
