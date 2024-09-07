@@ -32,3 +32,9 @@ String extractJson(String input) {
   }
   return '';
 }
+
+ int wordsCount(String text) {
+    // a word is separated by one or more whitespace, or a Chinese character
+    return text.split(RegExp(r'\s+')).length +
+        RegExp(r'[\u4e00-\u9fa5]').allMatches(text).length;
+  }

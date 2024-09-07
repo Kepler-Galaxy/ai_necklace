@@ -10,6 +10,7 @@ from utils.other import endpoints as auth
 from utils.other.cos_storage import get_memory_recording_if_exists, \
     delete_additional_profile_audio, delete_speech_sample_for_people
 from utils.plugins import trigger_external_integrations
+from utils.string import words_count
 
 router = APIRouter()
 
@@ -153,10 +154,10 @@ def set_assignee_memory_segment(
         raise HTTPException(status_code=400, detail="Invalid assign type")
 
     memories_db.update_memory_segments(uid, memory_id, [segment.dict() for segment in memory.transcript_segments])
-    segment_words = len(memory.transcript_segments[segment_idx].text.split(' '))
+    segment_words = words_count(memory.transcript_segments[segment_idx].text)
 
     # TODO: can do this async
-    if use_for_speech_training and not is_unassigning and segment_words > 5:  # some decent sample at least
+    if use_for_speech_training and not is_unassigning and segment_words > 15:  # some decent sample at least
         person_id = value if assign_type == 'person_id' else None
         expand_speech_profile(memory_id, uid, segment_idx, assign_type, person_id)
     else:
