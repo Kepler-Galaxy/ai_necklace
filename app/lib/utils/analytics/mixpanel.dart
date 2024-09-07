@@ -3,6 +3,7 @@ import 'package:friend_private/backend/schema/fact.dart';
 import 'package:friend_private/backend/schema/memory.dart';
 import 'package:friend_private/env/env.dart';
 import 'package:mixpanel_flutter/mixpanel_flutter.dart';
+import 'package:friend_private/utils/other/string_utils.dart';
 
 class MixpanelManager {
   static final MixpanelManager _instance = MixpanelManager._internal();
@@ -174,7 +175,7 @@ class MixpanelManager {
     transcriptCopy = transcriptCopy.replaceAll('  ', ' ').trim();
     return {
       'transcript_length': transcriptCopy.length,
-      'transcript_word_count': transcriptCopy.split(' ').length,
+      'transcript_word_count': wordsCount(transcriptCopy),
       'speaker_count': speakersCount,
     };
   }
@@ -205,7 +206,7 @@ class MixpanelManager {
   void memoryDeleted(ServerMemory memory) => track('Memory Deleted', properties: getMemoryEventProperties(memory));
 
   void chatMessageSent(String message) => track('Chat Message Sent',
-      properties: {'message_length': message.length, 'message_word_count': message.split(' ').length});
+      properties: {'message_length': message.length, 'message_word_count': wordsCount(message)});
 
   void speechProfileCapturePageClicked() => track('Speech Profile Capture Page Clicked');
 

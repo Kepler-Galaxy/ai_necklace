@@ -16,6 +16,7 @@ from models.transcript_segment import TranscriptSegment
 from models.trend import TrendEnum, ceo_options, company_options, software_product_options, hardware_product_options, \
     ai_product_options, TrendType
 from utils.memories.facts import get_prompt_facts
+from utils.string import words_count
 
 llm_mini = ChatOpenAI(model='gpt-4o-mini')
 embeddings = OpenAIEmbeddings(model="text-embedding-3-large")
@@ -46,7 +47,7 @@ class SpeakerIdMatch(BaseModel):
 
 
 def should_discard_memory(transcript: str) -> bool:
-    if len(transcript.split(' ')) > 100:
+    if words_count(transcript) > 100:
         return False
 
     parser = PydanticOutputParser(pydantic_object=DiscardMemory)
@@ -123,7 +124,7 @@ def get_plugin_result(transcript: str, plugin: Plugin) -> str:
 
     response = llm_mini.invoke(prompt)
     content = response.content.replace('```json', '').replace('```', '')
-    if len(content) < 5:
+    if words_count(content) < 5:
         return ''
     return content
 
