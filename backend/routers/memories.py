@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File
 from loguru import logger
 import os
+import aiofiles
 
 import database.memories as memories_db
 from database.vector_db import delete_vector
@@ -188,11 +189,10 @@ async def upload_memory_audio_recording(
         
         # if file_size > 20 * 1024 * 1024:  # 20 MB limit
         #     raise HTTPException(status_code=400, detail="File size exceeds the 20 MB limit.")
-        
         temp_file_path = f'_temp/{memory_id}.wav'
-        with open(temp_file_path, 'wb') as temp_file:
+        async with aiofiles.open(temp_file_path, 'wb') as temp_file:
             while chunk := await file.read(1024 * 1024):  # Read in 1MB chunks
-                temp_file.write(chunk)
+                await temp_file.write(chunk)
         
         upload_memory_recording(temp_file_path, uid, memory_id)
         
