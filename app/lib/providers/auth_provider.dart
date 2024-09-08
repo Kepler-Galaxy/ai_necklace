@@ -80,14 +80,16 @@ class AuthenticationProvider extends BaseProvider {
           int expiresIn = result.data["expires_in"] * 1000;
           SharedPreferencesUtil().tokenExpirationTime = nowTime + expiresIn;
           SharedPreferencesUtil().refershToken = result.user!.refreshToken!;
+          
 
           AuthResult userInfo = await AuthClient.getCurrentUser();
           debugPrint(userInfo.data.toString());
           SharedPreferencesUtil().uid = userInfo.data["userId"] ?? "";
           SharedPreferencesUtil().email = userInfo.user!.email;
-
+          debugPrint(result.user!.accessToken);
 
           onSignIn();
+          setIsCodeSentState(false);
         } else {
           AppSnackbar.showSnackbarError('Failed to sign in: ${result.message}');
         }
@@ -120,12 +122,22 @@ class AuthenticationProvider extends BaseProvider {
         }
       } catch (e, stackTrace) {
         setIsCodeSentState(false);
+        debugPrint('Error $e.');
         AppSnackbar.showSnackbarError('Error $e.');
         CrashReporting.reportHandledCrash(e, stackTrace, level: NonFatalExceptionLevel.error);
       } finally {
         setLoadingState(false);
       }
     }
+  }
+
+  static Future<void> logout() async {
+    // AuthClient.logout();
+    AuthClient.currentUser = null;
+    SharedPreferencesUtil().refershToken = "";
+    SharedPreferencesUtil().authToken = "";
+    SharedPreferencesUtil().uid = "";
+    SharedPreferencesUtil().tokenExpirationTime = 0;
   }
 
   Future<String?> _getIdToken() async {

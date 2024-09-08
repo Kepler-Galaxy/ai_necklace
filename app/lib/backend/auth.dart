@@ -141,9 +141,10 @@ Future<String?> getIdToken() async {
       debugPrint("Request timed out or failed: $e");
       return "";
     }
-    
     debugPrint(result.data.toString());
+    AuthClient.currentUser = result.user;
     SharedPreferencesUtil().authToken = result.user!.accessToken;
+    
     int nowTime = DateTime.now().millisecondsSinceEpoch;
     int expiresIn = result.data["expires_in"] * 1000;
     SharedPreferencesUtil().tokenExpirationTime = nowTime + expiresIn;

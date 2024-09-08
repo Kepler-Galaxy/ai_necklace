@@ -44,7 +44,7 @@ class _AuthComponentState extends State<AuthComponent> {
               const SizedBox(height: 16),
               TextField(
                 controller: provider.phoneController,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   labelText: 'Phone Number',
                   prefixIcon: Icon(Icons.phone),
                 ),
@@ -54,7 +54,7 @@ class _AuthComponentState extends State<AuthComponent> {
               // Add verification code input
               TextField(
                 controller: provider.codeController,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   labelText: 'Verification Code',
                   prefixIcon: Icon(Icons.sms),
                 ),
