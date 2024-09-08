@@ -72,12 +72,14 @@ def postprocess_memory(
             aseg = AudioSegment.from_wav(file_path)
             aseg = aseg[max(0, (start - 1) * 1000):min((end + 1) * 1000, aseg.duration_seconds * 1000)]
             aseg.export(file_path, format="wav")
+            logger.info("vad succecced with vad_segments", vad_segments)
     except Exception as e:
         logger.error(uid, "postprocess_memory", "Error vad_segments", e)
 
     try:
         aseg = AudioSegment.from_wav(file_path)
         signed_url = upload_postprocessing_audio(file_path)
+        logger.info("upload_postprocessing_audio succeeded with signed_url", signed_url)
         threading.Thread(target=_delete_postprocessing_audio, args=(file_path,)).start()
 
         if aseg.frame_rate == 16000 and get_user_store_recording_permission(uid):

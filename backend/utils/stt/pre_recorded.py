@@ -49,7 +49,7 @@ def fal_whisperx(audio_url: str, speakers_count: int = None, attempts: int = 0) 
                 "audio_url": audio_url,
                 'task': 'transcribe',
                 'diarize': True,
-                'language': 'en',
+                'language': 'ch',
                 'chunk_level': 'word',
                 # "num_speakers": None,
                 'version': '3',
