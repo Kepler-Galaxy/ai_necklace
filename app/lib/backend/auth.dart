@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:math';
+
 import 'package:authing_sdk_v3/client.dart';
 import 'package:authing_sdk_v3/result.dart';
 import 'package:authing_sdk_v3/oidc/oidc_client.dart';
@@ -171,5 +172,3 @@ Future<void> signOut(BuildContext context) async {
 bool isSignedIn() => FirebaseAuth.instance.currentUser != null;
 
 bool isSignedInAuthing() => SharedPreferencesUtil().authToken != "";
-
-

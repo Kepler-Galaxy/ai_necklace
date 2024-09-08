@@ -89,6 +89,7 @@ class AuthenticationProvider extends BaseProvider {
           debugPrint(result.user!.accessToken);
 
           onSignIn();
+          codeController.clear();
           setIsCodeSentState(false);
         } else {
           AppSnackbar.showSnackbarError('Failed to sign in: ${result.message}');
