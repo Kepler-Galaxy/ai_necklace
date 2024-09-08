@@ -1,5 +1,8 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, UploadFile, File
 from loguru import logger
+import os
+import aiofiles
+
 import database.memories as memories_db
 import database.redis_db as redis_db
 from database.vector_db import delete_vector
@@ -9,7 +12,7 @@ from utils.memories.location import get_google_maps_location
 from utils.memories.process_memory import process_memory
 from utils.other import endpoints as auth
 from utils.other.cos_storage import get_memory_recording_if_exists, \
-    delete_additional_profile_audio, delete_speech_sample_for_people
+    delete_additional_profile_audio, delete_speech_sample_for_people, upload_memory_recording
 from utils.plugins import trigger_external_integrations
 from utils.string import words_count
 
@@ -62,9 +65,10 @@ def create_memory(
         memories_db.set_postprocessing_status(uid, memory.id, PostProcessingStatus.not_started)
         memory.postprocessing = MemoryPostProcessing(status=PostProcessingStatus.not_started,
                                                      model=PostProcessingModel.fal_whisperx)
-
-    messages = trigger_external_integrations(uid, memory)
-    return CreateMemoryResponse(memory=memory, messages=messages)
+    # TODO(yiqi): turn off external plugins for now, since fetching from github results in a lot of
+    # failing memory creations. Need to think about how to handle plugins before our product release.
+    # messages = trigger_external_integrations(uid, memory)
+    return CreateMemoryResponse(memory=memory, messages=[])
 
 
 @router.post('/v1/memories/{memory_id}/reprocess', response_model=Memory, tags=['memories'])
@@ -242,3 +246,34 @@ def get_public_memories(offset: int = 0, limit: int = 1000):
     for memory in memories:
         memory['geolocation'] = None
     return memories
+
+@router.post("/v1/memories/{memory_id}/upload_audio", status_code=200, tags=['memories'])
+async def upload_memory_audio_recording(
+    memory_id: str,
+    file: UploadFile = File(...),
+    uid: str = Depends(auth.get_current_user_uid)
+):
+    """
+    Upload an audio recording for a specific memory.
+    """
+    memory = _get_memory_by_id(uid, memory_id)
+    
+    try:
+        file_size = file.file.seek(0, 2)
+        file.file.seek(0)  # Reset file pointer to the beginning
+        
+        # if file_size > 20 * 1024 * 1024:  # 20 MB limit
+        #     raise HTTPException(status_code=400, detail="File size exceeds the 20 MB limit.")
+        temp_file_path = f'_temp/{memory_id}.wav'
+        async with aiofiles.open(temp_file_path, 'wb') as temp_file:
+            while chunk := await file.read(1024 * 1024):  # Read in 1MB chunks
+                await temp_file.write(chunk)
+        
+        upload_memory_recording(temp_file_path, uid, memory_id)
+        
+        os.remove(temp_file_path)  # Clean up temporary file
+        
+        return {"message": "Audio file uploaded successfully"}
+    except Exception as e:
+        logger.error(f"Error uploading audio file for memory {memory_id}: {str(e)}")
+        raise HTTPException(status_code=500, detail="Failed to upload audio file")

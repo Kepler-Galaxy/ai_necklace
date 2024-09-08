@@ -287,17 +287,15 @@ class CaptureProvider extends ChangeNotifier with OpenGlassMixin, MessageNotifie
 
     if (segments.isEmpty && photos.isEmpty) return false;
 
-    // TODO: should clean variables here? and keep them locally?
     setMemoryCreating(true);
     File? file;
     if (audioStorage?.frames.isNotEmpty == true) {
       try {
         var secs = !forcedCreation ? quietSecondsForMemoryCreation : 0;
         file = (await audioStorage!.createWavFile(removeLastNSeconds: secs)).item1;
-        uploadFile(file);
       } catch (e) {
-        print("creating and uploading file error: $e");
-      } // in case was a local recording and not a BLE recording
+        print("creating file error: $e");
+      }
     }
 
     ServerMemory? memory = await processTranscriptContent(
@@ -307,7 +305,6 @@ class CaptureProvider extends ChangeNotifier with OpenGlassMixin, MessageNotifie
       geolocation: geolocation,
       photos: photos,
       sendMessageToChat: (v) {
-        // use message provider to send message to chat
         messageProvider?.addMessage(v);
       },
       triggerIntegrations: true,
@@ -333,12 +330,9 @@ class CaptureProvider extends ChangeNotifier with OpenGlassMixin, MessageNotifie
         processingMemoryId: processingMemoryId,
       );
       SharedPreferencesUtil().addFailedMemory(memory);
-
-      // TODO: store anyways something temporal and retry once connected again.
     }
 
     if (memory != null) {
-      // use memory provider to add memory
       MixpanelManager().memoryCreated(memory);
       _handleCalendarCreation(memory);
       memoryProvider?.addMemory(memory);
@@ -348,21 +342,26 @@ class CaptureProvider extends ChangeNotifier with OpenGlassMixin, MessageNotifie
     }
 
     if (memory != null && !memory.failed && file != null && segments.isNotEmpty && !memory.discarded) {
-      setMemoryCreating(false);
       try {
-        memoryPostProcessing(file, memory.id).then((postProcessed) {
-          if (postProcessed != null) {
-            memoryProvider?.updateMemory(postProcessed);
-          } else {
-            memory!.postprocessing = MemoryPostProcessing(
-              status: MemoryPostProcessingStatus.failed,
-              model: MemoryPostProcessingModel.fal_whisperx,
-            );
-            memoryProvider?.updateMemory(memory);
-          }
-        });
+        bool uploadSuccess = await uploadMemoryAudio(memory.id, file);
+        if (uploadSuccess) {
+          setMemoryCreating(false);
+          memoryPostProcessing(file, memory.id).then((postProcessed) {
+            if (postProcessed != null) {
+              memoryProvider?.updateMemory(postProcessed);
+            } else {
+              memory!.postprocessing = MemoryPostProcessing(
+                status: MemoryPostProcessingStatus.failed,
+                model: MemoryPostProcessingModel.fal_whisperx,
+              );
+              memoryProvider?.updateMemory(memory);
+            }
+          });
+        } else {
+          throw Exception('Failed to upload audio file');
+        }
       } catch (e) {
-        print('Error occurred during memory post-processing: $e');
+        print('Error occurred during memory audio upload or post-processing: $e');
       }
     }
 
@@ -671,7 +670,7 @@ class CaptureProvider extends ChangeNotifier with OpenGlassMixin, MessageNotifie
     processTranscriptContent(
       segments: segments,
       sendMessageToChat: null,
-      triggerIntegrations: false,
+      triggerIntegrations: true,
       language: SharedPreferencesUtil().recordingsLanguage,
     );
     SharedPreferencesUtil().transcriptSegments = [];
