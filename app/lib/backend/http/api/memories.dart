@@ -198,6 +198,27 @@ Future<TranscriptsResponse> getMemoryTranscripts(String memoryId) async {
   return TranscriptsResponse();
 }
 
+Future<bool> uploadMemoryAudio(String memoryId, File file) async {
+  var request = http.MultipartRequest(
+    'POST',
+    Uri.parse('${Env.apiBaseUrl}v1/memories/$memoryId/upload_audio'),
+  );
+  request.files.add(await http.MultipartFile.fromPath('file', file.path, filename: basename(file.path)));
+  request.headers.addAll({
+    'Authorization': await getAuthHeader(),
+    'Provider': 'authing'
+  });
+
+  try {
+    var response = await request.send();
+    debugPrint('uploadMemoryAudio: ${response.statusCode}');
+    return response.statusCode == 200;
+  } catch (e) {
+    debugPrint('An error occurred uploadMemoryAudio: $e');
+    return false;
+  }
+}
+
 Future<bool> hasMemoryRecording(String memoryId) async {
   var response = await makeApiCall(
     url: '${Env.apiBaseUrl}v1/memories/$memoryId/recording',
