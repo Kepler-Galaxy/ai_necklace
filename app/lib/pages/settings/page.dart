@@ -227,7 +227,17 @@ class _SettingsPageState extends State<SettingsPage> {
                         await routeToPage(context, const RecordingsStoragePermission());
                         setState(() {});
                       }),
-                  const SizedBox(height: 32.0),
+                  const SizedBox(height: 16.0),
+                  const Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      'ADD ONS',
+                      style: TextStyle(
+                        color: Colors.white,
+                      )
+                    )
+                  ),
+                  
                   getItemAddOn('Plugins', () {
                     MixpanelManager().pluginsOpened();
                     routeToPage(context, const PluginsPage());
@@ -235,18 +245,76 @@ class _SettingsPageState extends State<SettingsPage> {
                   getItemAddOn('Calendar Integration', () {
                     routeToPage(context, const CalendarPage());
                   }, icon: Icons.calendar_month),
-                  const Divider(
-                    color: Colors.transparent,
-                  ),
+                  // const Divider(
+                  //   color: Colors.transparent,
+                  // ),
                   getItemAddOn('Speech Recognition', () {
                     routeToPage(context, const SpeakerIdPage());
                   }, icon: Icons.multitrack_audio),
                   getItemAddOn('Identifying Others', () {
                     routeToPage(context, const UserPeoplePage());
                   }, icon: Icons.people),
+                  // const Divider(
+                  //   color: Colors.transparent,
+                  // ),
                   const Divider(
                     color: Colors.transparent,
                   ),
+                  getItemAddOn('Developer Mode', () async {
+                    MixpanelManager().devModePageOpened();
+                    await routeToPage(context, const DeveloperSettingsPage());
+                    setState(() {});
+                  }, icon: Icons.code, visibility: devModeEnabled),
+                  const SizedBox(height: 16),
+                  // ListTile(
+                  //   title: const Text('Need help?', style: TextStyle(color: Colors.white)),
+                  //   subtitle: const Text('team@basedhardware.com'),
+                  //   contentPadding: const EdgeInsets.fromLTRB(4, 0, 24, 0),
+                  //   trailing: const Icon(Icons.arrow_forward_ios, color: Colors.white, size: 16),
+                  //   onTap: () {
+                  //     launchUrl(Uri.parse('mailto:team@basedhardware.com'));
+                  //     MixpanelManager().supportContacted();
+                  //   },
+                  // ),
+                  // ListTile(
+                  //   contentPadding: const EdgeInsets.fromLTRB(4, 0, 24, 0),
+                  //   title: const Text('Join the community!', style: TextStyle(color: Colors.white)),
+                  //   subtitle: const Text('2300+ members and counting.'),
+                  //   trailing: const Icon(Icons.discord, color: Colors.purple, size: 20),
+                  //   onTap: () {
+                  //     launchUrl(Uri.parse('https://discord.gg/ZutWMTJnwA'));
+                  //     MixpanelManager().joinDiscordClicked();
+                  //   },
+                  // ),
+                  // getItemAddOn('Privacy Policy', () {
+                  //   Navigator.of(context).push(
+                  //     MaterialPageRoute(
+                  //       builder: (c) => const PageWebView(
+                  //         url: 'https://basedhardware.com/pages/privacy',
+                  //         title: 'Privacy Policy',
+                  //       ),
+                  //     ),
+                  //   );
+                  // }, icon: Icons.privacy_tip_outlined, visibility: true),
+                  const Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      'ABOUT US',
+                      style: TextStyle(
+                        color: Colors.white,
+                      )
+                    )
+                  ),
+                  getItemAddOn('Our Website', () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (c) => const PageWebView(
+                          url: 'http://keplergalaxy.com/',
+                          title: 'Kepler Star',
+                        ),
+                      ),
+                    );
+                  }, icon: Icons.language_outlined, visibility: true),
                   getItemAddOn(
                       SharedPreferencesUtil().givenName.isEmpty
                           ? 'About YOU (by Omi)'
@@ -263,55 +331,6 @@ class _SettingsPageState extends State<SettingsPage> {
                           );
                         });
                   }, icon: Icons.person),
-                  const Divider(
-                    color: Colors.transparent,
-                  ),
-                  getItemAddOn('Developer Mode', () async {
-                    MixpanelManager().devModePageOpened();
-                    await routeToPage(context, const DeveloperSettingsPage());
-                    setState(() {});
-                  }, icon: Icons.code, visibility: devModeEnabled),
-                  const SizedBox(height: 16),
-                  ListTile(
-                    title: const Text('Need help?', style: TextStyle(color: Colors.white)),
-                    subtitle: const Text('team@basedhardware.com'),
-                    contentPadding: const EdgeInsets.fromLTRB(4, 0, 24, 0),
-                    trailing: const Icon(Icons.arrow_forward_ios, color: Colors.white, size: 16),
-                    onTap: () {
-                      launchUrl(Uri.parse('mailto:team@basedhardware.com'));
-                      MixpanelManager().supportContacted();
-                    },
-                  ),
-                  ListTile(
-                    contentPadding: const EdgeInsets.fromLTRB(4, 0, 24, 0),
-                    title: const Text('Join the community!', style: TextStyle(color: Colors.white)),
-                    subtitle: const Text('2300+ members and counting.'),
-                    trailing: const Icon(Icons.discord, color: Colors.purple, size: 20),
-                    onTap: () {
-                      launchUrl(Uri.parse('https://discord.gg/ZutWMTJnwA'));
-                      MixpanelManager().joinDiscordClicked();
-                    },
-                  ),
-                  // getItemAddOn('Privacy Policy', () {
-                  //   Navigator.of(context).push(
-                  //     MaterialPageRoute(
-                  //       builder: (c) => const PageWebView(
-                  //         url: 'https://basedhardware.com/pages/privacy',
-                  //         title: 'Privacy Policy',
-                  //       ),
-                  //     ),
-                  //   );
-                  // }, icon: Icons.privacy_tip_outlined, visibility: true),
-                  getItemAddOn('Our Website', () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (c) => const PageWebView(
-                          url: 'http://keplergalaxy.com/',
-                          title: 'Kepler Star',
-                        ),
-                      ),
-                    );
-                  }, icon: Icons.language_outlined, visibility: true),
                   const SizedBox(height: 32),
                   const Align(
                     alignment: Alignment.centerLeft,
