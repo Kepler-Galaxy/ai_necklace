@@ -3,9 +3,9 @@ FROM tiangolo/uvicorn-gunicorn:python3.11
 RUN apt-get update && apt-get install --no-install-recommends --no-install-suggests -y curl
 RUN apt-get install unzip
 RUN apt-get -y install python3
-RUN apt-get -y install python3-pip
+RUN apt-get update && apt-get -y install python3-pip
 RUN apt-get -y install git
-RUN apt-get -y install ffmpeg
+RUN pip install ffmpeg
 
 COPY ./requirements.txt /tmp/requirements.txt
 RUN pip install --no-cache-dir -r /tmp/requirements.txt
