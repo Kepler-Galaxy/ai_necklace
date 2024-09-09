@@ -35,6 +35,8 @@ final class DevEnv implements EnvFields {
   @override
   @EnviedField(varName: 'GLEAP_API_KEY', obfuscate: true)
   final String? gleapApiKey = _DevEnv.gleapApiKey;
+
+  @override
   @EnviedField(varName: 'AUTHING_USER_POOL_Id', obfuscate: true)
   final String? authingUserPoolId = _DevEnv.authingUserPoolId;
 
