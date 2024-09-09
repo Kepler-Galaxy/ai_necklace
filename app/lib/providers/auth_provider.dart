@@ -63,6 +63,7 @@ class AuthenticationProvider extends BaseProvider {
         LoginOptions opt = LoginOptions();
         opt.scope =
             "openid profile username email phone offline_access roles external_id extended_fields tenant_id";
+        AuthClient.currentUser = null;
         AuthResult result = await AuthClient.loginByPhoneCode(
           phone,
           code,
@@ -129,6 +130,7 @@ class AuthenticationProvider extends BaseProvider {
     SharedPreferencesUtil().authToken = "";
     SharedPreferencesUtil().uid = "";
     SharedPreferencesUtil().tokenExpirationTime = 0;
+    SharedPreferencesUtil().onboardingCompleted = false;
   }
 
   Future<String?> _getIdToken() async {
@@ -151,17 +153,6 @@ class AuthenticationProvider extends BaseProvider {
     String? token = await _getIdToken();
 
     if (token != null) {
-      User user;
-      try {
-        user = AuthClient.currentUser!;
-      } catch (e, stackTrace) {
-        AppSnackbar.showSnackbarError('Unexpected error signing in, Firebase error, please try again.');
-
-        CrashReporting.reportHandledCrash(e, stackTrace, level: NonFatalExceptionLevel.error);
-        return;
-      }
-      String newUid = user.id;
-      SharedPreferencesUtil().uid = newUid;
       MixpanelManager().identify();
       identifyGleap();
       onSignIn();
