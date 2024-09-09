@@ -57,7 +57,7 @@ class _OnboardingWrapperState extends State<OnboardingWrapper> with TickerProvid
               DeviceAnimationWidget(animatedBackground: _controller!.index != -1),
               Center(
                 child: Text(
-                  _controller!.index == _controller!.length - 1 ? 'You are all set  🎉' : 'Friend',
+                  _controller!.index == _controller!.length - 1 ? 'You are all set  🎉' : 'Kepler Star',
                   style: TextStyle(
                       color: Colors.grey.shade200,
                       fontSize: _controller!.index == _controller!.length - 1 ? 28 : 40,

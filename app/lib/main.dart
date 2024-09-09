@@ -39,7 +39,7 @@ import 'package:provider/provider.dart';
 Future<bool> _init() async {
   ble.FlutterBluePlus.setLogLevel(ble.LogLevel.info, color: true);
 
-  Authing.init(Env.authingUserPoolId!, Env.authingAppId!);
+  await Authing.init(Env.authingUserPoolId!, Env.authingAppId!);
   if (F.env == Environment.prod) {
     await Firebase.initializeApp(options: prod.DefaultFirebaseOptions.currentPlatform, name: 'prod');
   } else {
@@ -48,6 +48,7 @@ Future<bool> _init() async {
 
   await NotificationService.instance.initialize();
   await SharedPreferencesUtil.init();
+  await AuthenticationProvider.authingInit();
   await MixpanelManager.init();
 
   // TODO: replace by authing
@@ -56,7 +57,6 @@ Future<bool> _init() async {
   try {
     isAuth = (await getIdToken()) != "";
   } catch (e) {} // if no connect this will fail
-
   if (isAuth) MixpanelManager().identify();
 
   initOpus(await opus_flutter.load());

@@ -3,7 +3,7 @@ import 'package:friend_private/widgets/dialog.dart';
 import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
 
 class ConnectivityController {
-  ValueNotifier<bool> isConnected = ValueNotifier(true);
+  late ValueNotifier<bool> isConnected;
   bool previousConnection = true;
   InternetConnection internetConnection = InternetConnection();
 
@@ -16,6 +16,7 @@ class ConnectivityController {
   ConnectivityController._internal();
 
   Future<void> init() async {
+    isConnected = ValueNotifier(true);
     bool result = await internetConnection.hasInternetAccess;
     isConnected.value = result;
     previousConnection = result;
