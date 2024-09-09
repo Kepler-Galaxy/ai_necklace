@@ -126,11 +126,12 @@ class AuthenticationProvider extends BaseProvider {
   static Future<void> logout() async {
     await AuthClient.logout();
     AuthClient.currentUser = null;
-    SharedPreferencesUtil().refershToken = "";
-    SharedPreferencesUtil().authToken = "";
-    SharedPreferencesUtil().uid = "";
-    SharedPreferencesUtil().tokenExpirationTime = 0;
-    SharedPreferencesUtil().onboardingCompleted = false;
+    SharedPreferencesUtil().clear();
+    // SharedPreferencesUtil().refershToken = "";
+    // SharedPreferencesUtil().authToken = "";
+    // SharedPreferencesUtil().uid = "";
+    // SharedPreferencesUtil().tokenExpirationTime = 0;
+    // SharedPreferencesUtil().onboardingCompleted = false;
   }
 
   Future<String?> _getIdToken() async {
