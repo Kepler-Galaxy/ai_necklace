@@ -133,7 +133,7 @@ class AuthenticationProvider extends BaseProvider {
   }
 
   static Future<void> logout() async {
-    // AuthClient.logout();
+    AuthClient.logout();
     AuthClient.currentUser = null;
     SharedPreferencesUtil().refershToken = "";
     SharedPreferencesUtil().authToken = "";
