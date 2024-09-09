@@ -160,48 +160,41 @@ class _OnboardingWrapperState extends State<OnboardingWrapper> with TickerProvid
       onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
         backgroundColor: Theme.of(context).colorScheme.primary,
-        body: SingleChildScrollView(
-          child: Stack(
-            children: [
-              Padding(
+        body: Stack(
+          children: [
+            SingleChildScrollView(
+              child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: ListView(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
+                child: Column(
                   children: [
                     DeviceAnimationWidget(animatedBackground: _controller!.index != -1),
-                    _controller!.index == 6 || _controller!.index == 7
-                        ? const SizedBox()
-                        : Center(
-                            child: Text(
-                              'Omi',
-                              style: TextStyle(
-                                  color: Colors.grey.shade200,
-                                  fontSize: _controller!.index == _controller!.length - 1 ? 28 : 40,
-                                  fontWeight: FontWeight.w500),
-                            ),
+                    if (_controller!.index != 6 && _controller!.index != 7)
+                      Center(
+                        child: Text(
+                          _controller!.index == _controller!.length - 1 ? 'You are all set  🎉' : 'Omi',
+                          style: TextStyle(
+                            color: Colors.grey.shade200,
+                            fontSize: _controller!.index == _controller!.length - 1 ? 28 : 40,
+                            fontWeight: FontWeight.w500,
                           ),
+                        ),
+                      ),
                     const SizedBox(height: 24),
-                    [-1, 5, 6, 7].contains(_controller?.index)
-                        ? const SizedBox(
-                            height: 0,
-                          )
-                        : Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 16),
-                            child: Text(
-                              _controller!.index == _controller!.length - 1
-                                  ? 'Your personal growth journey with AI that listens to your every word.'
-                                  : 'Your personal growth journey with AI that listens to your every word.',
-                              style: TextStyle(color: Colors.grey.shade300, fontSize: 16),
-                              textAlign: TextAlign.center,
-                            ),
-                          ),
+                    if (![-1, 5, 6, 7].contains(_controller?.index))
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        child: Text(
+                          'Your personal growth journey with AI that listens to your every word.',
+                          style: TextStyle(color: Colors.grey.shade300, fontSize: 16),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
                     SizedBox(
                       height: (_controller!.index == 5 || _controller!.index == 6 || _controller!.index == 7)
                           ? max(MediaQuery.of(context).size.height - 500 - 10, maxHeightWithTextScale(context))
                           : max(MediaQuery.of(context).size.height - 500 - 60, maxHeightWithTextScale(context)),
                       child: Padding(
-                        padding: EdgeInsets.only(bottom: MediaQuery.sizeOf(context).height <= 700 ? 10 : 64),
+                        padding: EdgeInsets.only(bottom: MediaQuery.of(context).size.height <= 700 ? 10 : 64),
                         child: TabBarView(
                           controller: _controller,
                           physics: const NeverScrollableScrollPhysics(),
@@ -212,69 +205,64 @@ class _OnboardingWrapperState extends State<OnboardingWrapper> with TickerProvid
                   ],
                 ),
               ),
-              if (_controller!.index == 3)
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(0, 40, 16, 0),
-                  child: Align(
-                    alignment: Alignment.topRight,
-                    child: TextButton(
-                      onPressed: () {
-                        if (_controller!.index == 2) {
-                          _controller!.animateTo(_controller!.index + 1);
-                        } else {
-                          routeToPage(context, const HomePageWrapper(), replace: true);
-                        }
-                      },
-                      child: Text(
-                        'Skip',
-                        style: TextStyle(color: Colors.grey.shade200),
-                      ),
-                    ),
+            ),
+            if (_controller!.index == 3)
+              Positioned(
+                top: 40,
+                right: 16,
+                child: TextButton(
+                  onPressed: () {
+                    if (_controller!.index == 2) {
+                      _controller!.animateTo(_controller!.index + 1);
+                    } else {
+                      routeToPage(context, const HomePageWrapper(), replace: true);
+                    }
+                  },
+                  child: Text(
+                    'Skip',
+                    style: TextStyle(color: Colors.grey.shade200),
                   ),
                 ),
-              if (_controller!.index > 1)
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 40, 0, 0),
-                  child: Align(
-                    alignment: Alignment.topLeft,
-                    child: TextButton(
-                      onPressed: () {
-                        _controller!.animateTo(_controller!.index - 1);
-                      },
-                      child: Text(
-                        'Back',
-                        style: TextStyle(color: Colors.grey.shade200),
-                      ),
-                    ),
+              ),
+            if (_controller!.index > 1)
+              Positioned(
+                top: 40,
+                left: 16,
+                child: TextButton(
+                  onPressed: () => _controller!.animateTo(_controller!.index - 1),
+                  child: Text(
+                    'Back',
+                    style: TextStyle(color: Colors.grey.shade200),
                   ),
                 ),
-              if (_controller!.index != 0)
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 56, 16, 0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: List.generate(
-                      _controller!.length - 1, // Exclude the Auth page from the count
-                      (index) {
-                        // Calculate the adjusted index
-                        int adjustedIndex = index + 1;
-                        return Container(
-                          margin: const EdgeInsets.symmetric(horizontal: 4.0),
-                          width: adjustedIndex == _controller!.index ? 12.0 : 8.0,
-                          height: adjustedIndex == _controller!.index ? 12.0 : 8.0,
-                          decoration: BoxDecoration(
-                            color: adjustedIndex <= _controller!.index
-                                ? Theme.of(context).colorScheme.secondary
-                                : Colors.grey.shade400,
-                            shape: BoxShape.circle,
-                          ),
-                        );
-                      },
-                    ),
+              ),
+            if (_controller!.index != 0)
+              Positioned(
+                bottom: 16,
+                left: 0,
+                right: 0,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: List.generate(
+                    _controller!.length - 1,
+                    (index) {
+                      int adjustedIndex = index + 1;
+                      return Container(
+                        margin: const EdgeInsets.symmetric(horizontal: 4.0),
+                        width: adjustedIndex == _controller!.index ? 12.0 : 8.0,
+                        height: adjustedIndex == _controller!.index ? 12.0 : 8.0,
+                        decoration: BoxDecoration(
+                          color: adjustedIndex <= _controller!.index
+                              ? Theme.of(context).colorScheme.secondary
+                              : Colors.grey.shade400,
+                          shape: BoxShape.circle,
+                        ),
+                      );
+                    },
                   ),
                 ),
-            ],
-          ),
+              ),
+          ],
         ),
       ),
     );
