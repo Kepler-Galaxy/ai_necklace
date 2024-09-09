@@ -86,6 +86,7 @@ class AuthenticationProvider extends BaseProvider {
           debugPrint(userInfo.data.toString());
           SharedPreferencesUtil().uid = userInfo.data["userId"] ?? "";
           SharedPreferencesUtil().email = userInfo.user!.email;
+          AuthClient.currentUser = result.user;
           debugPrint(result.user!.accessToken);
 
           onSignIn();
@@ -133,7 +134,7 @@ class AuthenticationProvider extends BaseProvider {
   }
 
   static Future<void> logout() async {
-    // AuthClient.logout();
+    await AuthClient.logout();
     AuthClient.currentUser = null;
     SharedPreferencesUtil().refershToken = "";
     SharedPreferencesUtil().authToken = "";
