@@ -2,6 +2,9 @@ import 'dart:convert';
 import 'dart:math';
 
 import 'package:authing_sdk_v3/client.dart';
+import 'package:authing_sdk_v3/result.dart';
+import 'package:authing_sdk_v3/oidc/oidc_client.dart';
+import 'package:authing_sdk_v3/options/login_options.dart';
 import 'package:crypto/crypto.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -159,7 +162,28 @@ Future<UserCredential?> signInWithGoogle() async {
 }
 
 Future<String?> getIdToken() async {
-  debugPrint(AuthClient.currentUser?.accessToken);
+  String refreshToken = SharedPreferencesUtil().refershToken;
+  AuthResult result;
+  if (refreshToken != "") {
+    try{
+      result = await OIDCClient.getNewAccessTokenByRefreshToken(refreshToken).timeout(Duration(seconds: 10));
+    } catch (e) {
+      debugPrint("Request timed out or failed: $e");
+      return "";
+    }
+    debugPrint(result.data.toString());
+    AuthClient.currentUser = result.user;
+    SharedPreferencesUtil().authToken = result.user!.accessToken;
+    
+    int nowTime = DateTime.now().millisecondsSinceEpoch;
+    int expiresIn = result.data["expires_in"] * 1000;
+    SharedPreferencesUtil().tokenExpirationTime = nowTime + expiresIn;
+    SharedPreferencesUtil().refershToken = result.user!.refreshToken!;
+    debugPrint(result.data.toString());
+  } else {
+    debugPrint('No refresh token available');
+    return "";
+  }
 
   return SharedPreferencesUtil().authToken;
 }

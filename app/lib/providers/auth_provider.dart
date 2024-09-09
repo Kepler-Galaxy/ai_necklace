@@ -1,4 +1,6 @@
 import 'package:authing_sdk_v3/client.dart';
+import 'package:authing_sdk_v3/user.dart' as authing_user;
+import 'package:authing_sdk_v3/oidc/oidc_client.dart';
 import 'package:authing_sdk_v3/result.dart';
 import 'package:authing_sdk_v3/options/login_options.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -84,6 +86,12 @@ class AuthenticationProvider extends BaseProvider {
     }
   }
 
+  static Future<void> authingInit() async {
+    AuthClient.getCurrentUser();
+    // AuthClient.currentUser = authing_user.User();
+    // AuthClient.currentUser!.accessToken = SharedPreferencesUtil().authToken;
+  }
+
   Future<void> onVerificationCodeSignIn(
       BuildContext context, Function() onSignIn) async {
     if (!loading) {
@@ -93,10 +101,7 @@ class AuthenticationProvider extends BaseProvider {
       String code = codeController.text.trim();
 
       if (phone.isEmpty || code.isEmpty) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-              content: Text('Please enter both phone number and code.')),
-        );
+        AppSnackbar.showSnackbar('Please enter both phone number and code.');
         setLoadingState(false);
         return;
       }
@@ -118,22 +123,24 @@ class AuthenticationProvider extends BaseProvider {
           int nowTime = DateTime.now().millisecondsSinceEpoch;
           int expiresIn = result.data["expires_in"] * 1000;
           SharedPreferencesUtil().tokenExpirationTime = nowTime + expiresIn;
+          SharedPreferencesUtil().refershToken = result.user!.refreshToken!;
+          
 
           AuthResult userInfo = await AuthClient.getCurrentUser();
           debugPrint(userInfo.data.toString());
           SharedPreferencesUtil().uid = userInfo.data["userId"] ?? "";
           SharedPreferencesUtil().email = userInfo.user!.email;
+          AuthClient.currentUser = result.user;
+          debugPrint(result.user!.accessToken);
 
           onSignIn();
+          codeController.clear();
+          setIsCodeSentState(false);
         } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Failed to sign in: ${result.message}')),
-          );
+          AppSnackbar.showSnackbarError('Failed to sign in: ${result.message}');
         }
       } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: $e')),
-        );
+        AppSnackbar.showSnackbarError('Error: $e');
       } finally {
         setLoadingState(false);
       }
@@ -146,9 +153,7 @@ class AuthenticationProvider extends BaseProvider {
       String phone = phoneController.text.trim();
 
       if (phone.isEmpty) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Please enter a phone number.')),
-        );
+        AppSnackbar.showSnackbar('Please enter a phone number.');
         setLoadingState(false);
         return;
       }
@@ -157,23 +162,28 @@ class AuthenticationProvider extends BaseProvider {
         AuthResult result = await AuthClient.sendSms(phone, "CHANNEL_LOGIN");
         if (result.statusCode == 200) {
           setIsCodeSentState(true);
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Verification code sent.')),
-          );
+          AppSnackbar.showSnackbar('Verification code sent.');
         } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Failed to send code: ${result.message}')),
-          );
+          AppSnackbar.showSnackbarError('Failed to send code: ${result.message}');
         }
-      } catch (e) {
+      } catch (e, stackTrace) {
         setIsCodeSentState(false);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: $e')),
-        );
+        debugPrint('Error $e.');
+        AppSnackbar.showSnackbarError('Error $e.');
+        CrashReporting.reportHandledCrash(e, stackTrace, level: NonFatalExceptionLevel.error);
       } finally {
         setLoadingState(false);
       }
     }
+  }
+
+  static Future<void> logout() async {
+    await AuthClient.logout();
+    AuthClient.currentUser = null;
+    SharedPreferencesUtil().refershToken = "";
+    SharedPreferencesUtil().authToken = "";
+    SharedPreferencesUtil().uid = "";
+    SharedPreferencesUtil().tokenExpirationTime = 0;
   }
 
   Future<String?> _getIdToken() async {

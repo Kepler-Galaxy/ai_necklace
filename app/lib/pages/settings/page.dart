@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:friend_private/backend/auth.dart';
@@ -13,10 +14,15 @@ import 'package:friend_private/pages/settings/privacy.dart';
 import 'package:friend_private/pages/settings/recordings_storage_permission.dart';
 import 'package:friend_private/pages/settings/webview.dart';
 import 'package:friend_private/pages/settings/widgets.dart';
+import 'package:friend_private/pages/onboarding/wrapper.dart';
+import 'package:friend_private/pages/onboarding/auth.dart';
+import 'package:friend_private/pages/home/page.dart';
 import 'package:friend_private/pages/speaker_id/page.dart';
 import 'package:friend_private/utils/analytics/mixpanel.dart';
+import 'package:friend_private/providers/auth_provider.dart';
 import 'package:friend_private/utils/other/temp.dart';
 import 'package:friend_private/widgets/dialog.dart';
+import 'package:friend_private/utils/alerts/app_snackbar.dart';
 import 'package:gradient_borders/gradient_borders.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -286,52 +292,69 @@ class _SettingsPageState extends State<SettingsPage> {
                       MixpanelManager().joinDiscordClicked();
                     },
                   ),
-                  getItemAddOn('Privacy Policy', () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (c) => const PageWebView(
-                          url: 'https://www.omi.me/pages/privacy',
-                          title: 'Privacy Policy',
-                        ),
-                      ),
-                    );
-                  }, icon: Icons.privacy_tip_outlined, visibility: true),
-                  // getItemAddOn('About omi', () {
+                  // getItemAddOn('Privacy Policy', () {
                   //   Navigator.of(context).push(
                   //     MaterialPageRoute(
                   //       builder: (c) => const PageWebView(
-                  //         url: 'https://www.omi.me/',
-                  //         title: 'omi',
+                  //         url: 'https://basedhardware.com/pages/privacy',
+                  //         title: 'Privacy Policy',
                   //       ),
                   //     ),
                   //   );
-                  // }, icon: Icons.language_outlined, visibility: true),
+                  // }, icon: Icons.privacy_tip_outlined, visibility: true),
+                  getItemAddOn('Our Website', () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (c) => const PageWebView(
+                          url: 'http://keplergalaxy.com/',
+                          title: 'Kepler Star',
+                        ),
+                      ),
+                    );
+                  }, icon: Icons.language_outlined, visibility: true),
                   const SizedBox(height: 32),
-                  getItemAddOn('Delete Account', () {
-                    showDialog(
-                        context: context,
-                        builder: (ctx) {
-                          return getDialog(
-                            context,
-                            () {
-                              Navigator.of(context).pop();
-                            },
-                            () async {
-                              // send email to team@basedhardware.com
-                              launchUrl(Uri.parse('mailto:team@basedhardware.com?subject=Delete%20My%20Account'));
-                            },
-                            'Deleting Account?',
-                            'Please send us an email at team@basedhardware.com',
-                            okButtonText: 'Open Email',
-                            singleButton: false,
-                          );
-                        });
-                  }, icon: Icons.warning, visibility: true),
-                  getItemAddOn('Sign Out', () {
-                    signOut();
-                    Navigator.pushAndRemoveUntil(
-                        context, MaterialPageRoute(builder: (context) => const DeciderWidget()), (route) => false);
-                  }, icon: Icons.logout, visibility: true),
+                  const Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      'LOGOUT',
+                      style: TextStyle(
+                        color: Colors.white,
+                      ),
+                      textAlign: TextAlign.start,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12), backgroundColor: Colors.red, // 设置按钮背景颜色
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10), // 按钮圆角
+                      ),
+                    ),
+                    onPressed: () async {
+                      await AuthenticationProvider.logout(); // 执行登出
+                      if (context.mounted) {
+                        routeToPage(context, const OnboardingWrapper(), replace: true);
+                      }
+                      AppSnackbar.showSnackbar('Logout Success!');
+                    },
+                    child: const Center(
+                      child: Row(
+                        // mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Text(
+                            'Logout',
+                            style: TextStyle(color: Colors.white, fontSize: 16), // 文字颜色
+
+                          ),
+                          SizedBox(width: 16), // 图标和文字间距
+                          Icon(Icons.exit_to_app, color: Colors.white, size: 16), // 图标颜色
+                        ]
+                      ),
+                    ),
+                  ),
                   const SizedBox(height: 32),
                   Padding(
                     padding: const EdgeInsets.all(8),

@@ -83,7 +83,17 @@ class _OnboardingWrapperState extends State<OnboardingWrapper> with TickerProvid
           child: ListView(
             children: [
               DeviceAnimationWidget(animatedBackground: _controller!.index != -1),
-              _controller!.index == 6 || _controller!.index == 7
+              Center(
+                child: Text(
+                  _controller!.index == _controller!.length - 1 ? 'You are all set  🎉' : 'Kepler Star',
+                  style: TextStyle(
+                      color: Colors.grey.shade200,
+                      fontSize: _controller!.index == _controller!.length - 1 ? 28 : 40,
+                      fontWeight: FontWeight.w500),
+                ),
+              ),
+              const SizedBox(height: 24),
+              _controller!.index == 3 || _controller!.index == 4 || _controller!.index == 5
                   ? const SizedBox()
                   : Center(
                       child: Text(

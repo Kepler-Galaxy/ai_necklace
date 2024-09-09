@@ -362,6 +362,10 @@ class SharedPreferencesUtil {
 
   set authToken(String value) => saveString('authToken', value);
 
+  String get refershToken => getString('refershToken') ?? '';
+
+  set refershToken(String value) => saveString('refershToken', value);
+
   int get tokenExpirationTime => getInt('tokenExpirationTime') ?? 0;
 
   set tokenExpirationTime(int value) => saveInt('tokenExpirationTime', value);
