@@ -42,6 +42,7 @@ import 'package:opus_flutter/opus_flutter.dart' as opus_flutter;
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:talker_flutter/talker_flutter.dart';
+import 'package:friend_private/providers/diary_provider.dart';
 
 Future<bool> _init() async {
   ble.FlutterBluePlus.setLogLevel(ble.LogLevel.info, color: true);
@@ -174,6 +175,7 @@ class _MyAppState extends State<MyApp> {
             update: (BuildContext context, device, capture, wsProvider, SpeechProfileProvider? previous) =>
                 (previous?..setProviders(device, capture, wsProvider)) ?? SpeechProfileProvider(),
           ),
+          ChangeNotifierProvider(create: (context) => DiaryProvider()),
         ],
         builder: (context, child) {
           return WithForegroundTask(
