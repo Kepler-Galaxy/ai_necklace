@@ -1,5 +1,3 @@
-import 'package:flutter/foundation.dart';
-
 class ServerDiary {
   final String id;
   final String uid;

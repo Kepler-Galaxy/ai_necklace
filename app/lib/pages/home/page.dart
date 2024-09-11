@@ -29,6 +29,7 @@ import 'package:instabug_flutter/instabug_flutter.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:upgrader/upgrader.dart';
+import 'package:friend_private/pages/diary/page.dart';
 
 class HomePageWrapper extends StatefulWidget {
   const HomePageWrapper({super.key});
@@ -224,7 +225,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver, Ticker
         return Scaffold(
           backgroundColor: Theme.of(context).colorScheme.primary,
           body: DefaultTabController(
-            length: 2,
+            length: 3,
             initialIndex: SharedPreferencesUtil().pageToShowFromNotification,
             child: GestureDetector(
               onTap: () {
@@ -236,10 +237,10 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver, Ticker
                 children: [
                   Center(
                     child: TabBarView(
-                      // controller: _controller,
                       physics: const NeverScrollableScrollPhysics(),
                       children: [
                         const MemoriesPage(),
+                        const DiaryPage(),
                         ChatPage(
                           key: chatPageKey,
                         ),
@@ -271,7 +272,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver, Ticker
                           child: TabBar(
                             padding: const EdgeInsets.only(top: 4, bottom: 4),
                             onTap: (index) {
-                              MixpanelManager().bottomNavigationTabClicked(['Memories', 'Chat'][index]);
+                              MixpanelManager().bottomNavigationTabClicked(['Memories', 'Diary', 'Chat'][index]);
                               primaryFocus?.unfocus();
                               home.setIndex(index);
                             },
@@ -288,9 +289,18 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver, Ticker
                               ),
                               Tab(
                                 child: Text(
-                                  'Chat',
+                                  'Diary',
                                   style: TextStyle(
                                     color: home.selectedIndex == 1 ? Colors.white : Colors.grey,
+                                    fontSize: 16,
+                                  ),
+                                ),
+                              ),
+                              Tab(
+                                child: Text(
+                                  'Chat',
+                                  style: TextStyle(
+                                    color: home.selectedIndex == 2 ? Colors.white : Colors.grey,
                                     fontSize: 16,
                                   ),
                                 ),
@@ -421,7 +431,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver, Ticker
                 }),
                 Consumer2<PluginProvider, HomeProvider>(
                   builder: (context, provider, home, child) {
-                    if (home.selectedIndex != 1) {
+                    if (home.selectedIndex != 2) {
                       return const SizedBox(
                         width: 16,
                       );

@@ -73,6 +73,7 @@ class AuthenticationProvider extends BaseProvider {
         debugPrint(result.data.toString());
         if (result.statusCode == 200 && result.user != null) {
           // 登录成功
+          debugPrint("user authorization token: ${result.user!.accessToken}");
           SharedPreferencesUtil().authToken = result.user!.accessToken;
           int nowTime = DateTime.now().millisecondsSinceEpoch;
           int expiresIn = result.data["expires_in"] * 1000;
