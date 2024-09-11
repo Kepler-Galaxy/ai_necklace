@@ -171,15 +171,20 @@ Future<String?> getIdToken() async {
       debugPrint("Request timed out or failed: $e");
       return "";
     }
-    debugPrint(result.data.toString());
     AuthClient.currentUser = result.user;
     SharedPreferencesUtil().authToken = result.user!.accessToken;
-    
     int nowTime = DateTime.now().millisecondsSinceEpoch;
     int expiresIn = result.data["expires_in"] * 1000;
     SharedPreferencesUtil().tokenExpirationTime = nowTime + expiresIn;
     SharedPreferencesUtil().refershToken = result.user!.refreshToken!;
-    debugPrint(result.data.toString());
+
+    AuthResult userInfo = await AuthClient.getCurrentUser();
+    debugPrint(userInfo.data.toString());
+    SharedPreferencesUtil().uid = userInfo.data["userId"] ?? "";
+    SharedPreferencesUtil().email = userInfo.user!.email;
+    AuthClient.currentUser = result.user;
+    debugPrint(result.user!.accessToken);
+
   } else {
     debugPrint('No refresh token available');
     return "";
