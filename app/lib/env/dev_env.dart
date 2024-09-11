@@ -47,6 +47,8 @@ final class DevEnv implements EnvFields {
   @override
   @EnviedField(varName: 'INTERCOM_ANDROID_API_KEY', obfuscate: true)
   final String? intercomAndroidApiKey = _DevEnv.intercomAndroidApiKey;
+
+  @override
   @EnviedField(varName: 'AUTHING_USER_POOL_Id', obfuscate: true)
   final String? authingUserPoolId = _DevEnv.authingUserPoolId;
 

@@ -1,9 +1,9 @@
 import 'package:authing_sdk_v3/client.dart';
-import 'package:authing_sdk_v3/user.dart' as authing_user;
+import 'package:authing_sdk_v3/user.dart';
+import 'package:authing_sdk_v3/authing.dart';
 import 'package:authing_sdk_v3/oidc/oidc_client.dart';
 import 'package:authing_sdk_v3/result.dart';
 import 'package:authing_sdk_v3/options/login_options.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:friend_private/backend/auth.dart';
 import 'package:friend_private/backend/preferences.dart';
@@ -16,41 +16,19 @@ import 'package:instabug_flutter/instabug_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class AuthenticationProvider extends BaseProvider {
-  final FirebaseAuth _auth = FirebaseAuth.instance;
   User? user;
   String? authToken;
 
   bool isSignedIn() {
-    return _auth.currentUser != null;
+    return AuthClient.currentUser != null;
   }
 
   AuthenticationProvider() {
-    _auth.authStateChanges().distinct((p, n) => p?.uid == n?.uid).listen((User? user) {
-      this.user = user;
-      SharedPreferencesUtil().uid = user?.uid ?? '';
-      SharedPreferencesUtil().email = user?.email ?? '';
-      SharedPreferencesUtil().givenName = user?.displayName?.split(' ')[0] ?? '';
-    });
-    _auth.idTokenChanges().distinct((p, n) => p?.uid == n?.uid).listen((User? user) async {
-      if (user == null) {
-        debugPrint('User is currently signed out or the token has been revoked! ${user == null}');
-        SharedPreferencesUtil().authToken = '';
-        authToken = null;
-      } else {
-        debugPrint('User is signed in at ${DateTime.now()} with user ${user.uid}');
-        try {
-          if (SharedPreferencesUtil().authToken.isEmpty ||
-              DateTime.now().millisecondsSinceEpoch > SharedPreferencesUtil().tokenExpirationTime) {
-            authToken = await getIdToken();
-          }
-        } catch (e) {
-          authToken = null;
-          debugPrint('Failed to get token: $e');
-        }
-      }
-      notifyListeners();
-    });
+    _listenAuthingUserChanges();
   }
+
+  void _listenAuthingUserChanges() {}
+
   
   final TextEditingController phoneController = TextEditingController();
   final TextEditingController codeController = TextEditingController();
@@ -59,32 +37,6 @@ class AuthenticationProvider extends BaseProvider {
   void setIsCodeSentState(bool value) {
     isCodeSent = value;
     notifyListeners();
-  }
-
-  Future<void> onGoogleSignIn(Function() onSignIn) async {
-    if (!loading) {
-      setLoadingState(true);
-      await signInWithGoogle();
-      if (isSignedIn()) {
-        _signIn(onSignIn);
-      } else {
-        AppSnackbar.showSnackbarError('Failed to sign in with Google, please try again.');
-      }
-      setLoadingState(false);
-    }
-  }
-
-  Future<void> onAppleSignIn(Function() onSignIn) async {
-    if (!loading) {
-      setLoadingState(true);
-      await signInWithApple();
-      if (isSignedIn()) {
-        _signIn(onSignIn);
-      } else {
-        AppSnackbar.showSnackbarError('Failed to sign in with Apple, please try again.');
-      }
-      setLoadingState(false);
-    }
   }
 
   static Future<void> authingInit() async {
@@ -111,6 +63,7 @@ class AuthenticationProvider extends BaseProvider {
         LoginOptions opt = LoginOptions();
         opt.scope =
             "openid profile username email phone offline_access roles external_id extended_fields tenant_id";
+        AuthClient.currentUser = null;
         AuthResult result = await AuthClient.loginByPhoneCode(
           phone,
           code,
@@ -125,16 +78,8 @@ class AuthenticationProvider extends BaseProvider {
           int expiresIn = result.data["expires_in"] * 1000;
           SharedPreferencesUtil().tokenExpirationTime = nowTime + expiresIn;
           SharedPreferencesUtil().refershToken = result.user!.refreshToken!;
-          
 
-          AuthResult userInfo = await AuthClient.getCurrentUser();
-          debugPrint(userInfo.data.toString());
-          SharedPreferencesUtil().uid = userInfo.data["userId"] ?? "";
-          SharedPreferencesUtil().email = userInfo.user!.email;
-          AuthClient.currentUser = result.user;
-          debugPrint(result.user!.accessToken);
-
-          onSignIn();
+          _signIn(onSignIn);
           codeController.clear();
           setIsCodeSentState(false);
         } else {
@@ -181,10 +126,12 @@ class AuthenticationProvider extends BaseProvider {
   static Future<void> logout() async {
     await AuthClient.logout();
     AuthClient.currentUser = null;
-    SharedPreferencesUtil().refershToken = "";
-    SharedPreferencesUtil().authToken = "";
-    SharedPreferencesUtil().uid = "";
-    SharedPreferencesUtil().tokenExpirationTime = 0;
+    SharedPreferencesUtil().clear();
+    // SharedPreferencesUtil().refershToken = "";
+    // SharedPreferencesUtil().authToken = "";
+    // SharedPreferencesUtil().uid = "";
+    // SharedPreferencesUtil().tokenExpirationTime = 0;
+    // SharedPreferencesUtil().onboardingCompleted = false;
   }
 
   Future<String?> _getIdToken() async {
@@ -203,22 +150,10 @@ class AuthenticationProvider extends BaseProvider {
     }
   }
 
-  // TODO: change to authing
   void _signIn(Function() onSignIn) async {
     String? token = await _getIdToken();
 
     if (token != null) {
-      User user;
-      try {
-        user = FirebaseAuth.instance.currentUser!;
-      } catch (e, stackTrace) {
-        AppSnackbar.showSnackbarError('Unexpected error signing in, Firebase error, please try again.');
-
-        CrashReporting.reportHandledCrash(e, stackTrace, level: NonFatalExceptionLevel.error);
-        return;
-      }
-      String newUid = user.uid;
-      SharedPreferencesUtil().uid = newUid;
       MixpanelManager().identify();
       identifyGleap();
       onSignIn();

@@ -160,34 +160,53 @@ class _OnboardingWrapperState extends State<OnboardingWrapper> with TickerProvid
       onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
         backgroundColor: Theme.of(context).colorScheme.primary,
-        body: Stack(
-          children: [
-            SingleChildScrollView(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: Column(
-                  children: [
-                    DeviceAnimationWidget(animatedBackground: _controller!.index != -1),
-                    if (_controller!.index != 6 && _controller!.index != 7)
-                      Center(
-                        child: Text(
-                          _controller!.index == _controller!.length - 1 ? 'You are all set  🎉' : 'Omi',
-                          style: TextStyle(
-                            color: Colors.grey.shade200,
-                            fontSize: _controller!.index == _controller!.length - 1 ? 28 : 40,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ),
-                    const SizedBox(height: 24),
-                    if (![-1, 5, 6, 7].contains(_controller?.index))
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
-                        child: Text(
-                          'Your personal growth journey with AI that listens to your every word.',
-                          style: TextStyle(color: Colors.grey.shade300, fontSize: 16),
-                          textAlign: TextAlign.center,
-                        ),
+        appBar: AppBar(
+          backgroundColor: Theme.of(context).colorScheme.primary,
+          elevation: 0,
+          actions: [
+            if (_controller!.index == 2 || _controller!.index == 3)
+              TextButton(
+                onPressed: () {
+                  if (_controller!.index == 2) {
+                    _controller!.animateTo(_controller!.index + 1);
+                  } else {
+                    routeToPage(context, const HomePageWrapper(), replace: true);
+                  }
+                },
+                child: Text(
+                  'Skip',
+                  style: TextStyle(color: Colors.grey.shade200),
+                ),
+              ),
+          ],
+        ),
+        body: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: ListView(
+            children: [
+              DeviceAnimationWidget(animatedBackground: _controller!.index != -1),
+              Center(
+                child: Text(
+                  _controller!.index == _controller!.length - 1 ? 'You are all set  🎉' : 'Kepler Star',
+                  style: TextStyle(
+                      color: Colors.grey.shade200,
+                      fontSize: _controller!.index == _controller!.length - 1 ? 28 : 40,
+                      fontWeight: FontWeight.w500),
+                ),
+              ),
+              const SizedBox(height: 24),
+              [-1, 5, 6, 7].contains(_controller?.index)
+                  ? const SizedBox(
+                      height: 0,
+                    )
+                  : Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      child: Text(
+                        _controller!.index == _controller!.length - 1
+                            ? 'Your personal growth journey with AI that listens to your every word.'
+                            : 'Your personal growth journey with AI that listens to your every word.',
+                        style: TextStyle(color: Colors.grey.shade300, fontSize: 16),
+                        textAlign: TextAlign.center,
                       ),
                     SizedBox(
                       height: (_controller!.index == 5 || _controller!.index == 6 || _controller!.index == 7)
