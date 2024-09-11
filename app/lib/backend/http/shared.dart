@@ -66,7 +66,7 @@ Future<http.Response?> makeApiCall({
     }
   } catch (e, stackTrace) {
     debugPrint('HTTP request failed: $e, $stackTrace');
-    AppSnackbar.showSnackbarError('HTTP request failed: $e, $stackTrace');
+    // AppSnackbar.showSnackbarError('HTTP request failed: $e, $stackTrace');
     CrashReporting.reportHandledCrash(
       e,
       stackTrace,
