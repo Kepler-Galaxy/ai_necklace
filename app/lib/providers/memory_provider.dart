@@ -96,7 +96,7 @@ class MemoryProvider extends ChangeNotifier {
 
   Future getMemoriesFromServer() async {
     setLoadingMemories(true);
-    var mem = await getMemories();
+    var mem = await getMemories(limit: 100);
     memories = mem;
     setLoadingMemories(false);
     notifyListeners();
@@ -105,6 +105,7 @@ class MemoryProvider extends ChangeNotifier {
 
   Future getMoreMemoriesFromServer() async {
     if (memories.length % 50 != 0) return;
+    debugPrint('current memory lengh: ${memories.length}, getMoreMemoriesFromServer');
     if (isLoadingMemories) return;
     setLoadingMemories(true);
     var newMemories = await getMemories(offset: memories.length);
