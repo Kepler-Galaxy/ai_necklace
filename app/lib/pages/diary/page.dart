@@ -3,8 +3,12 @@ import 'package:table_calendar/table_calendar.dart';
 import 'package:provider/provider.dart';
 import 'package:friend_private/providers/diary_provider.dart';
 import 'package:friend_private/backend/schema/diary.dart';
+import 'package:friend_private/backend/schema/memory.dart';
 import 'package:friend_private/widgets/extensions/string.dart';
+import 'package:gradient_borders/box_borders/gradient_box_border.dart';
 import 'dart:convert';
+import 'package:friend_private/providers/memory_provider.dart';
+import 'package:friend_private/pages/memory_detail/page.dart';
 
 class DiaryPage extends StatefulWidget {
   const DiaryPage({Key? key}) : super(key: key);
@@ -18,6 +22,7 @@ class _DiaryPageState extends State<DiaryPage> {
   late DateTime _focusedDay;
   late Map<DateTime, List<ServerDiary>> _diaryEvents;
   bool _isLoading = true;
+  List<ServerMemory> _relatedMemories = [];
 
   @override
   void initState() {
@@ -38,17 +43,27 @@ class _DiaryPageState extends State<DiaryPage> {
       setState(() {
         _diaryEvents = diaryProvider.getDiaryEventMap();
         DateTime? closestDate = _findClosestDiaryDate(_focusedDay);
-        _selectedDay = closestDate ??
-            _focusedDay; // Use _focusedDay if closestDate is null
+        _selectedDay = closestDate ?? _focusedDay;
         _isLoading = false;
       });
+      _loadRelatedMemories();
     } catch (e) {
       print("Error loading diaries: $e");
       setState(() {
         _isLoading = false;
-        _diaryEvents =
-            {}; // Ensure _diaryEvents is initialized even if loading fails
+        _diaryEvents = {};
       });
+    }
+  }
+
+  void _loadRelatedMemories() async {
+    final diaries = _diaryEvents[_selectedDay];
+    if (diaries != null && diaries.isNotEmpty) {
+      final diary = diaries.first;
+      final memoryProvider =
+          Provider.of<MemoryProvider>(context, listen: false);
+      _relatedMemories = await memoryProvider.getMemoriesByIds(diary.memoryIds);
+      setState(() {});
     }
   }
 
@@ -79,17 +94,12 @@ class _DiaryPageState extends State<DiaryPage> {
           : Column(
               children: [
                 SizedBox(
-                  height: MediaQuery.of(context).size.height *
-                      0.3, // 30% of screen height
+                  height: MediaQuery.of(context).size.height * 0.3,
                   child: _buildCalendar(),
                 ),
                 Expanded(
-                  child: Center(
-                    // Center the diary content
-                    child: SingleChildScrollView(
-                      // Make the content scrollable
-                      child: _buildDiaryContent(),
-                    ),
+                  child: SingleChildScrollView(
+                    child: _buildDiaryContent(),
                   ),
                 ),
               ],
@@ -111,6 +121,7 @@ class _DiaryPageState extends State<DiaryPage> {
             _selectedDay = selectedDay;
             _focusedDay = focusedDay;
           });
+          _loadRelatedMemories();
         }
       },
       calendarStyle: CalendarStyle(
@@ -159,7 +170,7 @@ class _DiaryPageState extends State<DiaryPage> {
         children: [
           if (diary.footprintJpeg == null || diary.footprintJpeg!.isEmpty)
             Text(
-                'Footprint image not available, try set app locacation permission to always allow to enable this feature',
+                'Footprint image not available, try set app location permission to always allow to enable this feature',
                 style: TextStyle(color: const Color.fromARGB(255, 189, 0, 157)))
           else
             Image.memory(
@@ -168,9 +179,65 @@ class _DiaryPageState extends State<DiaryPage> {
           SizedBox(height: 16),
           Text(diary.content.decodeSting),
           SizedBox(height: 16),
-          Text('Related Memories:'),
-          ...diary.memoryIds.map((id) => Text('- $id')),
+          Text("Number of related memories: " +
+              _relatedMemories.length.toString()),
+          SizedBox(height: 16),
+          Text('Related Memories:',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+          ..._relatedMemories.map((memory) => _buildMemoryItem(memory)),
         ],
+      ),
+    );
+  }
+
+  Widget _buildMemoryItem(ServerMemory memory) {
+    return Container(
+      padding: const EdgeInsets.fromLTRB(16, 8, 8, 0),
+      margin: const EdgeInsets.fromLTRB(18, 0, 18, 0),
+      decoration: const BoxDecoration(
+        color: Colors.black,
+        borderRadius: BorderRadius.all(Radius.circular(16)),
+        border: GradientBoxBorder(
+          gradient: LinearGradient(colors: [
+            Color.fromARGB(127, 208, 208, 208),
+            Color.fromARGB(127, 188, 99, 121),
+            Color.fromARGB(127, 86, 101, 182),
+            Color.fromARGB(127, 126, 190, 236)
+          ]),
+          width: 1,
+        ),
+        shape: BoxShape.rectangle,
+      ),
+      child: ListTile(
+        contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+        title: Text(
+          memory.structured.title,
+          style: TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+            fontSize: 18,
+          ),
+        ),
+        subtitle: Text(
+          memory.structured.category,
+          style: TextStyle(
+            color: Colors.white.withOpacity(0.8),
+            fontSize: 14,
+          ),
+        ),
+        trailing: Icon(
+          Icons.arrow_forward_ios,
+          color: Colors.white,
+        ),
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) =>
+                  MemoryDetailPage(memory: memory, isPopup: true),
+            ),
+          );
+        },
       ),
     );
   }
