@@ -4,6 +4,7 @@ import 'package:friend_private/backend/http/api/diaries.dart';
 
 class DiaryProvider extends ChangeNotifier {
   List<ServerDiary> _diaries = [];
+  Map<DateTime, List<ServerDiary>> diaryEventMap = {};
   bool _isLoadingDiaries = false;
   ServerDiary? _selectedDiary;
 
@@ -18,6 +19,7 @@ class DiaryProvider extends ChangeNotifier {
     try {
       final fetchedDiaries = await DiariesApi.getAllDiaries();
       _diaries = fetchedDiaries;
+      _updateDiaryEventMap();
     } catch (e) {
       print('Error fetching diaries: $e');
     }
@@ -26,10 +28,22 @@ class DiaryProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  void _updateDiaryEventMap() {
+    diaryEventMap = Map.fromIterable(
+      _diaries,
+      key: (diary) => DateTime(
+          diary.createdAt.year, diary.createdAt.month, diary.createdAt.day),
+      value: (diary) => _diaries
+          .where((d) => isSameDay(d.createdAt, diary.createdAt))
+          .toList(),
+    );
+  }
+
   Future<void> deleteDiary(String diaryId) async {
     try {
       await DiariesApi.deleteDiary(diaryId);
       _diaries.removeWhere((d) => d.id == diaryId);
+      _updateDiaryEventMap();
       notifyListeners();
     } catch (e) {
       print('Error deleting diary: $e');
@@ -37,7 +51,7 @@ class DiaryProvider extends ChangeNotifier {
   }
 
   List<ServerDiary> getDiariesForDay(DateTime day) {
-    return _diaries.where((diary) => isSameDay(diary.createdAt, day)).toList();
+    return diaryEventMap[day] ?? [];
   }
 
   void selectDiary(DateTime day) {
@@ -53,13 +67,6 @@ class DiaryProvider extends ChangeNotifier {
   }
 
   Map<DateTime, List<ServerDiary>> getDiaryEventMap() {
-    return Map.fromIterable(
-      _diaries,
-      key: (diary) => DateTime(
-          diary.createdAt.year, diary.createdAt.month, diary.createdAt.day),
-      value: (diary) => _diaries
-          .where((d) => isSameDay(d.createdAt, diary.createdAt))
-          .toList(),
-    );
+    return diaryEventMap;
   }
 }

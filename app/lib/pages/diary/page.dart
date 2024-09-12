@@ -20,7 +20,6 @@ class DiaryPage extends StatefulWidget {
 class _DiaryPageState extends State<DiaryPage> {
   late DateTime _selectedDay;
   late DateTime _focusedDay;
-  late Map<DateTime, List<ServerDiary>> _diaryEvents;
   bool _isLoading = true;
   List<ServerMemory> _relatedMemories = [];
 
@@ -29,7 +28,8 @@ class _DiaryPageState extends State<DiaryPage> {
     super.initState();
     _focusedDay = DateTime.now();
     _selectedDay = _focusedDay;
-    _diaryEvents = {};
+    // TODO(yiqi): don't load diaries and related memories every time the page is loaded.
+    // Use cached data if available.
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _loadDiaries();
     });
@@ -41,9 +41,8 @@ class _DiaryPageState extends State<DiaryPage> {
       final diaryProvider = Provider.of<DiaryProvider>(context, listen: false);
       await diaryProvider.loadAllDiaries();
       setState(() {
-        _diaryEvents = diaryProvider.getDiaryEventMap();
-        DateTime? closestDate = _findClosestDiaryDate(_focusedDay);
-        _selectedDay = closestDate ?? _focusedDay;
+        _selectedDay = _findClosestDiaryDate(DateTime.now()) ?? DateTime.now();
+        _focusedDay = _selectedDay;
         _isLoading = false;
       });
       _loadRelatedMemories();
@@ -51,14 +50,14 @@ class _DiaryPageState extends State<DiaryPage> {
       print("Error loading diaries: $e");
       setState(() {
         _isLoading = false;
-        _diaryEvents = {};
       });
     }
   }
 
   void _loadRelatedMemories() async {
-    final diaries = _diaryEvents[_selectedDay];
-    if (diaries != null && diaries.isNotEmpty) {
+    final diaryProvider = Provider.of<DiaryProvider>(context, listen: false);
+    final diaries = diaryProvider.getDiariesForDay(_selectedDay);
+    if (diaries.isNotEmpty) {
       final diary = diaries.first;
       final memoryProvider =
           Provider.of<MemoryProvider>(context, listen: false);
@@ -68,11 +67,13 @@ class _DiaryPageState extends State<DiaryPage> {
   }
 
   DateTime? _findClosestDiaryDate(DateTime date) {
-    final sortedDates = _diaryEvents.keys.toList()
+    final diaryProvider = Provider.of<DiaryProvider>(context, listen: false);
+    final diaryEventMap = diaryProvider.getDiaryEventMap();
+    final sortedDates = diaryEventMap.keys.toList()
       ..sort((a, b) => a.compareTo(b));
 
     if (sortedDates.isEmpty) {
-      return null; // Return null if there are no diary entries
+      return null;
     }
 
     try {
@@ -82,7 +83,7 @@ class _DiaryPageState extends State<DiaryPage> {
       );
     } catch (e) {
       print("Error finding closest diary date: $e");
-      return null; // Return null if an error occurs
+      return null;
     }
   }
 
@@ -108,15 +109,15 @@ class _DiaryPageState extends State<DiaryPage> {
   }
 
   Widget _buildCalendar() {
+    final diaryProvider = Provider.of<DiaryProvider>(context, listen: false);
     return TableCalendar(
       firstDay: DateTime.utc(2022, 10, 16),
       lastDay: DateTime.utc(2025, 3, 14),
       focusedDay: _focusedDay,
       selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
-      eventLoader: (day) => _diaryEvents[day] ?? [],
+      eventLoader: (day) => diaryProvider.getDiariesForDay(day),
       onDaySelected: (selectedDay, focusedDay) {
-        debugPrint("diaryEvents: ${_diaryEvents.keys}");
-        if (_diaryEvents.containsKey(selectedDay)) {
+        if (diaryProvider.getDiariesForDay(selectedDay).isNotEmpty) {
           setState(() {
             _selectedDay = selectedDay;
             _focusedDay = focusedDay;
@@ -150,8 +151,9 @@ class _DiaryPageState extends State<DiaryPage> {
   }
 
   Widget _buildDiaryContent() {
-    final diaries = _diaryEvents[_selectedDay];
-    if (diaries == null || diaries.isEmpty) {
+    final diaryProvider = Provider.of<DiaryProvider>(context, listen: false);
+    final diaries = diaryProvider.getDiariesForDay(_selectedDay);
+    if (diaries.isEmpty) {
       return Padding(
         padding: const EdgeInsets.all(16.0),
         child: Text(
