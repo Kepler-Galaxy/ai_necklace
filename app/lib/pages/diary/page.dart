@@ -3,6 +3,7 @@ import 'package:table_calendar/table_calendar.dart';
 import 'package:provider/provider.dart';
 import 'package:friend_private/providers/diary_provider.dart';
 import 'package:friend_private/backend/schema/diary.dart';
+import 'package:friend_private/widgets/extensions/string.dart';
 import 'dart:convert';
 
 class DiaryPage extends StatefulWidget {
@@ -104,6 +105,7 @@ class _DiaryPageState extends State<DiaryPage> {
       selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
       eventLoader: (day) => _diaryEvents[day] ?? [],
       onDaySelected: (selectedDay, focusedDay) {
+        debugPrint("diaryEvents: ${_diaryEvents.keys}");
         if (_diaryEvents.containsKey(selectedDay)) {
           setState(() {
             _selectedDay = selectedDay;
@@ -155,10 +157,16 @@ class _DiaryPageState extends State<DiaryPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          if (diary.footprintJpeg != null)
-            Image.memory(base64Decode(diary.footprintJpeg!)),
+          if (diary.footprintJpeg == null || diary.footprintJpeg!.isEmpty)
+            Text(
+                'Footprint image not available, try set app locacation permission to always allow to enable this feature',
+                style: TextStyle(color: const Color.fromARGB(255, 189, 0, 157)))
+          else
+            Image.memory(
+              base64Decode(diary.footprintJpeg!),
+            ),
           SizedBox(height: 16),
-          Text(diary.content),
+          Text(diary.content.decodeSting),
           SizedBox(height: 16),
           Text('Related Memories:'),
           ...diary.memoryIds.map((id) => Text('- $id')),
