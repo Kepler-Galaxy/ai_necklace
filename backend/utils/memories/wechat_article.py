@@ -11,7 +11,6 @@ def fetch_wechat_article_content(url: str) -> str:
     content = soup.find(id='js_content')
     
     if content:
-        print(f"wechat content is {content.get_text(strip=True)}")
         return content.get_text(strip=True)
     else:
         raise Exception("Failed to extract article content")

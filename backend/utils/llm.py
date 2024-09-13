@@ -527,7 +527,6 @@ def summarize_wechat_article(article_content: str) -> Structured:
         'article_content': article_content,
         'format_instructions': parser.get_format_instructions(),
     })
-    print(response)
 
     return Structured(
         title=response.title,

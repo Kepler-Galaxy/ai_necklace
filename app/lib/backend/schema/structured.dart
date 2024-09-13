@@ -8,12 +8,18 @@ class Structured {
   String overview;
   String emoji;
   String category;
+  List<String> keyPoints = [];
 
   List<ActionItem> actionItems = [];
 
   List<Event> events = [];
 
-  Structured(this.title, this.overview, {this.id = 0, this.emoji = '', this.category = 'other'});
+  Structured(this.title, this.overview, {
+    this.id = 0,
+    this.emoji = '',
+    this.category = 'other',
+    this.keyPoints = const [],
+  });
 
   getEmoji() {
     try {
@@ -31,6 +37,7 @@ class Structured {
       json['overview'],
       emoji: json['emoji'],
       category: json['category'],
+      keyPoints: List<String>.from(json['key_points'] ?? []),
     );
     var aItems = json['actionItems'] ?? json['action_items'];
     if (aItems != null) {
@@ -62,7 +69,14 @@ class Structured {
   @override
   String toString() {
     var str = '';
-    str += '${getEmoji()} $title\n\n$overview\n\n'; // ($category)
+    str += '${getEmoji()} $title\n\n$overview\n\n';
+    if (keyPoints.isNotEmpty) {
+      str += 'Key Points:\n';
+      for (var point in keyPoints) {
+        str += '- $point\n';
+      }
+      str += '\n';
+    }
     if (actionItems.isNotEmpty) {
       str += 'Action Items:\n';
       for (var item in actionItems) {
@@ -84,6 +98,7 @@ class Structured {
       'overview': overview,
       'emoji': emoji,
       'category': category,
+      'key_points': keyPoints,
       'actionItems': actionItems.map((item) => item.description).toList(),
       'events': events.map((event) => event.toJson()).toList(),
     };

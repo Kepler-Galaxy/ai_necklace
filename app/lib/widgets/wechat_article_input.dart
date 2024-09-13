@@ -5,7 +5,8 @@ import 'package:provider/provider.dart';
 
 class WeChatArticleInputWidget extends StatefulWidget {
   @override
-  _WeChatArticleInputWidgetState createState() => _WeChatArticleInputWidgetState();
+  _WeChatArticleInputWidgetState createState() =>
+      _WeChatArticleInputWidgetState();
 }
 
 class _WeChatArticleInputWidgetState extends State<WeChatArticleInputWidget> {
@@ -44,7 +45,8 @@ class _WeChatArticleInputWidgetState extends State<WeChatArticleInputWidget> {
               onPressed: _isLoading ? null : _submitLink,
               child: _isLoading
                   ? CircularProgressIndicator()
-                  : Text('Create Memory', style: TextStyle(color: Colors.white)),
+                  : Text('Create Memory',
+                      style: TextStyle(color: Colors.white)),
             ),
           ),
           const SizedBox(height: 16),
@@ -55,20 +57,7 @@ class _WeChatArticleInputWidgetState extends State<WeChatArticleInputWidget> {
 
   void _submitLink() async {
     Navigator.of(context).pop();
-    Provider.of<MemoryProvider>(context, listen: false).setCreatingWeChatMemory(true);
-
-    try {
-      final memory = await createMemoryFromWeChatArticle(_linkController.text);
-      Provider.of<MemoryProvider>(context, listen: false).addMemory(memory);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Memory created successfully')),
-      );
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to create memory: $e')),
-      );
-    } finally {
-      Provider.of<MemoryProvider>(context, listen: false).setCreatingWeChatMemory(false);
-    }
+    await Provider.of<MemoryProvider>(context, listen: false)
+        .addWeChatMemory(_linkController.text);
   }
 }

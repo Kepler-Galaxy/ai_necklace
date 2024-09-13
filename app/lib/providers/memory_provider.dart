@@ -195,4 +195,17 @@ class MemoryProvider extends ChangeNotifier {
     debugPrint('SharedPreferencesUtil().failedMemories: ${SharedPreferencesUtil().failedMemories.length}');
     notifyListeners();
   }
+
+  Future<void> addWeChatMemory(String articleLink) async {
+    setCreatingWeChatMemory(true);
+    try {
+      final memory = await createMemoryFromWeChatArticle(articleLink);
+      addMemory(memory);
+      notifyListeners();
+    } catch (e) {
+      throw Exception('Failed to create memory: $e');
+    } finally {
+      setCreatingWeChatMemory(false);
+    }
+  }
 }
