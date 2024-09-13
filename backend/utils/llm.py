@@ -549,5 +549,41 @@ def obtain_diary(user_name: str, user_facts: List[Fact], topic_to_memories: dict
     ${topic_conversations}
     ```
     """.replace('    ', '').strip()
-    print(prompt)
     return llm.invoke(prompt).content
+
+# **************************************************
+# ************* WECHAT ARTICLE SUMMARIZATION ********
+# **************************************************
+def summarize_wechat_article(article_content: str) -> Structured:
+    prompt = ChatPromptTemplate.from_messages([(
+        'system',
+        '''You are an expert content analyzer and summarizer. Your task is to analyze the given WeChat article and provide a structured summary.
+
+        Please provide the following:
+        1. For the title, use a concise and engaging title that captures the essence of the article.
+        2. For the overview, use 3-5 sentences to summarize the main points of the article.
+        3. For the emoji, use a beautiful emoji to represent it is from a Wechat article.
+        4. For the category, classify the conversation into one of the available categories.
+        5. For the keypoints, extract a list of 3-5 original sentences needs to be highlighted from the article, and provide a brief explanation for each.
+            
+        Article content: ```{article_content}```
+
+        You should leave the events and action items as empty lists.
+        {format_instructions}'''.replace('    ', '').strip()
+    )])
+    chain = prompt | llm | parser
+
+    response = chain.invoke({
+        'article_content': article_content,
+        'format_instructions': parser.get_format_instructions(),
+    })
+
+    return Structured(
+        title=response.title,
+        overview=response.overview,
+        emoji=response.emoji,
+        category=response.category,
+        key_points=response.key_points,
+        action_items=[],
+        events=[]
+    )

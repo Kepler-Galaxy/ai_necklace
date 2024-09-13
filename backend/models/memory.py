@@ -62,6 +62,8 @@ class Event(BaseModel):
     created: bool = False
 
 
+# TODO(yiqi): Structured is a struct for all kinds of memories. Not limited to conversations.
+# refactor it by moving conservation related fields to a new struct.
 class Structured(BaseModel):
     title: str = Field(description="A title/name for this conversation", default='')
     overview: str = Field(
@@ -70,6 +72,7 @@ class Structured(BaseModel):
     )
     emoji: str = Field(description="An emoji to represent the memory", default='🧠')
     category: CategoryEnum = Field(description="A category for this memory", default=CategoryEnum.other)
+    key_points: List[str] = Field(description="A list of key points", default=[])
     action_items: List[ActionItem] = Field(description="A list of action items from the conversation", default=[])
     events: List[Event] = Field(
         description="A list of events extracted from the conversation, that the user must have on his calendar.",
@@ -105,6 +108,7 @@ class MemorySource(str, Enum):
     openglass = 'openglass'
     screenpipe = 'screenpipe'
     workflow = 'workflow'
+    wechat_article = 'wechat_article'
 
 
 class MemoryVisibility(str, Enum):
@@ -141,7 +145,7 @@ class Memory(BaseModel):
     language: Optional[str] = None  # applies only to Friend # TODO: once released migrate db to default 'en'
 
     structured: Structured
-    transcript_segments: List[TranscriptSegment] = []
+    transcript_segments: Optional[List[TranscriptSegment]] = []
     geolocation: Optional[Geolocation] = None
     photos: List[MemoryPhoto] = []
 
@@ -181,14 +185,22 @@ class Memory(BaseModel):
         # Warn: missing transcript for workflow source
         return TranscriptSegment.segments_as_string(self.transcript_segments, include_timestamps=include_timestamps)
 
+class ExternalLink(BaseModel):
+    link: str
+    metadata: Dict
 
+    @staticmethod
+    def from_wechat_article(article_link: str):
+        return ExternalLink(link=article_link, metadata={"source": "wechat_article"})
+    
 class CreateMemory(BaseModel):
     started_at: datetime
     finished_at: datetime
-    transcript_segments: List[TranscriptSegment]
+    transcript_segments: Optional[List[TranscriptSegment]] = None
     geolocation: Optional[Geolocation] = None
 
     photos: List[MemoryPhoto] = []
+    external_links: List[ExternalLink] = None
 
     source: MemorySource = MemorySource.friend
     language: Optional[str] = None

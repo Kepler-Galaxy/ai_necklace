@@ -9,6 +9,7 @@ import 'package:visibility_detector/visibility_detector.dart';
 
 import 'widgets/empty_memories.dart';
 import 'widgets/memory_list_item.dart';
+import 'package:friend_private/widgets/wechat_article_input.dart';
 
 class MemoriesPage extends StatefulWidget {
   const MemoriesPage({super.key});
@@ -117,4 +118,17 @@ class _MemoriesPageState extends State<MemoriesPage> with AutomaticKeepAliveClie
       );
     });
   }
+}
+
+void _showWeChatArticleInput(BuildContext context) {
+  showModalBottomSheet(
+    context: context,
+    isScrollControlled: true,
+    shape: const RoundedRectangleBorder(
+      borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+    ),
+    builder: (BuildContext context) {
+      return WeChatArticleInputWidget();
+    },
+  );
 }

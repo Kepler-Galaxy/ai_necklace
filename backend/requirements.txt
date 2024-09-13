@@ -245,3 +245,4 @@ pyogg @ git+https://github.com/TeamPyOgg/PyOgg@6871a4f
 loguru==0.7.2
 authing==5.1.0
 cos-python-sdk-v5==1.9.31
+beautifulsoup4==4.12.3

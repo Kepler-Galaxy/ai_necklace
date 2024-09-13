@@ -15,6 +15,8 @@ from utils.other.cos_storage import get_memory_recording_if_exists, \
     delete_additional_profile_audio, delete_speech_sample_for_people, upload_memory_recording
 from utils.plugins import trigger_external_integrations
 from utils.string import words_count
+from datetime import datetime
+from fastapi import Body
 
 router = APIRouter()
 
@@ -288,3 +290,32 @@ async def upload_memory_audio_recording(
     except Exception as e:
         logger.error(f"Error uploading audio file for memory {memory_id}: {str(e)}")
         raise HTTPException(status_code=500, detail="Failed to upload audio file")
+
+@router.post("/v1/memories/wechat-article", response_model=Memory, tags=['memories'])
+def create_memory_from_wechat_article(
+    article_link: str = Body(..., embed=True),
+    uid: str = Depends(auth.get_current_user_uid)
+):
+    """
+    Create a memory from a WeChat article link.
+    :param article_link: The URL of the WeChat article.
+    :param uid: User ID.
+    :return: The newly created memory.
+    """
+    logger.info(uid, "create_memory_from_wechat_article", article_link)
+
+    try:
+        create_memory = CreateMemory(
+            started_at=datetime.utcnow(),
+            finished_at=datetime.utcnow(),
+            external_links=[ExternalLink.from_wechat_article(article_link)],
+            source=MemorySource.wechat_article,
+            language="zh",  # It only affects the conversation, the CreateMemory and Structured should be refactored to separate all sources completely.
+        )
+
+        memory = process_memory(uid, "zh", create_memory, force_process=True)
+        return memory
+
+    except Exception as e:
+        logger.error(uid, "Failed to create memory from WeChat article", str(e))
+        raise HTTPException(status_code=500, detail=f"Failed to create memory: {str(e)}")
