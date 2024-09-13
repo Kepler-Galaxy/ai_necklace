@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:provider/provider.dart';
 import 'package:friend_private/providers/diary_provider.dart';
-import 'package:friend_private/backend/schema/diary.dart';
 import 'package:friend_private/backend/schema/memory.dart';
 import 'package:friend_private/widgets/extensions/string.dart';
 import 'package:gradient_borders/box_borders/gradient_box_border.dart';
