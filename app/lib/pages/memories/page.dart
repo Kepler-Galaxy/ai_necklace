@@ -10,6 +10,7 @@ import 'package:visibility_detector/visibility_detector.dart';
 
 import 'widgets/empty_memories.dart';
 import 'widgets/memory_list_item.dart';
+import 'package:friend_private/widgets/wechat_article_input.dart';
 
 class MemoriesPage extends StatefulWidget {
   const MemoriesPage({
@@ -111,7 +112,38 @@ class _MemoriesPageState extends State<MemoriesPage> with AutomaticKeepAliveClie
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const SizedBox(width: 1),
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: GestureDetector(
+                            onTap: memoryProvider.isCreatingWeChatMemory ? null : () {
+                              _showWeChatArticleInput(context);
+                            },
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                Text(
+                                  memoryProvider.isCreatingWeChatMemory ? 'Creating WeChat Memory' : 'Add WeChat Article',
+                                  style: TextStyle(color: Colors.white, fontSize: 16),
+                                ),
+                                const SizedBox(width: 8),
+                                memoryProvider.isCreatingWeChatMemory
+                                    ? SizedBox(
+                                        width: 20,
+                                        height: 20,
+                                        child: CircularProgressIndicator(
+                                          valueColor: AlwaysStoppedAnimation<Color>(Colors.green),
+                                          strokeWidth: 2,
+                                        ),
+                                      )
+                                    : const Icon(
+                                        Icons.add,
+                                        color: Colors.white,
+                                      ),
+                              ],
+                            ),
+                          ),
+                        ),
                         Padding(
                           padding: const EdgeInsets.all(8.0),
                           child: GestureDetector(
@@ -210,4 +242,17 @@ class _MemoriesPageState extends State<MemoriesPage> with AutomaticKeepAliveClie
       );
     });
   }
+}
+
+void _showWeChatArticleInput(BuildContext context) {
+  showModalBottomSheet(
+    context: context,
+    isScrollControlled: true,
+    shape: const RoundedRectangleBorder(
+      borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+    ),
+    builder: (BuildContext context) {
+      return WeChatArticleInputWidget();
+    },
+  );
 }

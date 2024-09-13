@@ -275,3 +275,27 @@ Future<bool> setMemoryEventsState(
   debugPrint('setMemoryEventsState: ${response.body}');
   return response.statusCode == 200;
 }
+
+Future<ServerMemory> createMemoryFromWeChatArticle(String articleLink) async {
+  var response = await makeApiCall(
+    url: '${Env.apiBaseUrl}v1/memories/wechat-article',
+    headers: {},
+    method: 'POST',
+    body: jsonEncode(<String, String>{
+      'article_link': articleLink,
+    }),
+  );
+
+  if (response == null) {
+    throw Exception(
+        'Failed to create memory from WeChat article, this should not happen');
+  }
+
+  if (response.statusCode == 200) {
+    final jsonResponse = json.decode(response.body);
+    return ServerMemory.fromJson(jsonResponse);
+  } else {
+    throw Exception(
+        'Failed to create memory from WeChat article: ${response.body}');
+  }
+}

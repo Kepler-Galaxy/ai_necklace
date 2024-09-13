@@ -20,6 +20,13 @@ class MemoryProvider extends ChangeNotifier {
 
   String previousQuery = '';
 
+  bool _isCreatingWeChatMemory = false;
+  bool get isCreatingWeChatMemory => _isCreatingWeChatMemory;
+  void setCreatingWeChatMemory(bool value) {
+    _isCreatingWeChatMemory = value;
+    notifyListeners();
+  }
+
   void populateMemoriesWithDates() {
     memoriesWithDates = [];
     for (var i = 0; i < filteredMemories.length; i++) {

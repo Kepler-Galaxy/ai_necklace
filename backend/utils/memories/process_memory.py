@@ -23,7 +23,8 @@ from utils.notifications import send_notification
 from utils.other.hume import get_hume, HumeJobCallbackModel, HumeJobModelPredictionResponseModel
 from utils.plugins import get_plugins_data
 from utils.retrieval.rag import retrieve_rag_memory_context
-
+from utils.llm import summarize_wechat_article
+from utils.memories.wechat_article import fetch_wechat_article_content
 
 def _get_structured(
         uid: str, language_code: str, memory: Union[Memory, CreateMemory, WorkflowCreateMemory],
@@ -46,6 +47,12 @@ def _get_structured(
         # from OpenGlass
         if memory.photos:
             return summarize_open_glass(memory.photos), False
+        
+        # from third party links, now we assume all comes from WeChat article
+        if memory.external_links:
+            article_content = fetch_wechat_article_content(memory.external_links[0].link)
+            logger.info(f"article_content: {article_content}")
+            return summarize_wechat_article(article_content), False
 
         # from Friend
         if force_process:
@@ -133,11 +140,13 @@ def process_memory(uid: str, language_code: str, memory: Union[Memory, CreateMem
     if not discarded:
         vector = generate_embedding(str(structured))
         upsert_vector(uid, memory, vector)
-        _trigger_plugins(uid, memory)
-        threading.Thread(target=_extract_facts, args=(uid, memory)).start()
+        # don't run plugins and extract facts for wechat article
+        if (memory.source != MemorySource.wechat_article):
+            _trigger_plugins(uid, memory)
+            threading.Thread(target=_extract_facts, args=(uid, memory)).start()
 
     memories_db.upsert_memory(uid, memory.dict())
-    logger.info('process_memory memory.id=', memory.id)
+    logger.info(f"process_memory memory.id={memory.id}")
 
     return memory
 
