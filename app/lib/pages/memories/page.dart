@@ -123,7 +123,7 @@ class _MemoriesPageState extends State<MemoriesPage> with AutomaticKeepAliveClie
                               mainAxisAlignment: MainAxisAlignment.start,
                               children: [
                                 Text(
-                                  memoryProvider.isCreatingWeChatMemory ? 'Creating WeChat Memory' : 'Add WeChat Article',
+                                  memoryProvider.isCreatingWeChatMemory ? 'Creating Memory' : 'Add WeChat Article',
                                   style: TextStyle(color: Colors.white, fontSize: 16),
                                 ),
                                 const SizedBox(width: 8),
