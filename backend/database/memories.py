@@ -32,40 +32,16 @@ def get_memory(uid, memory_id):
 
 
 def get_memories(uid: str, limit: int = 100, offset: int = 0, include_discarded: bool = False):
+    # since the UI supports loading more memories, we don't need to filter out discarded memories now.
     memories_ref = (
         db.collection('users').document(uid).collection('memories')
         .where(filter=FieldFilter('deleted', '==', False))
     )
     if not include_discarded:
         memories_ref = memories_ref.where(filter=FieldFilter('discarded', '==', False))
-        memories_ref = memories_ref.order_by('created_at', direction=firestore.Query.DESCENDING)
-        memories_ref = memories_ref.limit(limit).offset(offset)
-        return [doc.to_dict() for doc in memories_ref.stream()]
-
-    else:
-        # Calculate the number of each type of memory to retrieve
-        non_discarded_limit = limit // 2
-
-        # Get non-discarded memories
-        non_discarded_ref = memories_ref.where(filter=FieldFilter('deleted', '==', False))
-        non_discarded_ref = non_discarded_ref.where(filter=FieldFilter('discarded', '==', False))
-        non_discarded_ref = non_discarded_ref.order_by('created_at', direction=firestore.Query.DESCENDING)
-        non_discarded_ref = non_discarded_ref.limit(non_discarded_limit).offset(offset)
-        non_discarded_memories = [doc.to_dict() for doc in non_discarded_ref.stream()]
-
-        # Get discarded memories
-        discarded_limit = limit - len(non_discarded_memories)
-        discarded_ref = memories_ref.where(filter=FieldFilter('deleted', '==', False))
-        discarded_ref = discarded_ref.where(filter=FieldFilter('discarded', '==', True))
-        discarded_ref = discarded_ref.order_by('created_at', direction=firestore.Query.DESCENDING)
-        discarded_ref = discarded_ref.limit(discarded_limit).offset(offset)
-        discarded_memories = [doc.to_dict() for doc in discarded_ref.stream()]
-
-        # Combine and sort the lists by 'created_at' in descending order
-        all_memories = non_discarded_memories + discarded_memories
-        all_memories_sorted = sorted(all_memories, key=lambda x: x['created_at'], reverse=True)
-
-        return all_memories_sorted
+    memories_ref = memories_ref.order_by('created_at', direction=firestore.Query.DESCENDING)
+    memories_ref = memories_ref.offset(offset).limit(limit)
+    return [doc.to_dict() for doc in memories_ref.stream()]
 
 
 def update_memory(uid: str, memory_id: str, memoy_data: dict):

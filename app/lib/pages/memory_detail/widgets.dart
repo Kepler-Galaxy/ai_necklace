@@ -19,6 +19,7 @@ import 'package:friend_private/widgets/expandable_text.dart';
 import 'package:gradient_borders/box_borders/gradient_box_border.dart';
 import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
+import 'dart:convert';
 
 import 'maps_util.dart';
 
@@ -74,6 +75,35 @@ List<Widget> getSummaryWidgets(
         ? const SizedBox.shrink()
         : _getEditTextField(memory, overviewController, editingOverview, focusOverviewField),
     memory.discarded ? const SizedBox.shrink() : const SizedBox(height: 40),
+    if (structured.keyPoints.isNotEmpty) ...[
+      const SizedBox(height: 24),
+      Text('Key Points', style: Theme.of(context).textTheme.titleLarge!.copyWith(fontSize: 26)),
+      const SizedBox(height: 8),
+      ...structured.keyPoints.map((keyPoint) => Padding(
+        padding: const EdgeInsets.only(bottom: 8),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(top: 4.0, right: 8.0),
+              child: Icon(Icons.circle, size: 8, color: Colors.grey.shade300),
+            ),
+            Expanded(
+              child: Text(
+                utf8.decode(keyPoint.codeUnits),
+                style: TextStyle(
+                  color: Colors.grey.shade300,
+                  fontSize: 16,
+                  height: 1.5,
+                  letterSpacing: 0.5,
+                ),
+              ),
+            ),
+          ],
+        ),
+      )),
+      const SizedBox(height: 16),
+    ],
     structured.actionItems.isNotEmpty
         ? Row(
             crossAxisAlignment: CrossAxisAlignment.center,
