@@ -133,6 +133,11 @@ class MemoryPostProcessing(BaseModel):
     model: PostProcessingModel
 
 
+class MemoryConnection(BaseModel):
+    memory_id: str
+    explanation: str
+
+
 class Memory(BaseModel):
     id: str
     created_at: datetime
@@ -159,6 +164,8 @@ class Memory(BaseModel):
 
     processing_memory_id: Optional[str] = None
 
+    connections: List[MemoryConnection] = []
+
     @staticmethod
     def memories_to_string(memories: List['Memory'], include_action_items = True) -> str:
         result = []
@@ -175,6 +182,12 @@ class Memory(BaseModel):
                 memory_str += "Action Items:\n"
                 for item in memory.structured.action_items:
                     memory_str += f"- {item.description}\n"
+
+            if memory.connections:
+                memory_str += "Connections:\n"
+                for connection in memory.connections:
+                    memory_str += f"- {connection.memory_id}: {connection.explanation}\n"
+
             result.append(memory_str.strip())
 
         return "\n\n---------------------\n\n".join(result).strip()
