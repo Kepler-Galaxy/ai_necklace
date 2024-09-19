@@ -10,6 +10,7 @@ import 'package:instabug_flutter/instabug_flutter.dart';
 import 'package:tuple/tuple.dart';
 import 'package:friend_private/backend/http/shared.dart';
 import 'package:friend_private/env/env.dart';
+import 'package:friend_private/backend/schema/memory_connection.dart';
 
 class MemoryProvider extends ChangeNotifier {
   List<ServerMemory> memories = [];
@@ -27,6 +28,43 @@ class MemoryProvider extends ChangeNotifier {
   void setCreatingWeChatMemory(bool value) {
     _isCreatingWeChatMemory = value;
     notifyListeners();
+  }
+
+  Future<ServerMemory?> getMemoryById(String id) async {
+    try {
+      final response = await makeApiCall(
+        url: '${Env.apiBaseUrl}v1/memories/$id',
+        method: 'GET',
+        headers: {},
+        body: '',
+      );
+      if (response != null && response.statusCode == 200) {
+        return ServerMemory.fromJson(json.decode(response.body));
+      }
+    } catch (e) {
+      print("Error fetching memory: $e");
+    }
+    return null;
+  }
+
+  // TODO(yiqi): use batch request
+  Future<List<ServerMemory>> getMemoriesByIds(List<String> memoryIds) async {
+    List<ServerMemory> memories = [];
+    for (String id in memoryIds) {
+      ServerMemory? memory = await getMemoryById(id);
+      if (memory != null) {
+        memories.add(memory);
+      }
+    }
+    return memories;
+  }
+
+  Future<List<MemoryConnectionNode>> getMemoryChains(
+      List<String> memoryIds, int depth) async {
+    final response = await getMemoryConnectionsGraph(memoryIds, depth);
+    return (response['forest'] as List)
+        .map((tree) => MemoryConnectionNode.fromJson(tree))
+        .toList();
   }
 
   void populateMemoriesWithDates() {
@@ -229,32 +267,5 @@ class MemoryProvider extends ChangeNotifier {
     } finally {
       setCreatingWeChatMemory(false);
     }
-  // TODO(yiqi): use batch request
-  Future<List<ServerMemory>> getMemoriesByIds(List<String> memoryIds) async {
-    List<ServerMemory> memories = [];
-    for (String id in memoryIds) {
-      ServerMemory? memory = await getMemoryById(id);
-      if (memory != null) {
-        memories.add(memory);
-      }
-    }
-    return memories;
-  }
-
-  Future<ServerMemory?> getMemoryById(String id) async {
-    try {
-      final response = await makeApiCall(
-        url: '${Env.apiBaseUrl}v1/memories/$id',
-        method: 'GET',
-        headers: {},
-        body: '',
-      );
-      if (response != null && response.statusCode == 200) {
-        return ServerMemory.fromJson(json.decode(response.body));
-      }
-    } catch (e) {
-      print("Error fetching memory: $e");
-    }
-    return null;
   }
 }

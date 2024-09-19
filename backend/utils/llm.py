@@ -566,6 +566,5 @@ def explain_relationship(memory: Memory, related_memory: Memory) -> ExplainRelat
         'memory1_str': str(memory.structured), 
         'memory2_str': str(related_memory.structured), 
         'format_instructions': parser.get_format_instructions()})
-    logger.info(response) 
 
     return response

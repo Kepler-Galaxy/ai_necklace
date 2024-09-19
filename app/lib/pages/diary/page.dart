@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:provider/provider.dart';
@@ -5,9 +6,12 @@ import 'package:friend_private/providers/diary_provider.dart';
 import 'package:friend_private/backend/schema/memory.dart';
 import 'package:friend_private/widgets/extensions/string.dart';
 import 'package:gradient_borders/box_borders/gradient_box_border.dart';
-import 'dart:convert';
 import 'package:friend_private/providers/memory_provider.dart';
 import 'package:friend_private/pages/memory_detail/page.dart';
+import 'package:friend_private/pages/diary/memory_chains_view.dart';
+import 'package:friend_private/backend/http/api/memories.dart';
+import 'package:friend_private/backend/schema/memory_connection.dart';
+import 'package:friend_private/utils/other/temp.dart';
 
 class DiaryPage extends StatefulWidget {
   const DiaryPage({Key? key}) : super(key: key);
@@ -17,10 +21,12 @@ class DiaryPage extends StatefulWidget {
 }
 
 class _DiaryPageState extends State<DiaryPage> {
+  bool _isCalendarExpanded = false;
   late DateTime _selectedDay;
   late DateTime _focusedDay;
   bool _isLoading = true;
-  List<ServerMemory> _relatedMemories = [];
+  List<ServerMemory> _selectedDayMemories = [];
+  List<MemoryConnectionNode> _memoryChainForest = [];
 
   @override
   void initState() {
@@ -29,8 +35,11 @@ class _DiaryPageState extends State<DiaryPage> {
     _selectedDay = _focusedDay;
     // TODO(yiqi): don't load diaries and related memories every time the page is loaded.
     // Use cached data if available.
+    // _loadDiaries();
+    // _loadMemoryChainData();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _loadDiaries();
+      _loadMemoryChainData();
     });
   }
 
@@ -44,7 +53,7 @@ class _DiaryPageState extends State<DiaryPage> {
         _focusedDay = _selectedDay;
         _isLoading = false;
       });
-      _loadRelatedMemories();
+      _loadMemoriesForSelectedDay();
     } catch (e) {
       print("Error loading diaries: $e");
       setState(() {
@@ -53,16 +62,60 @@ class _DiaryPageState extends State<DiaryPage> {
     }
   }
 
-  void _loadRelatedMemories() async {
+  void _loadMemoriesForSelectedDay() async {
+    _selectedDayMemories = [];
     final diaryProvider = Provider.of<DiaryProvider>(context, listen: false);
+    // TODO(yiqi): Bug due to timezone issues.
+    debugPrint('Loading memories for selected day: $_selectedDay');
     final diaries = diaryProvider.getDiariesForDay(_selectedDay);
     if (diaries.isNotEmpty) {
+      debugPrint('diary is not empty');
       final diary = diaries.first;
       final memoryProvider =
           Provider.of<MemoryProvider>(context, listen: false);
-      _relatedMemories = await memoryProvider.getMemoriesByIds(diary.memoryIds);
-      setState(() {});
+      List<ServerMemory> selectedDayMemories =
+          await memoryProvider.getMemoriesByIds(diary.memoryIds);
+      setState(() {
+        _selectedDayMemories = selectedDayMemories;
+      });
     }
+  }
+
+  Future<void> _loadMemoryChainData() async {
+    _memoryChainForest = [];
+    if (_selectedDayMemories.isEmpty) {
+      return;
+    }
+
+    try {
+      final response = await getMemoryConnectionsGraph(
+        _selectedDayMemories.map((m) => m.id).toList(),
+        3, // Number of levels
+      );
+
+      setState(() {
+        debugPrint('memory chain forest is not empty');
+        _memoryChainForest = (response['forest'] as List)
+            .map((tree) => _parseMemoryConnectionNode(tree))
+            .toList();
+      });
+    } catch (e) {
+      debugPrint('Error loading memory connections graph: $e');
+      setState(() {
+        _memoryChainForest = [];
+      });
+    }
+  }
+
+  MemoryConnectionNode _parseMemoryConnectionNode(Map<String, dynamic> node) {
+    return MemoryConnectionNode(
+      memoryId: node['memory_id'],
+      explanation: node['explanation'],
+      children: (node['children'] as List?)
+              ?.map((child) => _parseMemoryConnectionNode(child))
+              .toList() ??
+          [],
+    );
   }
 
   DateTime? _findClosestDiaryDate(DateTime date) {
@@ -89,63 +142,118 @@ class _DiaryPageState extends State<DiaryPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: _isLoading
-          ? Center(child: CircularProgressIndicator())
-          : Column(
-              children: [
-                SizedBox(
-                  height: MediaQuery.of(context).size.height * 0.3,
-                  child: _buildCalendar(),
-                ),
-                Expanded(
-                  child: SingleChildScrollView(
-                    child: _buildDiaryContent(),
+      backgroundColor: Colors.black,
+      body: Column(
+        children: [
+          SizedBox(
+            child: _buildCalendar(),
+          ),
+          Expanded(
+            child: _isLoading
+                ? Center(
+                    child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    color: Colors.white,
+                  ))
+                : SingleChildScrollView(
+                    child: Column(
+                      children: [
+                        MemoryChainsView(forest: _memoryChainForest),
+                        _buildDiaryContent(),
+                        SizedBox(height: 16),
+                      ],
+                    ),
                   ),
-                ),
-              ],
-            ),
+          ),
+        ],
+      ),
     );
   }
 
   Widget _buildCalendar() {
     final diaryProvider = Provider.of<DiaryProvider>(context, listen: false);
-    return TableCalendar(
-      firstDay: DateTime.utc(2022, 10, 16),
-      lastDay: DateTime.utc(2025, 3, 14),
-      focusedDay: _focusedDay,
-      selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
-      eventLoader: (day) => diaryProvider.getDiariesForDay(day),
-      onDaySelected: (selectedDay, focusedDay) {
-        if (diaryProvider.getDiariesForDay(selectedDay).isNotEmpty) {
-          setState(() {
-            _selectedDay = selectedDay;
-            _focusedDay = focusedDay;
-          });
-          _loadRelatedMemories();
-        }
-      },
-      calendarStyle: CalendarStyle(
-        markersMaxCount: 1,
-        markerDecoration: BoxDecoration(
-          color: Colors.blue,
-          shape: BoxShape.circle,
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                dateTimeFormat('MMM d, yyyy', _selectedDay),
+                style: TextStyle(color: Colors.white, fontSize: 16),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  setState(() {
+                    _isCalendarExpanded = !_isCalendarExpanded;
+                  });
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.transparent,
+                  elevation: 0,
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      'Select Another Day',
+                      style: TextStyle(color: Colors.white, fontSize: 16),
+                    ),
+                    SizedBox(width: 4),
+                    Icon(Icons.event, color: Colors.white, size: 20),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
-        cellMargin: EdgeInsets.only(left: 4.0, right: 4.0),
-        cellPadding: EdgeInsets.zero,
-        tablePadding: EdgeInsets.symmetric(horizontal: 50),
-      ),
-      daysOfWeekStyle: DaysOfWeekStyle(
-        weekdayStyle: TextStyle(fontSize: 10),
-        weekendStyle: TextStyle(fontSize: 10),
-      ),
-      headerStyle: HeaderStyle(
-        formatButtonVisible: false, // Hide the format button
-        titleTextStyle: TextStyle(fontSize: 16),
-        leftChevronIcon: Icon(Icons.chevron_left, size: 20),
-        rightChevronIcon: Icon(Icons.chevron_right, size: 20),
-      ),
-      rowHeight: 25,
-      daysOfWeekHeight: 20,
+        if (_isCalendarExpanded)
+          TableCalendar(
+            firstDay: DateTime.utc(2022, 10, 16),
+            lastDay: DateTime.utc(2025, 3, 14),
+            focusedDay: _focusedDay,
+            selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
+            eventLoader: (day) => diaryProvider.getDiariesForDay(day),
+            onDaySelected: (selectedDay, focusedDay) {
+              setState(() {
+                _selectedDay = selectedDay;
+                _focusedDay = focusedDay;
+                _isCalendarExpanded =
+                    false; // Collapse the calendar when a day is selected
+              });
+              _loadMemoriesForSelectedDay();
+              _loadMemoryChainData();
+            },
+            calendarStyle: CalendarStyle(
+              markersMaxCount: 1,
+              markerDecoration: BoxDecoration(
+                color: Colors.blue,
+                shape: BoxShape.circle,
+              ),
+              cellMargin: EdgeInsets.only(left: 4.0, right: 4.0),
+              cellPadding: EdgeInsets.zero,
+              tablePadding: EdgeInsets.symmetric(horizontal: 50),
+              markerSize: 8,
+              markerMargin: EdgeInsets.symmetric(horizontal: 1),
+              markersAnchor: 1,
+            ),
+            daysOfWeekStyle: DaysOfWeekStyle(
+              weekdayStyle: TextStyle(fontSize: 10, color: Colors.white),
+              weekendStyle: TextStyle(fontSize: 10, color: Colors.white),
+            ),
+            headerStyle: HeaderStyle(
+              formatButtonVisible: false,
+              titleTextStyle: TextStyle(fontSize: 16, color: Colors.white),
+              leftChevronIcon:
+                  Icon(Icons.chevron_left, size: 20, color: Colors.white),
+              rightChevronIcon:
+                  Icon(Icons.chevron_right, size: 20, color: Colors.white),
+            ),
+            rowHeight: 25,
+            daysOfWeekHeight: 20,
+          ),
+      ],
     );
   }
 
@@ -180,12 +288,9 @@ class _DiaryPageState extends State<DiaryPage> {
           SizedBox(height: 16),
           Text(diary.content.decodeSting),
           SizedBox(height: 16),
-          Text("Number of related memories: " +
-              _relatedMemories.length.toString()),
-          SizedBox(height: 16),
           Text('Related Memories:',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-          ..._relatedMemories.map((memory) => _buildMemoryItem(memory)),
+          ..._selectedDayMemories.map((memory) => _buildMemoryItem(memory)),
         ],
       ),
     );

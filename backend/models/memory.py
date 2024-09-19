@@ -221,6 +221,17 @@ class CreateMemory(BaseModel):
     def get_transcript(self, include_timestamps: bool) -> str:
         return TranscriptSegment.segments_as_string(self.transcript_segments, include_timestamps=include_timestamps)
 
+class MemoryConnectionsGraphRequest(BaseModel):
+    memory_ids: List[str]
+    memory_connection_depth: int = Field(ge=1, le=5)  # Limit depth to prevent excessive recursion
+
+class MemoryConnectionNode(BaseModel):
+    memory_id: str
+    children: List['MemoryConnectionNode'] = []
+    explanation: Optional[str] = None
+
+class MemoryConnectionsGraphResponse(BaseModel):
+    forest: List[MemoryConnectionNode]
 
 class WorkflowMemorySource(str, Enum):
     audio = 'audio_transcript'

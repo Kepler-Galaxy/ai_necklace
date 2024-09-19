@@ -4,7 +4,6 @@ import database.memories as memories_db
 from database.vector_db import query_vectors
 from utils.llm import generate_embedding, explain_relationship
 
-
 def get_similar_memories(memory: Memory, uid:str, top_k: int = 5) -> List[str]:
     """
     Retrieves the IDs of the top_k most similar memories to the given memory.
