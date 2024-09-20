@@ -24,7 +24,13 @@ def patching(record):
 
 
 # load env
-load_dotenv()
+if(os.environ.get('ENV') == 'dev' or os.environ.get('ENV') == ''):
+    print('loding dev environments from .env.dev')
+    print(os.environ.get('SERVICE_ACCOUNT_JSON'))
+    load_dotenv('.env.dev')
+else:
+    print('loding prod environments from .env')
+    load_dotenv()
 
 from modal import Image, App, asgi_app, Secret, Cron
 from routers import workflow, chat, firmware, screenpipe, plugins, memories, transcribe, notifications, speech_profile, \
