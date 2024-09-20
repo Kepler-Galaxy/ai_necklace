@@ -26,24 +26,25 @@ def patching(record):
 # load env
 if(os.environ.get('ENV') == 'dev' or os.environ.get('ENV') == ''):
     print('loding dev environments from .env.dev')
-    print(os.environ.get('SERVICE_ACCOUNT_JSON'))
-    load_dotenv('.env.dev')
+    load_dotenv('./.env.dev')
 else:
     print('loding prod environments from .env')
     load_dotenv()
+
+# TODO(yiqi): How to set the environment variable GOOGLE_APPLICATION_CREDENTIALS to the path of generated file google-credentials.json, where is it?
+if os.environ.get('SERVICE_ACCOUNT_JSON'):
+    service_account_info = json.loads(os.environ["SERVICE_ACCOUNT_JSON"])
+    credentials = firebase_admin.credentials.Certificate(service_account_info)
+    firebase_admin.initialize_app(credentials)
+else:
+    print('initializing firebase without credentials')
+    firebase_admin.initialize_app()
 
 from modal import Image, App, asgi_app, Secret, Cron
 from routers import workflow, chat, firmware, screenpipe, plugins, memories, transcribe, notifications, speech_profile, \
     agents, facts, users, postprocessing, processing_memories, diary
 
 from utils.other.notifications import start_cron_job
-
-if os.environ.get('SERVICE_ACCOUNT_JSON'):
-    service_account_info = json.loads(os.environ["SERVICE_ACCOUNT_JSON"])
-    credentials = firebase_admin.credentials.Certificate(service_account_info)
-    firebase_admin.initialize_app(credentials)
-else:
-    firebase_admin.initialize_app()
 
 app = FastAPI()
 app.include_router(transcribe.router)

@@ -559,7 +559,6 @@ def explain_relationship(memory: Memory, related_memory: Memory) -> ExplainRelat
         {format_instructions}'''.replace('    ', '').strip()
     )])
 
-    logger.info(prompt)
     parser = PydanticOutputParser(pydantic_object=ExplainRelationshipOutput)
     chain = prompt | llm | parser
     response = chain.invoke({
