@@ -1,5 +1,8 @@
+import os
+
 from pymongo import MongoClient, UpdateOne
 from typing import Any, Dict, List, Optional
+
 
 
 class DocumentReference:
@@ -114,6 +117,8 @@ class MongoDBClient:
         # Initialize the MongoDB client
         self.mongodb_uri = os.getenv("MONGODB_URI")
         self.database = os.getenv("MONGODB_DATABASE")
+        print(self.mongodb_uri)
+        print(self.database)
         self.client = MongoClient(self.mongodb_uri)
         self.db = self.client[self.database]
 
