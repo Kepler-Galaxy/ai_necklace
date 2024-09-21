@@ -112,8 +112,10 @@ class MongoDBClient:
 
     def __init__(self):
         # Initialize the MongoDB client
-        self.client = MongoClient('mongodb://localhost:27017/')
-        self.db = self.client['your_database_name']  # Replace with your database name
+        self.mongodb_uri = os.getenv("MONGODB_URI")
+        self.database = os.getenv("MONGODB_DATABASE")
+        self.client = MongoClient(self.mongodb_uri)
+        self.db = self.client[self.database]
 
     def collection(self, collection_name: str):
         return CollectionReference(self.db, collection_name)
