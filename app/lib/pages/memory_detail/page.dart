@@ -24,8 +24,14 @@ import 'memory_detail_provider.dart';
 class MemoryDetailPage extends StatefulWidget {
   final ServerMemory memory;
   final bool isFromOnboarding;
+  final bool isPopup;
 
-  const MemoryDetailPage({super.key, this.isFromOnboarding = false, required this.memory});
+  const MemoryDetailPage({
+    Key? key,
+    required this.memory,
+    this.isFromOnboarding = false,
+    this.isPopup = false,
+  }) : super(key: key);
 
   @override
   State<MemoryDetailPage> createState() => _MemoryDetailPageState();
@@ -66,7 +72,13 @@ class _MemoryDetailPageState extends State<MemoryDetailPage> with TickerProvider
   @override
   Widget build(BuildContext context) {
     return PopScope(
-      canPop: true,
+      canPop:  !widget.isPopup,
+      onPopInvoked: (didPop) {
+        if (didPop) {
+          return;
+        }
+        Navigator.of(context).pop();
+      },
       child: DefaultTabController(
         length: 2,
         initialIndex: 1,

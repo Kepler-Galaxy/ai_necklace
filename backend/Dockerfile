@@ -11,7 +11,7 @@ COPY ./requirements.txt /tmp/requirements.txt
 RUN pip install --no-cache-dir -r /tmp/requirements.txt
 
 COPY . /app
-RUN rm /app/.env /app/credentials.json /app/docker-compose.yml
+RUN rm /app/.env /app/.env.dev /app/docker-compose.yml /app/docker-compose-dev.yml
 
 EXPOSE 8080
 CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8080"]

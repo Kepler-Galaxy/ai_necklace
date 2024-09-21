@@ -6,6 +6,12 @@ import 'package:friend_private/backend/schema/memory.dart';
 import 'package:friend_private/backend/schema/structured.dart';
 import 'package:friend_private/utils/analytics/mixpanel.dart';
 import 'package:friend_private/utils/features/calendar.dart';
+import 'package:friend_private/utils/memories/process.dart';
+import 'package:instabug_flutter/instabug_flutter.dart';
+import 'package:tuple/tuple.dart';
+import 'package:friend_private/backend/http/shared.dart';
+import 'package:friend_private/env/env.dart';
+import 'package:friend_private/backend/schema/memory_connection.dart';
 
 class MemoryProvider extends ChangeNotifier {
   List<ServerMemory> memories = [];
@@ -24,13 +30,51 @@ class MemoryProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  Future<ServerMemory?> getMemoryById(String id) async {
+    try {
+      final response = await makeApiCall(
+        url: '${Env.apiBaseUrl}v1/memories/$id',
+        method: 'GET',
+        headers: {},
+        body: '',
+      );
+      if (response != null && response.statusCode == 200) {
+        return ServerMemory.fromJson(json.decode(response.body));
+      }
+    } catch (e) {
+      print("Error fetching memory: $e");
+    }
+    return null;
+  }
+
+  // TODO(yiqi): use batch request
+  Future<List<ServerMemory>> getMemoriesByIds(List<String> memoryIds) async {
+    List<ServerMemory> memories = [];
+    for (String id in memoryIds) {
+      ServerMemory? memory = await getMemoryById(id);
+      if (memory != null) {
+        memories.add(memory);
+      }
+    }
+    return memories;
+  }
+
+  Future<List<MemoryConnectionNode>> getMemoryChains(
+      List<String> memoryIds, int depth) async {
+    final response = await getMemoryConnectionsGraph(memoryIds, depth);
+    return (response['forest'] as List)
+        .map((tree) => MemoryConnectionNode.fromJson(tree))
+        .toList();
+  }
+
   void populateMemoriesWithDates() {
     memoriesWithDates = [];
     for (var i = 0; i < filteredMemories.length; i++) {
       if (i == 0) {
         memoriesWithDates.add(filteredMemories[i]);
       } else {
-        if (filteredMemories[i].createdAt.day != filteredMemories[i - 1].createdAt.day) {
+        if (filteredMemories[i].createdAt.day !=
+            filteredMemories[i - 1].createdAt.day) {
           memoriesWithDates.add(filteredMemories[i].createdAt);
         }
         memoriesWithDates.add(filteredMemories[i]);
@@ -54,7 +98,9 @@ class MemoryProvider extends ChangeNotifier {
         ? filteredMemories
         : filteredMemories
             .where(
-              (memory) => (memory.getTranscript() + memory.structured.title + memory.structured.overview)
+              (memory) => (memory.getTranscript() +
+                      memory.structured.title +
+                      memory.structured.overview)
                   .toLowerCase()
                   .contains(query.toLowerCase()),
             )
@@ -96,7 +142,7 @@ class MemoryProvider extends ChangeNotifier {
 
   Future getMemoriesFromServer() async {
     setLoadingMemories(true);
-    var mem = await getMemories();
+    var mem = await getMemories(limit: 100);
     memories = mem;
     createEventsForMemories();
     setLoadingMemories(false);
@@ -116,6 +162,8 @@ class MemoryProvider extends ChangeNotifier {
 
   Future getMoreMemoriesFromServer() async {
     if (memories.length % 50 != 0) return;
+    debugPrint(
+        'current memory lengh: ${memories.length}, getMoreMemoriesFromServer');
     if (isLoadingMemories) return;
     setLoadingMemories(true);
     var newMemories = await getMemories(offset: memories.length);

@@ -3,7 +3,7 @@ import random
 import threading
 import uuid
 from datetime import timezone
-from typing import Union, Tuple
+from typing import Union, Tuple, List, Dict
 
 from fastapi import HTTPException
 from loguru import logger
@@ -28,7 +28,7 @@ from utils.plugins import get_plugins_data
 from utils.retrieval.rag import retrieve_rag_memory_context
 from utils.llm import summarize_wechat_article
 from utils.memories.wechat_article import fetch_wechat_article_content
-
+from utils.memories.memory_connection import explain_related_memories
 def _get_structured(
         uid: str, language_code: str, memory: Union[Memory, CreateMemory, WorkflowCreateMemory],
         force_process: bool = False, retries: int = 1
@@ -134,6 +134,8 @@ def _extract_facts(uid: str, memory: Memory):
         logger.info('fact:', fact.category.value.upper(), '~', fact.content)
     facts_db.save_facts(uid, [fact.dict() for fact in parsed_facts])
 
+def _memory_consolidation(uid: str, memory: Memory):
+    memory.connections = explain_related_memories(memory, uid)
 
 def _extract_trends(memory: Memory):
     extracted_items = trends_extractor(memory)
@@ -147,6 +149,12 @@ def process_memory(uid: str, language_code: str, memory: Union[Memory, CreateMem
     memory = _get_memory_obj(uid, structured, memory)
 
     if not discarded:
+        # TODO(yiqi): embedding for this memory is generated before upsert_vector, don't do it repeatedly.
+        # TODO(yiqi): don't do memory consolidation in memory creation. Like human do it during sleep, we can do it
+        # during post processing or diary generation.
+        _memory_consolidation(uid, memory)
+        logger.info(f"current memory, {memory.dict()}")
+
         vector = generate_embedding(str(structured))
         upsert_vector(uid, memory, vector)
         # don't run plugins and extract facts for wechat article

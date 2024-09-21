@@ -219,6 +219,33 @@ Future<bool> uploadMemoryAudio(String memoryId, File file) async {
   }
 }
 
+Future<Map<String, dynamic>> getMemoryConnectionsGraph(List<String> memoryIds, int levels) async {
+  try {
+    final response = await makeApiCall(
+      url: '${Env.apiBaseUrl}v1/memories/connections_graph',
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({
+        'memory_ids': memoryIds,
+        'memory_connection_depth': levels,
+      }),
+    );
+
+    if (response == null) {
+      throw Exception('Failed to get memory connections graph: No response');
+    }
+
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body) as Map<String, dynamic>;
+    } else {
+      throw Exception('Failed to get memory connections graph: ${response.statusCode}');
+    }
+  } catch (e) {
+    debugPrint('Error in getMemoryConnectionsGraph: $e');
+    rethrow;
+  }
+}
+
 Future<bool> hasMemoryRecording(String memoryId) async {
   var response = await makeApiCall(
     url: '${Env.apiBaseUrl}v1/memories/$memoryId/recording',

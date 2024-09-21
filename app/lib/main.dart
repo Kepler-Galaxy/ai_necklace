@@ -44,6 +44,7 @@ import 'package:opus_dart/opus_dart.dart';
 import 'package:opus_flutter/opus_flutter.dart' as opus_flutter;
 import 'package:provider/provider.dart';
 import 'package:talker_flutter/talker_flutter.dart';
+import 'package:friend_private/providers/diary_provider.dart';
 
 Future<bool> _init() async {
   // Service manager
@@ -205,6 +206,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
                 (previous?..setProviders(plugin, memory)) ?? MemoryDetailProvider(),
           ),
           ChangeNotifierProvider(create: (context) => CalenderProvider()),
+          ChangeNotifierProvider(create: (context) => DiaryProvider()),
         ],
         builder: (context, child) {
           return WithForegroundTask(

@@ -144,7 +144,6 @@ backend/scripts/rag/visualizations/
 backend/google-credentials.json
 backend/google-credentials-dev.json
 backend/credentials.json
-backend/docker-compose-dev.yml
 backend/modal/vad_modal_fix.py
 
 startup-script.sh
@@ -167,4 +166,6 @@ app/lib/env/prod_env.g.dart
 /backend/scripts/stt/results
 /backend/scripts/stt/diarization.json
 backend/.env
+app/.dev.env
+backend/.env.dev
 app/.dev.env
