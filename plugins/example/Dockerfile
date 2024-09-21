@@ -6,6 +6,7 @@ RUN apt-get -y install python3
 RUN apt-get -y install python3-pip
 RUN apt-get -y install git
 RUN apt-get -y install ffmpeg
+RUN apt-get -y install opus-tools
 
 COPY plugins/example/requirements.txt /tmp/requirements.txt
 RUN pip install --no-cache-dir -r /tmp/requirements.txt

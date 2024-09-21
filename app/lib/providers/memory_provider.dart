@@ -8,6 +8,9 @@ import 'package:friend_private/utils/analytics/mixpanel.dart';
 import 'package:friend_private/utils/memories/process.dart';
 import 'package:instabug_flutter/instabug_flutter.dart';
 import 'package:tuple/tuple.dart';
+import 'package:friend_private/backend/http/shared.dart';
+import 'package:friend_private/env/env.dart';
+import 'package:friend_private/backend/schema/memory_connection.dart';
 
 class MemoryProvider extends ChangeNotifier {
   List<ServerMemory> memories = [];
@@ -27,13 +30,51 @@ class MemoryProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  Future<ServerMemory?> getMemoryById(String id) async {
+    try {
+      final response = await makeApiCall(
+        url: '${Env.apiBaseUrl}v1/memories/$id',
+        method: 'GET',
+        headers: {},
+        body: '',
+      );
+      if (response != null && response.statusCode == 200) {
+        return ServerMemory.fromJson(json.decode(response.body));
+      }
+    } catch (e) {
+      print("Error fetching memory: $e");
+    }
+    return null;
+  }
+
+  // TODO(yiqi): use batch request
+  Future<List<ServerMemory>> getMemoriesByIds(List<String> memoryIds) async {
+    List<ServerMemory> memories = [];
+    for (String id in memoryIds) {
+      ServerMemory? memory = await getMemoryById(id);
+      if (memory != null) {
+        memories.add(memory);
+      }
+    }
+    return memories;
+  }
+
+  Future<List<MemoryConnectionNode>> getMemoryChains(
+      List<String> memoryIds, int depth) async {
+    final response = await getMemoryConnectionsGraph(memoryIds, depth);
+    return (response['forest'] as List)
+        .map((tree) => MemoryConnectionNode.fromJson(tree))
+        .toList();
+  }
+
   void populateMemoriesWithDates() {
     memoriesWithDates = [];
     for (var i = 0; i < filteredMemories.length; i++) {
       if (i == 0) {
         memoriesWithDates.add(filteredMemories[i]);
       } else {
-        if (filteredMemories[i].createdAt.day != filteredMemories[i - 1].createdAt.day) {
+        if (filteredMemories[i].createdAt.day !=
+            filteredMemories[i - 1].createdAt.day) {
           memoriesWithDates.add(filteredMemories[i].createdAt);
         }
         memoriesWithDates.add(filteredMemories[i]);
@@ -50,12 +91,16 @@ class MemoryProvider extends ChangeNotifier {
 
   void filterMemories(String query) {
     filteredMemories = [];
-    filteredMemories = displayDiscardMemories ? memories : memories.where((memory) => !memory.discarded).toList();
+    filteredMemories = displayDiscardMemories
+        ? memories
+        : memories.where((memory) => !memory.discarded).toList();
     filteredMemories = query.isEmpty
         ? filteredMemories
         : filteredMemories
             .where(
-              (memory) => (memory.getTranscript() + memory.structured.title + memory.structured.overview)
+              (memory) => (memory.getTranscript() +
+                      memory.structured.title +
+                      memory.structured.overview)
                   .toLowerCase()
                   .contains(query.toLowerCase()),
             )
@@ -96,7 +141,7 @@ class MemoryProvider extends ChangeNotifier {
 
   Future getMemoriesFromServer() async {
     setLoadingMemories(true);
-    var mem = await getMemories();
+    var mem = await getMemories(limit: 100);
     memories = mem;
     setLoadingMemories(false);
     notifyListeners();
@@ -105,6 +150,8 @@ class MemoryProvider extends ChangeNotifier {
 
   Future getMoreMemoriesFromServer() async {
     if (memories.length % 50 != 0) return;
+    debugPrint(
+        'current memory lengh: ${memories.length}, getMoreMemoriesFromServer');
     if (isLoadingMemories) return;
     setLoadingMemories(true);
     var newMemories = await getMemories(offset: memories.length);
@@ -149,7 +196,9 @@ class MemoryProvider extends ChangeNotifier {
       startedAt: memory.startedAt,
       finishedAt: memory.finishedAt,
       geolocation: memory.geolocation,
-      photos: memory.photos.map((photo) => Tuple2(photo.base64, photo.description)).toList(),
+      photos: memory.photos
+          .map((photo) => Tuple2(photo.base64, photo.description))
+          .toList(),
       triggerIntegrations: false,
       language: memory.language ?? 'en',
       processingMemoryId: memory.processingMemoryId,
@@ -158,7 +207,8 @@ class MemoryProvider extends ChangeNotifier {
 
   Future retryFailedMemories() async {
     if (SharedPreferencesUtil().failedMemories.isEmpty) return;
-    debugPrint('SharedPreferencesUtil().failedMemories: ${SharedPreferencesUtil().failedMemories.length}');
+    debugPrint(
+        'SharedPreferencesUtil().failedMemories: ${SharedPreferencesUtil().failedMemories.length}');
     // retry failed memories
     List<Future<ServerMemory?>> asyncEvents = [];
     for (var item in SharedPreferencesUtil().failedMemories) {
@@ -168,7 +218,8 @@ class MemoryProvider extends ChangeNotifier {
     // TODO: should trigger integrations? probably yes, but notifications?
 
     List<ServerMemory?> results = await Future.wait(asyncEvents);
-    var failedCopy = List<ServerMemory>.from(SharedPreferencesUtil().failedMemories);
+    var failedCopy =
+        List<ServerMemory>.from(SharedPreferencesUtil().failedMemories);
 
     for (var i = 0; i < results.length; i++) {
       ServerMemory? newCreatedMemory = results[i];
@@ -178,21 +229,30 @@ class MemoryProvider extends ChangeNotifier {
         memories.insert(0, newCreatedMemory);
       } else {
         var prefsMemory = SharedPreferencesUtil().failedMemories[i];
-        if (prefsMemory.transcriptSegments.isEmpty && prefsMemory.photos.isEmpty) {
+        if (prefsMemory.transcriptSegments.isEmpty &&
+            prefsMemory.photos.isEmpty) {
           SharedPreferencesUtil().removeFailedMemory(failedCopy[i].id);
           continue;
         }
         if (SharedPreferencesUtil().failedMemories[i].retries == 3) {
-          CrashReporting.reportHandledCrash(Exception('Retry memory limits reached'), StackTrace.current,
-              userAttributes: {'memory': jsonEncode(SharedPreferencesUtil().failedMemories[i].toJson())});
+          CrashReporting.reportHandledCrash(
+              Exception('Retry memory limits reached'), StackTrace.current,
+              userAttributes: {
+                'memory': jsonEncode(
+                    SharedPreferencesUtil().failedMemories[i].toJson())
+              });
           SharedPreferencesUtil().removeFailedMemory(failedCopy[i].id);
           continue;
         }
-        memories.insert(0, SharedPreferencesUtil().failedMemories[i]); // TODO: sort them or something?
+        memories.insert(
+            0,
+            SharedPreferencesUtil()
+                .failedMemories[i]); // TODO: sort them or something?
         SharedPreferencesUtil().increaseFailedMemoryRetries(failedCopy[i].id);
       }
     }
-    debugPrint('SharedPreferencesUtil().failedMemories: ${SharedPreferencesUtil().failedMemories.length}');
+    debugPrint(
+        'SharedPreferencesUtil().failedMemories: ${SharedPreferencesUtil().failedMemories.length}');
     notifyListeners();
   }
 

@@ -537,3 +537,33 @@ def summarize_wechat_article(article_content: str) -> Structured:
         action_items=[],
         events=[]
     )
+
+# **************************************************
+# ************* MEMORY RELATIONSHIP **************
+# **************************************************
+
+class ExplainRelationshipOutput(BaseModel):
+    related: bool = Field(description="Whether the two memories are related.")
+    explanation: str = Field(description="The explanation of the relationship between two memories.")
+
+# TODO(yiqi): provide raw data to improve the explanation
+def explain_relationship(memory: Memory, related_memory: Memory) -> ExplainRelationshipOutput:
+    prompt = ChatPromptTemplate.from_messages([(
+        'system',
+        '''You are an expert to identify relationships between different memories. You will use logic reasoning, critical thinking, and common sense 
+        to determine if two memories are related. explain why they are or aren't related in a few sentences.
+
+        Memory 1: {memory1_str}
+        Memory 2: {memory2_str}
+
+        {format_instructions}'''.replace('    ', '').strip()
+    )])
+
+    parser = PydanticOutputParser(pydantic_object=ExplainRelationshipOutput)
+    chain = prompt | llm | parser
+    response = chain.invoke({
+        'memory1_str': str(memory.structured), 
+        'memory2_str': str(related_memory.structured), 
+        'format_instructions': parser.get_format_instructions()})
+
+    return response

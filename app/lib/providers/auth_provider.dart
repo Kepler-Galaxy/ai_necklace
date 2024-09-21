@@ -1,7 +1,5 @@
 import 'package:authing_sdk_v3/client.dart';
 import 'package:authing_sdk_v3/user.dart';
-import 'package:authing_sdk_v3/authing.dart';
-import 'package:authing_sdk_v3/oidc/oidc_client.dart';
 import 'package:authing_sdk_v3/result.dart';
 import 'package:authing_sdk_v3/options/login_options.dart';
 import 'package:flutter/material.dart';
@@ -29,7 +27,6 @@ class AuthenticationProvider extends BaseProvider {
 
   void _listenAuthingUserChanges() {}
 
-  
   final TextEditingController phoneController = TextEditingController();
   final TextEditingController codeController = TextEditingController();
   bool isCodeSent = false;
@@ -110,13 +107,15 @@ class AuthenticationProvider extends BaseProvider {
           setIsCodeSentState(true);
           AppSnackbar.showSnackbar('Verification code sent.');
         } else {
-          AppSnackbar.showSnackbarError('Failed to send code: ${result.message}');
+          AppSnackbar.showSnackbarError(
+              'Failed to send code: ${result.message}');
         }
       } catch (e, stackTrace) {
         setIsCodeSentState(false);
         debugPrint('Error $e.');
         AppSnackbar.showSnackbarError('Error $e.');
-        CrashReporting.reportHandledCrash(e, stackTrace, level: NonFatalExceptionLevel.error);
+        CrashReporting.reportHandledCrash(e, stackTrace,
+            level: NonFatalExceptionLevel.error);
       } finally {
         setLoadingState(false);
       }
@@ -142,9 +141,11 @@ class AuthenticationProvider extends BaseProvider {
       debugPrint('Token: $token');
       return token;
     } catch (e, stackTrace) {
-      AppSnackbar.showSnackbarError('Failed to retrieve firebase token, please try again.');
+      AppSnackbar.showSnackbarError(
+          'Failed to retrieve firebase token, please try again.');
 
-      CrashReporting.reportHandledCrash(e, stackTrace, level: NonFatalExceptionLevel.error);
+      CrashReporting.reportHandledCrash(e, stackTrace,
+          level: NonFatalExceptionLevel.error);
 
       return null;
     }
@@ -158,7 +159,8 @@ class AuthenticationProvider extends BaseProvider {
       identifyGleap();
       onSignIn();
     } else {
-      AppSnackbar.showSnackbarError('Unexpected error signing in, please try again');
+      AppSnackbar.showSnackbarError(
+          'Unexpected error signing in, please try again');
     }
   }
 
