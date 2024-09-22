@@ -14,8 +14,8 @@ abstract class Env {
   static String? get mixpanelProjectToken => _instance.mixpanelProjectToken;
 
   // static String? get apiBaseUrl => _instance.apiBaseUrl;
-  static String? get apiBaseUrl => 'https://equal-magnetic-pheasant.ngrok-free.app/';
-  // static String? get apiBaseUrl => 'https://delicate-elephant-close.ngrok-free.app/';
+  // static String? get apiBaseUrl => 'https://equal-magnetic-pheasant.ngrok-free.app/';
+  static String? get apiBaseUrl => 'https://delicate-elephant-close.ngrok-free.app/';
 
   static String? get growthbookApiKey => _instance.growthbookApiKey;
 
