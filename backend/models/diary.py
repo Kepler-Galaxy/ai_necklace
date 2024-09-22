@@ -30,13 +30,13 @@ class DiaryDB(Diary):
     # # TODO: should add diary status?
 
     @staticmethod
-    def from_memories(uid: str, memories: list[Memory]) -> 'DiaryDB':
+    def from_memories(uid: str, memories: list[Memory], user_specified_created_at: None) -> 'DiaryDB':
         memory_ids=[memory['id'] for memory in memories]
 
         return DiaryDB(
             id=document_id_from_seed(uid.join(memory_ids)),
             uid=uid,
-            created_at=datetime.utcnow(),
+            created_at=user_specified_created_at if user_specified_created_at else datetime.utcnow(),
             updated_at=datetime.utcnow(),
             memory_ids = memory_ids,
             footprint_jpeg="",

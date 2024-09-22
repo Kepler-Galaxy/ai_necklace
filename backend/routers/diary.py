@@ -27,6 +27,6 @@ def add_diary_for_datetime_range(start_at_utc: str, end_at_utc: str, uid: str = 
         return {'status': 'ok'}
     
     logger.info(f'generating diary for {uid} using {len(memories)} memories')
-    diary = DiaryDB.from_memories(uid, memories)
+    diary = DiaryDB.from_memories(uid, memories, user_specified_created_at=datetime.fromisoformat(end_at_utc))
     diaries_db.save_diary(uid, diary.dict())
     return {'status': 'ok'}
