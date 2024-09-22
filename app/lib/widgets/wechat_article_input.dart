@@ -27,14 +27,14 @@ class _WeChatArticleInputWidgetState extends State<WeChatArticleInputWidget> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'WeChat Article Link',
+            'Article Link: WeChat Article or Others',
             style: Theme.of(context).textTheme.titleLarge,
           ),
           const SizedBox(height: 16),
           TextField(
             controller: _linkController,
             decoration: InputDecoration(
-              hintText: 'Paste WeChat article link here',
+              hintText: 'Paste article link here',
               border: OutlineInputBorder(),
             ),
           ),

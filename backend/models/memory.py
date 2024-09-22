@@ -6,6 +6,7 @@ from pydantic import BaseModel, Field
 
 from models.chat import Message
 from models.transcript_segment import TranscriptSegment
+from utils.memories.web_content import WebContentResponse
 
 
 class CategoryEnum(str, Enum):
@@ -107,8 +108,21 @@ class MemorySource(str, Enum):
     openglass = 'openglass'
     screenpipe = 'screenpipe'
     workflow = 'workflow'
-    wechat_article = 'wechat_article'
+    wechat_article = 'wechat_article' # TODO: keep for validation correctness, remove this once migration is done
+    web_link = 'web_link'
 
+class ExternalLinkDescription(BaseModel):
+    link: str
+    metadata: Dict
+
+    @staticmethod
+    # currently only support article extraction from web links
+    def from_web_article(article_link: str):
+        return ExternalLinkDescription(link=article_link, metadata={"source": "web_article"})
+
+class ExternalLink(BaseModel):
+    external_link_description: ExternalLinkDescription
+    web_content_response: Optional[WebContentResponse] = None
 
 class MemoryVisibility(str, Enum):
     private = 'private'
@@ -155,6 +169,7 @@ class Memory(BaseModel):
     plugins_results: List[PluginResult] = []
 
     external_data: Optional[Dict] = None
+    external_link: Optional[ExternalLink] = None
 
     postprocessing: Optional[MemoryPostProcessing] = None
 
@@ -195,14 +210,6 @@ class Memory(BaseModel):
     def get_transcript(self, include_timestamps: bool) -> str:
         # Warn: missing transcript for workflow source
         return TranscriptSegment.segments_as_string(self.transcript_segments, include_timestamps=include_timestamps)
-
-class ExternalLink(BaseModel):
-    link: str
-    metadata: Dict
-
-    @staticmethod
-    def from_wechat_article(article_link: str):
-        return ExternalLink(link=article_link, metadata={"source": "wechat_article"})
     
 class CreateMemory(BaseModel):
     started_at: datetime
@@ -211,7 +218,7 @@ class CreateMemory(BaseModel):
     geolocation: Optional[Geolocation] = None
 
     photos: List[MemoryPhoto] = []
-    external_links: List[ExternalLink] = None
+    external_link: ExternalLink = None
 
     source: MemorySource = MemorySource.friend
     language: Optional[str] = None

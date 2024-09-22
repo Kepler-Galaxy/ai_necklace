@@ -292,14 +292,15 @@ def create_memory_from_wechat_article(
     :param uid: User ID.
     :return: The newly created memory.
     """
-    logger.info(uid, "create_memory_from_wechat_article", article_link)
+    logger.info(f'create_memory_from_wechat_article from {article_link}')
 
     try:
         create_memory = CreateMemory(
             started_at=datetime.utcnow(),
             finished_at=datetime.utcnow(),
-            external_links=[ExternalLink.from_wechat_article(article_link)],
-            source=MemorySource.wechat_article,
+            external_link=ExternalLink(external_link_description=ExternalLinkDescription.from_web_article(article_link), 
+                                       web_content_response=None),
+            source=MemorySource.web_link,
             language="zh",  # It only affects the conversation, the CreateMemory and Structured should be refactored to separate all sources completely.
         )
 
@@ -307,7 +308,7 @@ def create_memory_from_wechat_article(
         return memory
 
     except Exception as e:
-        logger.error(uid, "Failed to create memory from WeChat article", str(e))
+        logger.error(f'Failed to create memory from WeChat article: {str(e)}')
         raise HTTPException(status_code=500, detail=f"Failed to create memory: {str(e)}")
     
 @router.post("/v1/memories/connections_graph", response_model=MemoryConnectionsGraphResponse, tags=['memories'])
