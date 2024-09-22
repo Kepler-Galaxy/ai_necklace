@@ -233,3 +233,4 @@ beautifulsoup4==4.12.3
 readability-lxml
 lxml_html_clean
 html2text
+apscheduler

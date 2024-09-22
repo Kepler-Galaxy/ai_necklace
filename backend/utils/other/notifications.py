@@ -1,6 +1,6 @@
 import asyncio
 import concurrent.futures
-from datetime import datetime
+from datetime import datetime, timedelta
 from datetime import time
 from loguru import logger
 
@@ -9,6 +9,8 @@ import pytz
 import database.chat as chat_db
 import database.memories as memories_db
 import database.notifications as notification_db
+import database.diary as diaries_db
+from models.diary import DiaryDB
 from models.notification_message import NotificationMessage
 from utils.llm import get_memory_summary
 from utils.notifications import send_notification, send_bulk_notification
@@ -16,9 +18,12 @@ from utils.notifications import send_notification, send_bulk_notification
 
 async def start_cron_job():
     if should_run_job():
-        logger.info("start_cron_job")
-        await send_daily_notification()
-        await send_daily_summary_notification()
+        logger.info("sending notifications")
+        await asyncio.gather(
+            send_daily_notification(),
+            send_daily_summary_notification(),
+            send_daily_dairy_notification()
+        )
 
 
 def should_run_job():
@@ -53,7 +58,7 @@ def _send_summary_notification(user_data: tuple):
     fcm_token = user_data[1]
     daily_summary_title = "Here is your action plan for tomorrow"  # TODO: maybe include llm a custom message for this
     memories = memories_db.filter_memories_by_date(
-        uid, datetime.combine(datetime.now().date(), time.min), datetime.now()
+        uid, datetime.now() - timedelta(days=1), datetime.now()
     )
     if not memories:
         return
@@ -68,8 +73,7 @@ def _send_summary_notification(user_data: tuple):
     )
     chat_db.add_summary_message(summary, uid)
     send_notification(fcm_token, daily_summary_title, summary, NotificationMessage.get_message_as_dict(ai_message))
-
-
+    
 async def _send_bulk_summary_notification(users: list):
     loop = asyncio.get_running_loop()
     with concurrent.futures.ThreadPoolExecutor() as pool:
@@ -79,7 +83,57 @@ async def _send_bulk_summary_notification(users: list):
         ]
         await asyncio.gather(*tasks)
 
+async def send_daily_dairy_notification():
+    try:
+        daily_summary_target_time = "22:00"
+        timezones_in_time = _get_timezones_at_time(daily_summary_target_time)
+        user_in_time_zone = await notification_db.get_users_id_in_timezones(timezones_in_time)
+        if not user_in_time_zone:
+            return None
 
+        await _send_bulk_dairy_notification(user_in_time_zone)
+    except Exception as e:
+        logger.error(e)
+        logger.error("Error sending message:", e)
+        return None
+    
+async def _send_bulk_dairy_notification(users: list):
+    loop = asyncio.get_running_loop()
+    with concurrent.futures.ThreadPoolExecutor() as pool:
+        tasks = [
+            loop.run_in_executor(pool, _generate_dairy_and_send_notification, uid)
+            for uid in users
+        ]
+        await asyncio.gather(*tasks)
+
+async def _generate_dairy_and_send_notification(uid: str):
+    try:
+        start_at_utc = datetime.now() - timedelta(days=1)
+        end_at_utc = datetime.now()
+        memories = memories_db.filter_memories_by_date(uid, start_at_utc, end_at_utc)
+        if len(memories) == 0:
+            logger.info(f'{uid} has no memory between {start_at_utc} and {end_at_utc}, skip diary generation')
+            return {'status': 'ok'}
+    
+        logger.info(f'generating diary for {uid} using {len(memories)} memories')
+        diary = DiaryDB.from_memories(uid, memories, user_specified_created_at=end_at_utc)
+        diaries_db.save_diary(uid, diary.dict())
+        
+        fcm_token = await notification_db.get_user_fcm_token(uid)
+        if not fcm_token:
+            logger.warning(f"No FCM token found for user {uid}")
+            return
+        diary_notification_title = f'{len(memories)} memories consolidated to your digital brain. Check it out!'
+        diary_notification_body = "Wear your Kepler Star and capture more personal conversation memories tomorrow."
+        send_notification(fcm_token, diary_notification_title, diary_notification_body)
+
+    except Exception as e:
+        logger.error(e)
+        logger.error("Error sending message:", e)
+        return None
+    
+
+    
 async def send_daily_notification():
     try:
         morning_alert_title = "Don\'t forget to wear Friend today"
