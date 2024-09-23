@@ -28,12 +28,11 @@ async def start_cron_job():
 
 def should_run_job():
     current_utc = datetime.now(pytz.utc)
-    target_hours = {8, 15}
+    target_hours = {8, 22}
 
     for tz in pytz.all_timezones:
         local_time = current_utc.astimezone(pytz.timezone(tz))
-        # if local_time.hour in target_hours and local_time.minute == 0:
-        if local_time.hour in target_hours and local_time.minute == 20:
+        if local_time.hour in target_hours and local_time.minute == 0:
             return True
 
     return False
@@ -41,7 +40,7 @@ def should_run_job():
 
 async def send_daily_summary_notification():
     try:
-        daily_summary_target_time = "15:00"
+        daily_summary_target_time = "22:00"
         timezones_in_time = _get_timezones_at_time(daily_summary_target_time)
         user_in_time_zone = await notification_db.get_users_id_in_timezones(timezones_in_time)
         if not user_in_time_zone:
@@ -87,7 +86,7 @@ async def _send_bulk_summary_notification(users: list):
 
 async def send_daily_dairy_notification():
     try:
-        daily_summary_target_time = "15:20"
+        daily_summary_target_time = "22:00"
         timezones_in_time = _get_timezones_at_time(daily_summary_target_time)
         user_in_time_zone = await notification_db.get_users_id_in_timezones(timezones_in_time)
         if not user_in_time_zone:
