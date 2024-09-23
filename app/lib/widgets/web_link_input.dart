@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:friend_private/backend/http/api/memories.dart';
 import 'package:friend_private/providers/memory_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -27,14 +26,14 @@ class _WeChatArticleInputWidgetState extends State<WeChatArticleInputWidget> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'WeChat Article Link',
+            'Article Link: WeChat Article or Others',
             style: Theme.of(context).textTheme.titleLarge,
           ),
           const SizedBox(height: 16),
           TextField(
             controller: _linkController,
             decoration: InputDecoration(
-              hintText: 'Paste WeChat article link here',
+              hintText: 'Paste article link here',
               border: OutlineInputBorder(),
             ),
           ),

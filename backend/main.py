@@ -4,9 +4,10 @@ from loguru import logger
 import sys
 
 import firebase_admin
-from fastapi import FastAPI
+from fastapi import FastAPI, BackgroundTasks
 from dotenv import load_dotenv
-
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
+from apscheduler.triggers.cron import CronTrigger
 
 def serialize(record):
     subset = {
@@ -24,7 +25,7 @@ def patching(record):
 
 
 # load env
-if(os.environ.get('ENV') == 'dev' or os.environ.get('ENV') == ''):
+if(os.environ.get('ENV') == 'dev' or os.environ.get('ENV') == None):
     print('loding dev environments from .env.dev')
     load_dotenv('./.env.dev')
 else:
@@ -95,6 +96,18 @@ for path in paths:
         os.makedirs(path)
 
 
-@modal_app.function(image=image, schedule=Cron('* * * * *'))
-async def notifications_cronjob():
-    await start_cron_job()
+scheduler = AsyncIOScheduler()
+
+@app.on_event("startup")
+async def startup_event():
+    scheduler.start()
+    scheduler.add_job(start_cron_job, CronTrigger.from_crontab("* * * * *"))
+
+@app.on_event("shutdown")
+async def shutdown_event():
+    scheduler.shutdown()
+
+@app.post("/trigger_cron_job")
+async def trigger_cron_job(background_tasks: BackgroundTasks):
+    background_tasks.add_task(start_cron_job)
+    return {"message": "Cron job triggered"}

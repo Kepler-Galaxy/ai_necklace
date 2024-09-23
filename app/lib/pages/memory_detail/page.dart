@@ -22,6 +22,8 @@ import 'package:friend_private/widgets/photos_grid.dart';
 import 'package:friend_private/widgets/transcript.dart';
 import 'package:provider/provider.dart';
 import 'package:tuple/tuple.dart';
+import 'dart:convert';
+import 'package:url_launcher/url_launcher.dart';
 
 class MemoryDetailPage extends StatefulWidget {
   final ServerMemory memory;
@@ -204,7 +206,9 @@ class _MemoryDetailPageState extends State<MemoryDetailPage> with TickerProvider
                       ? 'Photos'
                       : widget.memory.source == MemorySource.screenpipe
                           ? 'Raw Data'
-                          : 'Transcript',
+                          : widget.memory.source == MemorySource.web_link
+                              ? 'Web Content'
+                              : 'Transcript',
                 ),
                 const Tab(text: 'Summary')
               ],
@@ -219,8 +223,11 @@ class _MemoryDetailPageState extends State<MemoryDetailPage> with TickerProvider
                   children: [
                     ListView(
                       shrinkWrap: true,
-                      children:
-                          widget.memory.source == MemorySource.openglass ? _getImagesWidget() : _getTranscriptWidgets(),
+                      children: widget.memory.source == MemorySource.openglass
+                          ? _getImagesWidget()
+                          : widget.memory.source == MemorySource.web_link
+                              ? _getWebContentWidget()
+                              : _getTranscriptWidgets(),
                     ),
                     ListView(
                       shrinkWrap: true,
@@ -502,6 +509,52 @@ class _MemoryDetailPageState extends State<MemoryDetailPage> with TickerProvider
     var photosData = photos.map((e) => Tuple2(e.base64, e.description)).toList();
     print('Images length ${photos.length}');
     return [PhotosGridComponent(photos: photosData), const SizedBox(height: 32)];
+  }
+
+  List<Widget> _getWebContentWidget() {
+    final webContentResponse = widget.memory.externalLink?.webContentResponse;
+    final String webContent = webContentResponse?.mainContent ?? 'No content available';
+    final String title = webContentResponse?.title ?? 'No title available';
+    final String url = webContentResponse?.url ?? '';
+
+    return [
+      const SizedBox(height: 16),
+      Text(
+        utf8.decode(title.codeUnits),
+        style: Theme.of(context).textTheme.titleLarge?.copyWith(color: Colors.grey.shade300),
+      ),
+      const SizedBox(height: 8),
+      if (url.isNotEmpty)
+        InkWell(
+          onTap: () async {
+            final Uri uri = Uri.parse(url);
+            if (await canLaunchUrl(uri)) {
+              await launchUrl(uri);
+            } else {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text('Could not launch $url')),
+              );
+            }
+          },
+          child: Text(
+            url,
+            style: TextStyle(
+              color: Colors.blue.shade300,
+              decoration: TextDecoration.underline,
+            ),
+          ),
+        ),
+      const SizedBox(height: 16),
+      ExpandableTextWidget(
+        text: utf8.decode(webContent.codeUnits),
+        maxLines: 10000,
+        linkColor: Colors.grey.shade300,
+        style: TextStyle(color: Colors.grey.shade300, fontSize: 15, height: 1.3),
+        isExpanded: isTranscriptExpanded,
+        toggleExpand: () => setState(() => isTranscriptExpanded = !isTranscriptExpanded),
+      ),
+      const SizedBox(height: 32)
+    ];
   }
 
   _reProcessMemory(

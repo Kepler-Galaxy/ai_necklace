@@ -10,7 +10,7 @@ import 'package:visibility_detector/visibility_detector.dart';
 
 import 'widgets/empty_memories.dart';
 import 'widgets/memory_list_item.dart';
-import 'package:friend_private/widgets/wechat_article_input.dart';
+import 'package:friend_private/widgets/web_link_input.dart';
 
 class MemoriesPage extends StatefulWidget {
   const MemoriesPage({
@@ -123,7 +123,7 @@ class _MemoriesPageState extends State<MemoriesPage> with AutomaticKeepAliveClie
                               mainAxisAlignment: MainAxisAlignment.start,
                               children: [
                                 Text(
-                                  memoryProvider.isCreatingWeChatMemory ? 'Creating Memory' : 'Add WeChat Article',
+                                  memoryProvider.isCreatingWeChatMemory ? 'Creating Memory' : 'Add Article Memory',
                                   style: TextStyle(color: Colors.white, fontSize: 16),
                                 ),
                                 const SizedBox(width: 8),

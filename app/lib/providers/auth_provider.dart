@@ -1,5 +1,7 @@
 import 'package:authing_sdk_v3/client.dart';
 import 'package:authing_sdk_v3/user.dart';
+import 'package:authing_sdk_v3/authing.dart';
+import 'package:authing_sdk_v3/oidc/oidc_client.dart';
 import 'package:authing_sdk_v3/result.dart';
 import 'package:authing_sdk_v3/options/login_options.dart';
 import 'package:flutter/material.dart';
