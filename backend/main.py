@@ -25,7 +25,7 @@ def patching(record):
 
 
 # load env
-if(os.environ.get('ENV') == 'dev' or os.environ.get('ENV') == ''):
+if(os.environ.get('ENV') == 'dev' or os.environ.get('ENV') == None):
     print('loding dev environments from .env.dev')
     load_dotenv('./.env.dev')
 else:

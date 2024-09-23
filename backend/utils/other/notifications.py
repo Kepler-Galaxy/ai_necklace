@@ -28,11 +28,12 @@ async def start_cron_job():
 
 def should_run_job():
     current_utc = datetime.now(pytz.utc)
-    target_hours = {8, 22}
+    target_hours = {8, 15}
 
     for tz in pytz.all_timezones:
         local_time = current_utc.astimezone(pytz.timezone(tz))
-        if local_time.hour in target_hours and local_time.minute == 0:
+        # if local_time.hour in target_hours and local_time.minute == 0:
+        if local_time.hour in target_hours and local_time.minute == 20:
             return True
 
     return False
@@ -40,7 +41,7 @@ def should_run_job():
 
 async def send_daily_summary_notification():
     try:
-        daily_summary_target_time = "22:00"
+        daily_summary_target_time = "15:00"
         timezones_in_time = _get_timezones_at_time(daily_summary_target_time)
         user_in_time_zone = await notification_db.get_users_id_in_timezones(timezones_in_time)
         if not user_in_time_zone:
@@ -48,8 +49,7 @@ async def send_daily_summary_notification():
 
         await _send_bulk_summary_notification(user_in_time_zone)
     except Exception as e:
-        logger.error(e)
-        logger.error("Error sending message:", e)
+        logger.error(f'Error sending message: {e}')
         return None
 
 
@@ -74,6 +74,7 @@ def _send_summary_notification(user_data: tuple):
     chat_db.add_summary_message(summary, uid)
     send_notification(fcm_token, daily_summary_title, summary, NotificationMessage.get_message_as_dict(ai_message))
     
+
 async def _send_bulk_summary_notification(users: list):
     loop = asyncio.get_running_loop()
     with concurrent.futures.ThreadPoolExecutor() as pool:
@@ -83,9 +84,10 @@ async def _send_bulk_summary_notification(users: list):
         ]
         await asyncio.gather(*tasks)
 
+
 async def send_daily_dairy_notification():
     try:
-        daily_summary_target_time = "22:00"
+        daily_summary_target_time = "15:20"
         timezones_in_time = _get_timezones_at_time(daily_summary_target_time)
         user_in_time_zone = await notification_db.get_users_id_in_timezones(timezones_in_time)
         if not user_in_time_zone:
@@ -93,47 +95,43 @@ async def send_daily_dairy_notification():
 
         await _send_bulk_dairy_notification(user_in_time_zone)
     except Exception as e:
-        logger.error(e)
-        logger.error("Error sending message:", e)
+        logger.error(f"Error sending message: {e}")
         return None
     
-async def _send_bulk_dairy_notification(users: list):
-    loop = asyncio.get_running_loop()
-    with concurrent.futures.ThreadPoolExecutor() as pool:
-        tasks = [
-            loop.run_in_executor(pool, _generate_dairy_and_send_notification, uid)
-            for uid in users
-        ]
-        await asyncio.gather(*tasks)
 
-async def _generate_dairy_and_send_notification(uid: str):
+async def _send_bulk_dairy_notification(users: list):
+    logger.info(f"Sending dairy notification to {len(users)} users")
+    for user_data in users:
+        logger.info(f"Sending dairy notification to user {user_data[0]}")
+    tasks = [_generate_dairy_and_send_notification(user_data) for user_data in users]
+    await asyncio.gather(*tasks)
+
+
+async def _generate_dairy_and_send_notification(user_data: tuple):
     try:
-        start_at_utc = datetime.now() - timedelta(days=1)
-        end_at_utc = datetime.now()
+        uid = user_data[0]
+        fcm_token = user_data[1]
+
+        start_at_utc = datetime.now(pytz.utc) - timedelta(days=1)
+        end_at_utc = datetime.now(pytz.utc)
         memories = memories_db.filter_memories_by_date(uid, start_at_utc, end_at_utc)
         if len(memories) == 0:
             logger.info(f'{uid} has no memory between {start_at_utc} and {end_at_utc}, skip diary generation')
-            return {'status': 'ok'}
+            return
     
         logger.info(f'generating diary for {uid} using {len(memories)} memories')
         diary = DiaryDB.from_memories(uid, memories, user_specified_created_at=end_at_utc)
         diaries_db.save_diary(uid, diary.dict())
-        
-        fcm_token = await notification_db.get_user_fcm_token(uid)
-        if not fcm_token:
-            logger.warning(f"No FCM token found for user {uid}")
-            return
+
         diary_notification_title = f'{len(memories)} memories consolidated to your digital brain. Check it out!'
         diary_notification_body = "Wear your Kepler Star and capture more personal conversation memories tomorrow."
         send_notification(fcm_token, diary_notification_title, diary_notification_body)
 
     except Exception as e:
-        logger.error(e)
-        logger.error("Error sending message:", e)
-        return None
+        logger.error(f'Error sending message: {e}')
+        return
     
 
-    
 async def send_daily_notification():
     try:
         morning_alert_title = "Don\'t forget to wear Friend today"
@@ -143,8 +141,7 @@ async def send_daily_notification():
         await _send_notification_for_time(morning_target_time, morning_alert_title, morning_alert_body)
 
     except Exception as e:
-        logger.error(e)
-        logger.error("Error sending message:", e)
+        logger.error(f'Error sending message: {e}')
         return None
 
 

@@ -10,7 +10,7 @@ import 'package:visibility_detector/visibility_detector.dart';
 
 import 'widgets/empty_memories.dart';
 import 'widgets/memory_list_item.dart';
-import 'package:friend_private/widgets/wechat_article_input.dart';
+import 'package:friend_private/widgets/web_link_input.dart';
 
 class MemoriesPage extends StatefulWidget {
   const MemoriesPage({

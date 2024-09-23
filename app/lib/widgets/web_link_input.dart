@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:friend_private/backend/http/api/memories.dart';
 import 'package:friend_private/providers/memory_provider.dart';
 import 'package:provider/provider.dart';
 
