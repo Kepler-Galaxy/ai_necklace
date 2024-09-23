@@ -23,9 +23,10 @@ from utils.notifications import send_notification
 from utils.other.hume import get_hume, HumeJobCallbackModel, HumeJobModelPredictionResponseModel
 from utils.plugins import get_plugins_data
 from utils.retrieval.rag import retrieve_rag_memory_context
-from utils.llm import summarize_wechat_article
-from utils.memories.wechat_article import fetch_wechat_article_content
+from utils.llm import summarize_article
+from utils.memories.web_content import extract_web_content
 from utils.memories.memory_connection import explain_related_memories
+
 def _get_structured(
         uid: str, language_code: str, memory: Union[Memory, CreateMemory, WorkflowCreateMemory],
         force_process: bool = False, retries: int = 1
@@ -48,11 +49,15 @@ def _get_structured(
         if memory.photos:
             return summarize_open_glass(memory.photos), False
         
-        # from third party links, now we assume all comes from WeChat article
-        if memory.external_links:
-            article_content = fetch_wechat_article_content(memory.external_links[0].link)
-            logger.info(f"article_content: {article_content}")
-            return summarize_wechat_article(article_content), False
+        # from third party link
+        if memory.external_link:
+            memory.external_link.web_content_response = extract_web_content(memory.external_link.external_link_description.link)
+            if memory.external_link.web_content_response.success:    
+                logger.info(f"article_content: {memory.external_link.web_content_response.main_content}")
+                return summarize_article(memory.external_link.web_content_response), False
+            else:
+                logger.error(f"Failed to extract web content: {memory.external_link.web_content_response.url}")
+                return Structured(emoji=random.choice(['🧠', '🎉'])), True
 
         # from Friend
         if force_process:
@@ -131,9 +136,6 @@ def _extract_facts(uid: str, memory: Memory):
         logger.info('fact:', fact.category.value.upper(), '~', fact.content)
     facts_db.save_facts(uid, [fact.dict() for fact in parsed_facts])
 
-def _memory_consolidation(uid: str, memory: Memory):
-    memory.connections = explain_related_memories(memory, uid)
-
 def process_memory(uid: str, language_code: str, memory: Union[Memory, CreateMemory, WorkflowCreateMemory],
                    force_process: bool = False) -> Memory:
     structured, discarded = _get_structured(uid, language_code, memory, force_process)
@@ -143,13 +145,13 @@ def process_memory(uid: str, language_code: str, memory: Union[Memory, CreateMem
         # TODO(yiqi): embedding for this memory is generated before upsert_vector, don't do it repeatedly.
         # TODO(yiqi): don't do memory consolidation in memory creation. Like human do it during sleep, we can do it
         # during post processing or diary generation.
-        _memory_consolidation(uid, memory)
-        logger.info(f"current memory, {memory.dict()}")
+        memory.connections = explain_related_memories(memory, uid)
+        logger.info(f"inserting memory to pinecone and memory db, {memory.dict()}")
 
         vector = generate_embedding(str(structured))
         upsert_vector(uid, memory, vector)
-        # don't run plugins and extract facts for wechat article
-        if (memory.source != MemorySource.wechat_article):
+        # don't run plugins and extract facts for web article
+        if (memory.source != MemorySource.web_link):
             _trigger_plugins(uid, memory)
             threading.Thread(target=_extract_facts, args=(uid, memory)).start()
 
