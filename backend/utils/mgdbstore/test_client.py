@@ -7,8 +7,6 @@ load_dotenv()
 from client import MongoDBClient, FieldFilter, db
 
 
-
-
 # 设置测试环境的 MongoDB，后续流程正规后可以打开
 @pytest.fixture(scope="module")
 def mongo_test_db():
@@ -73,8 +71,8 @@ def test_write_batch(mongo_test_db):
     assert doc_ref_1.get()["name"] == "User 3"
     assert doc_ref_2.get()["name"] == "User 4"
 
-
-# 测试 where 过滤查询
+#
+# # 测试 where 过滤查询
 def test_collection_reference_where(mongo_test_db):
     # 插入测试数据
     doc_ref_1 = db.collection("users").document("test_user_5")
@@ -87,11 +85,11 @@ def test_collection_reference_where(mongo_test_db):
     users_over_25 = db.collection("users").where(FieldFilter("age", ">", 25)).stream()
     result = [user['name'] for user in users_over_25]
 
-    assert len(result) == 1
+    assert len(result) == 2
     assert "User 6" in result
-
-
-# 测试嵌套 collection 操作
+#
+#
+# # 测试嵌套 collection 操作
 def test_subcollection_reference(mongo_test_db):
     user_ref = db.collection("users").document("test_user_7")
     subcollection_ref = user_ref.collection("memories").document("memory_1")

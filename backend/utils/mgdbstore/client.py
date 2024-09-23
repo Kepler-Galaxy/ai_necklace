@@ -9,32 +9,36 @@ class DocumentReference:
     def __init__(self, db, collection_name: str, document_id: Optional[Any] = None):
         self.db = db
         self.collection_name = collection_name
-        self.collection = self.db[self.collection_name]
+        self.collection_ref = self.db[self.collection_name]
         self.document_id = document_id
 
     def collection(self, subcollection_name: str):
         # Simulate subcollections by using a naming convention
-        full_collection_name = f"{self.collection_name}.{self.document_id}.{subcollection_name}"
-        return CollectionReference(self.db, full_collection_name)
+        # full_collection_name = f"{self.collection_name}.{self.document_id}.{subcollection_name}"
+        print(subcollection_name)
+        return CollectionReference(self.db, subcollection_name)
 
     def set(self, data: Dict[str, Any], merge: bool = False):
         if merge:
-            self.collection.update_one({'_id': self.document_id}, {'$set': data}, upsert=True)
+            self.collection_ref.update_one({'_id': self.document_id}, {'$set': data}, upsert=True)
         else:
             data['_id'] = self.document_id
-            self.collection.replace_one({'_id': self.document_id}, data, upsert=True)
+            self.collection_ref.replace_one({'_id': self.document_id}, data, upsert=True)
 
     def get(self):
-        return self.collection.find_one({'_id': self.document_id})
+        return self.collection_ref.find_one({'_id': self.document_id})
 
     def delete(self):
-        self.collection.delete_one({'_id': self.document_id})
+        self.collection_ref.delete_one({'_id': self.document_id})
 
 
 class CollectionReference:
     def __init__(self, db, collection_name: str):
+        print(collection_name)
         self.db = db
+        print(self.db)
         self.collection_name = collection_name
+        print(self.collection_name)
         self.collection = self.db[self.collection_name]
         self._filters = []
 
