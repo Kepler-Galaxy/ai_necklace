@@ -17,6 +17,7 @@ from models.trend import TrendEnum, ceo_options, company_options, software_produ
     ai_product_options, TrendType
 from utils.memories.facts import get_prompt_facts
 from utils.string import words_count
+from utils.memories.web_content import WebContentResponse
 
 llm_mini = ChatOpenAI(model='gpt-4o-mini')
 embeddings = OpenAIEmbeddings(model="text-embedding-3-large")
@@ -554,18 +555,20 @@ def obtain_diary(user_name: str, user_facts: List[Fact], topic_to_memories: dict
 # **************************************************
 # ************* WECHAT ARTICLE SUMMARIZATION ********
 # **************************************************
-def summarize_wechat_article(article_content: str) -> Structured:
+def summarize_article(web_content_response: WebContentResponse) -> Structured:
+    parser = PydanticOutputParser(pydantic_object=Structured)
     prompt = ChatPromptTemplate.from_messages([(
         'system',
-        '''You are an expert content analyzer and summarizer. Your task is to analyze the given WeChat article and provide a structured summary.
+        '''You are an expert content analyzer and summarizer. Your task is to analyze the given article and provide a structured summary.
 
         Please provide the following:
-        1. For the title, use a concise and engaging title that captures the essence of the article.
-        2. For the overview, use 3-5 sentences to summarize the main points of the article.
-        3. For the emoji, use a beautiful emoji to represent it is from a Wechat article.
+        1. For the title, if the original title doesn't make sense, use a concise and engaging title that captures the essence of the article.
+        2. For the overview, use 3-5 sentences to summarize the main points of the article. If necessary, use at most 10 sentences.
+        3. For the emoji, use a beautiful emoji to match the article's content.
         4. For the category, classify the conversation into one of the available categories.
-        5. For the keypoints, extract a list of 3-5 original sentences needs to be highlighted from the article, and provide a brief explanation for each.
+        5. For the keypoints, extract a few original sentences needs to be highlighted from the article, and provide a brief explanation why they are important.
             
+        Article title: ```{title}```
         Article content: ```{article_content}```
 
         You should leave the events and action items as empty lists.
@@ -574,7 +577,8 @@ def summarize_wechat_article(article_content: str) -> Structured:
     chain = prompt | llm | parser
 
     response = chain.invoke({
-        'article_content': article_content,
+        'title': web_content_response.title,
+        'article_content': web_content_response.main_content,
         'format_instructions': parser.get_format_instructions(),
     })
 

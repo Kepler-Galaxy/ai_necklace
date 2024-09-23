@@ -246,3 +246,7 @@ loguru==0.7.2
 authing==5.1.0
 cos-python-sdk-v5==1.9.31
 beautifulsoup4==4.12.3
+readability-lxml
+lxml_html_clean
+html2text
+apscheduler

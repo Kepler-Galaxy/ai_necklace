@@ -49,14 +49,26 @@ async def get_users_in_timezones(timezones: list[str], filter: str):
         def sync_query():
             chunk_users = []
             try:
+                # Query users with time_zone in the specified chunk
                 query = users_ref.where(filter=FieldFilter('time_zone', 'in', chunk))
                 for doc in query.stream():
-                    if(filter == 'fcm_token'):
+                    if filter == 'fcm_token':
                         token = doc.get('fcm_token')
                     else:
                         token = doc.id, doc.get('fcm_token')
                     if token:
                         chunk_users.append(token)
+
+                # Assume users without time_zone information is in shanghai
+                if 'Asia/Shanghai' in chunk:
+                    query_default = users_ref.where(filter=FieldFilter('time_zone', '==', None))
+                    for doc in query_default.stream():
+                        if filter == 'fcm_token':
+                            token = doc.get('fcm_token')
+                        else:
+                            token = doc.id, doc.get('fcm_token')
+                        if token:
+                            chunk_users.append(token)
 
             except Exception as e:
                 logger.error(f"Error querying chunk {chunk}", e)

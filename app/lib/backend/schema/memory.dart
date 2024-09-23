@@ -23,7 +23,7 @@ class CreateMemoryResponse {
   }
 }
 
-enum MemorySource { friend, openglass, screenpipe }
+enum MemorySource { friend, openglass, screenpipe, web_link }
 
 class MemoryExternalData {
   final String text;
@@ -109,6 +109,91 @@ class UpdateProcessingMemoryResponse {
   }
 }
 
+class MemoryExternalLink {
+  final ExternalLinkDescription? externalLinkDescription;
+  final WebContentResponse? webContentResponse;
+
+  MemoryExternalLink({
+    this.externalLinkDescription,
+    this.webContentResponse,
+  });
+
+  factory MemoryExternalLink.fromJson(Map<String, dynamic>? json) {
+    if (json == null) return MemoryExternalLink();
+    return MemoryExternalLink(
+      externalLinkDescription: json['external_link_description'] != null
+          ? ExternalLinkDescription.fromJson(json['external_link_description'])
+          : null,
+      webContentResponse: json['web_content_response'] != null
+          ? WebContentResponse.fromJson(json['web_content_response'])
+          : null,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'external_link_description': externalLinkDescription?.toJson(),
+      'web_content_response': webContentResponse?.toJson(),
+    };
+  }
+}
+
+class ExternalLinkDescription {
+  final String link;
+  final Map<String, dynamic> metadata;
+
+  ExternalLinkDescription({
+    required this.link,
+    required this.metadata,
+  });
+
+  factory ExternalLinkDescription.fromJson(Map<String, dynamic> json) {
+    return ExternalLinkDescription(
+      link: json['link'],
+      metadata: json['metadata'],
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'link': link,
+      'metadata': metadata,
+    };
+  }
+}
+
+class WebContentResponse {
+  final bool success;
+  final String title;
+  final String mainContent;
+  final String url;
+
+  WebContentResponse({
+    required this.success,
+    required this.title,
+    required this.mainContent,
+    required this.url,
+  });
+
+  factory WebContentResponse.fromJson(Map<String, dynamic> json) {
+    return WebContentResponse(
+      success: json['success'],
+      title: json['title'],
+      mainContent: json['main_content'],
+      url: json['url'],
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'success': success,
+      'title': title,
+      'main_content': mainContent,
+      'url': url,
+    };
+  }
+}
+
 class ServerMemory {
   final String id;
   final DateTime createdAt;
@@ -119,6 +204,8 @@ class ServerMemory {
   final List<TranscriptSegment> transcriptSegments;
   final Geolocation? geolocation;
   final List<MemoryPhoto> photos;
+
+  final MemoryExternalLink? externalLink;
 
   final List<PluginResponse> pluginsResults;
   final MemorySource? source;
@@ -154,6 +241,7 @@ class ServerMemory {
     this.externalIntegration,
     // this.postprocessing,
     this.processingMemoryId,
+    this.externalLink,
   });
 
   factory ServerMemory.fromJson(Map<String, dynamic> json) {
@@ -179,6 +267,7 @@ class ServerMemory {
       externalIntegration: json['external_data'] != null ? MemoryExternalData.fromJson(json['external_data']) : null,
       // postprocessing: json['postprocessing'] != null ? MemoryPostProcessing.fromJson(json['postprocessing']) : null,
       processingMemoryId: json['processing_memory_id'],
+      externalLink: json['external_link'] != null ? MemoryExternalLink.fromJson(json['external_link']) : null,
     );
   }
 
@@ -214,6 +303,7 @@ class ServerMemory {
       'external_data': externalIntegration?.toJson(),
       // 'postprocessing': postprocessing?.toJson(),
       'processing_memory_id': processingMemoryId,
+      'external_link': externalLink?.toJson(),
     };
   }
 

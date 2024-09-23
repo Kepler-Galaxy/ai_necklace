@@ -142,7 +142,7 @@ class MemoryProvider extends ChangeNotifier {
 
   Future getMemoriesFromServer() async {
     setLoadingMemories(true);
-    var mem = await getMemories(limit: 100);
+    var mem = await getMemories(limit: 50);
     memories = mem;
     createEventsForMemories();
     setLoadingMemories(false);

@@ -20,6 +20,9 @@ import 'package:friend_private/widgets/transcript.dart';
 import 'package:provider/provider.dart';
 
 import 'memory_detail_provider.dart';
+import 'package:tuple/tuple.dart';
+import 'dart:convert';
+import 'package:url_launcher/url_launcher.dart';
 
 class MemoryDetailPage extends StatefulWidget {
   final ServerMemory memory;
