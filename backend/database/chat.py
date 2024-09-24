@@ -18,6 +18,7 @@ def add_message(uid: str, message_data: dict):
 def add_plugin_message(text: str, plugin_id: str, uid: str, memory_id: Optional[str] = None) -> Message:
     ai_message = Message(
         id=str(uuid.uuid4()),
+        uid=uid,
         text=text,
         created_at=datetime.now(timezone.utc),
         sender='ai',
@@ -33,6 +34,7 @@ def add_plugin_message(text: str, plugin_id: str, uid: str, memory_id: Optional[
 def add_summary_message(text: str, uid: str) -> Message:
     ai_message = Message(
         id=str(uuid.uuid4()),
+        uid=uid,
         text=text,
         created_at=datetime.now(timezone.utc),
         sender='ai',
