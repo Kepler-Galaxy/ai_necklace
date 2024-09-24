@@ -95,6 +95,7 @@ def _get_memory_obj(uid: str, structured: Structured, memory: Union[Memory, Crea
         create_memory = memory
         memory = Memory(
             id=str(uuid.uuid4()),
+            uid=uid,
             **memory.dict(),
             created_at=datetime.now(timezone.utc),
             deleted=False,
@@ -105,6 +106,7 @@ def _get_memory_obj(uid: str, structured: Structured, memory: Union[Memory, Crea
     else:
         memory.structured = structured
         memory.discarded = discarded
+
 
     return memory
 

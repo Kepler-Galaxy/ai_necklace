@@ -273,6 +273,7 @@ async def _websocket_util(
         nonlocal processing_memory_synced
         processing_memory = ProcessingMemory(
             id=str(uuid.uuid4()),
+            uid=uid,
             session_id=session_id,
             created_at=datetime.now(timezone.utc),
             timer_start=timer_start,

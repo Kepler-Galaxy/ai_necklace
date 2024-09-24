@@ -24,6 +24,7 @@ router = APIRouter()
 
 def _get_memory_by_id(uid: str, memory_id: str) -> dict:
     memory = memories_db.get_memory(uid, memory_id)
+    memory["uid"] = uid
     if memory is None or memory.get('deleted', False):
         raise HTTPException(status_code=404, detail="Memory not found")
     return memory

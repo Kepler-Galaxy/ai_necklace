@@ -4,6 +4,9 @@ from pymongo import MongoClient, UpdateOne
 from typing import Any, Dict, List, Optional
 
 
+ID_Field_DICT = {
+    "users": "uid"
+}
 
 class DocumentReference:
     def __init__(self, db, collection_name: str, document_id: Optional[Any] = None):
@@ -16,7 +19,10 @@ class DocumentReference:
         # Simulate subcollections by using a naming convention
         # full_collection_name = f"{self.collection_name}.{self.document_id}.{subcollection_name}"
         print(subcollection_name)
-        return CollectionReference(self.db, subcollection_name)
+        if self.collection_name == "users":
+            return CollectionReference(self.db, subcollection_name, FieldFilter(ID_Field_DICT.get(self.collection_name), "=", self.document_id))
+        else:
+            return CollectionReference(self.db, subcollection_name)
 
     def set(self, data: Dict[str, Any], merge: bool = False):
         if merge:
@@ -33,14 +39,11 @@ class DocumentReference:
 
 
 class CollectionReference:
-    def __init__(self, db, collection_name: str):
-        print(collection_name)
+    def __init__(self, db, collection_name: str, *filters):
         self.db = db
-        print(self.db)
         self.collection_name = collection_name
-        print(self.collection_name)
         self.collection = self.db[self.collection_name]
-        self._filters = []
+        self._filters = list(filters)
 
     def document(self, document_id: Optional[Any] = None):
         return DocumentReference(self.db, self.collection_name, document_id)
