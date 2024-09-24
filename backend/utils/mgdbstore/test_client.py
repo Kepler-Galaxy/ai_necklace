@@ -48,7 +48,8 @@ def test_document_reference_delete(mongo_test_db):
 
     # 获取文档应返回 None
     result = doc_ref.get()
-    assert result is None
+
+    assert result.to_dict() is {}
 
 
 # 测试批量写入

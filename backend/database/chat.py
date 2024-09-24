@@ -5,8 +5,8 @@ from typing import Optional
 from google.cloud import firestore
 
 from models.chat import Message
-from ._client import db
-
+# from ._client import db
+from utils.mgdbstore.client import db
 
 def add_message(uid: str, message_data: dict):
     del message_data['memories']
