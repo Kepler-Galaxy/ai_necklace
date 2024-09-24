@@ -236,6 +236,7 @@ class MemoryConnectionNode(BaseModel):
     memory_id: str
     children: List['MemoryConnectionNode'] = []
     explanation: Optional[str] = None
+    memory: Optional[Memory] = None
 
 class MemoryConnectionsGraphResponse(BaseModel):
     forest: List[MemoryConnectionNode]

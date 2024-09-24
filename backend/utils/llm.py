@@ -487,18 +487,30 @@ def obtain_diary(user_name: str, user_facts: List[Fact], topic_to_memories: dict
     topic_conversations = ''.join(string_parts)
 
     prompt = f"""
-    
-    You are a personal assisstant, that helps people to keep diary. This diary will be used by the owner in the future to examine what happened in the past days, to highlight the achievements in work and life challenges, and to celebrate the happy and leisurely time spent with friends or family.
-    You are serving {user_name} right now, this is what you know about {user_name}: {Fact.get_facts_as_str(user_facts)}
-    
-    
-    The following are {user_name}'s memory on different topics, each topic has a few memories with its transcripts and a summary.
-    Note that the transcripts are recorded by a careless recorder and contains a lot of errors. Words are recorded incorrectly due to similar pronunciation. so figure out what might be the real transcript with your own judgement.
-  
-    your reponse should be in Chinese. Between 200 words to 1000 words. in plain text without markdown, just like writting a diary.
+    You are an AI assistant tasked with writing a daily diary entry for a user. The diary should reflect on the user's day, incorporating insights from their conversations and articles they've read. 
+
+    **Guidelines:**
+    - **Tone:** Reflective and personal
+    - **Style:** First-person narrative, informal
+    - **Length:** Between 200 to 500 words
+    - **Language:** English
+
+    **Conversation History:**
     ```
-    ${topic_conversations}
+    {conversation_history}
     ```
+
+    **Articles Read:**
+    ```
+    {articles_read}
+    ```
+
+    **Task:**
+    Write a coherent and engaging diary entry that:
+    - Summarizes key points from the conversations and articles.
+    - Reflects on how these interactions and readings impacted the user's thoughts and feelings.
+    - Includes personal insights or lessons learned.
+    - Maintains a natural and conversational tone.
     """.replace('    ', '').strip()
     return llm.invoke(prompt).content
 

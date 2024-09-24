@@ -313,7 +313,7 @@ def create_memory_from_wechat_article(
     
 @router.post("/v1/memories/connections_graph", response_model=MemoryConnectionsGraphResponse, tags=['memories'])
 async def get_memory_connections_graph(request: MemoryConnectionsGraphRequest, uid: str = Depends(auth.get_current_user_uid)):
-    memory_ids = set(request.memory_ids)
+    memory_ids = request.memory_ids
     depth = request.memory_connection_depth
     
     forest = []

@@ -16,12 +16,12 @@ def _get_categorized_memories(memories: list[Memory.dict]) -> Dict[str, List[Mem
 
     return category_to_memories
 
-def generate_diary_for_uid(uid: str, memories: list[Memory.dict]) -> str:
+async def generate_diary_for_uid(uid: str, memories: list[Memory.dict]) -> str:
     user_name, user_made_facts, generated_facts  = get_prompt_data(uid)
     user_facts = [*user_made_facts, *generated_facts]
     category_to_memories = _get_categorized_memories(memories)
 
-    result = obtain_diary(user_name, user_facts, category_to_memories)
+    result = await obtain_diary(user_name, user_facts, category_to_memories)
     logger.info(result)
 
     return result
