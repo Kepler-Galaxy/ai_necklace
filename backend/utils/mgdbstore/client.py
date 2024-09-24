@@ -8,6 +8,15 @@ ID_Field_DICT = {
     "users": "uid"
 }
 
+class DocumentSnapshot:
+    def __init__(self, document_id: Any, data: Dict[str, Any]):
+        self.id = document_id
+        self._data = data
+
+    def to_dict(self) -> Dict[str, Any]:
+        """返回文档的字典表示。"""
+        return self._data
+
 class DocumentReference:
     def __init__(self, db, collection_name: str, document_id: Optional[Any] = None):
         self.db = db
@@ -31,11 +40,18 @@ class DocumentReference:
             data['_id'] = self.document_id
             self.collection_ref.replace_one({'_id': self.document_id}, data, upsert=True)
 
-    def get(self):
-        return self.collection_ref.find_one({'_id': self.document_id})
+    def get(self) -> DocumentSnapshot:
+        doc_data = self.collection_ref.find_one({'_id': self.document_id})
+        if doc_data:
+            return DocumentSnapshot(doc_data['_id'], doc_data)
+        else:
+            return DocumentSnapshot(0, {})
 
     def delete(self):
         self.collection_ref.delete_one({'_id': self.document_id})
+
+    def update(self, data: Dict[str, Any]):
+        self.collection_ref.update_one({'_id': self.document_id}, {'$set': data})
 
 
 class CollectionReference:
@@ -56,9 +72,14 @@ class CollectionReference:
         query = {}
         for filter in self._filters:
             query.update(filter.to_query())
+        # todo: Change to return a documentSnapshot list @zhihuangliu
         return self.collection.find(query)
 
-    # Additional methods like get(), add(), etc., can be implemented as needed
+    def add(self, data: Dict[str, Any]):
+        result = self.collection.insert_one(data)
+        return result.inserted_id
+
+    # Additional methods like get(), etc., can be implemented as needed
 
 
 class WriteBatch:

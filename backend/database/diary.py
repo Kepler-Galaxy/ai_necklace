@@ -3,7 +3,8 @@ from typing import List, Dict
 from google.cloud import firestore
 from google.cloud.firestore_v1 import FieldFilter
 
-from ._client import db
+# from ._client import db
+from utils.mgdbstore.client import db
 
 def get_diaries(uid: str, limit: int = 100, offset: int = 0):
     diaries_ref = db.collection('users').document(uid).collection('diaries')
