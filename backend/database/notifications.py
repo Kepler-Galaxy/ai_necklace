@@ -1,9 +1,9 @@
 import asyncio
 from loguru import logger
-from google.cloud.firestore_v1.base_query import FieldFilter
+# from google.cloud.firestore_v1.base_query import FieldFilter
 from google.cloud.firestore import DELETE_FIELD
-from ._client import db
-
+# from ._client import db
+from utils.mgdbstore.client import db, FieldFilter
 
 def save_token(uid: str, data: dict):
     db.collection('users').document(uid).set(data, merge=True)
