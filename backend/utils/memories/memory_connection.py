@@ -3,6 +3,7 @@ from models.memory import Memory, MemoryConnection
 import database.memories as memories_db
 from database.vector_db import query_vectors
 from utils.llm import generate_embedding, explain_relationship
+from loguru import logger
 
 def get_similar_memories(memory: Memory, uid:str, top_k: int = 5) -> List[str]:
     """
@@ -37,6 +38,7 @@ def explain_related_memories(memory: Memory, uid:str, top_k: int = 3) -> List[Me
     connections = []
     for related_memory in related_memories:
         try:
+            logger.info(f'Explaining relationship between {memory.id} and {related_memory["id"]}')
             relationship_output = explain_relationship(memory, Memory(**related_memory))
             if relationship_output.related:
                 connections.append(MemoryConnection(memory_id=related_memory['id'], explanation=relationship_output.explanation))

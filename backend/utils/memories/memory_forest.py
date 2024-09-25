@@ -1,67 +1,73 @@
 from collections import deque
-from typing import List
+from typing import List, Union, Dict, Set
 from models.memory import Memory, MemoryConnectionNode
 import database.memories as memories_db
+from loguru import logger
 
-async def build_memory_connection_tree(uid: str, root_id: str, max_depth: int, is_include_memory: bool = False) -> MemoryConnectionNode:
-    queue = deque([(root_id, None, 0)])
-    nodes = {}
+async def build_memory_connection_forest(uid: str, memory_ids: List[str], max_depth: int, is_include_memory: bool = False) -> List[MemoryConnectionNode]:
+    logger.info(f"Building memory connection forest for {len(memory_ids)} memories with max depth {max_depth}")
+    visited = set()
+    memory_cache = {}
     
-    while queue:
-        level_memory_ids = [memory_id for memory_id, _, depth in queue if depth == queue[0][2]]
-        current_depth = queue[0][2]
+    async def build_tree(memory_id: str, depth: int, explanation: str = None) -> MemoryConnectionNode:
+        if depth > max_depth or memory_id in visited:
+            return None
         
-        if current_depth > max_depth:
-            break
+        visited.add(memory_id)
         
-        # Fetch all memories for the current level at once
-        level_memories = {}
-        for memory_data in await memories_db.get_memories_by_id(uid, level_memory_ids):  # Await the async call
-            memory = Memory(**memory_data)
-            level_memories[memory.id] = memory
+        if memory_id not in memory_cache:
+            memory_data = memories_db.get_memories_by_id(uid, [memory_id])
+            if not memory_data:
+                return None
+            memory_cache[memory_id] = memory_data[0]  # Store the dict directly
         
-        for memory_id, explanation, _ in queue:
-            if memory_id not in level_memories:
-                continue  # User might delete a memory afterwards, skip if memory is not found
-            
-            memory = level_memories[memory_id]
-            if memory_id not in nodes:
-                nodes[memory_id] = MemoryConnectionNode(memory_id=memory_id, explanation=explanation, memory=memory if is_include_memory else None, children=[])
-            
-            if current_depth < max_depth:
-                for connection in memory.connections:
-                    if connection.memory_id not in nodes:
-                        queue.append((connection.memory_id, connection.explanation, current_depth + 1))
-                    nodes[memory_id].children.append(MemoryConnectionNode(memory_id=connection.memory_id, explanation=connection.explanation, children=[]))
+        memory = memory_cache[memory_id]
         
-        # Remove processed memories from the queue
-        queue = deque([item for item in queue if item[2] > current_depth])
+        children = []
+        if depth < max_depth and memory.get('connections'):
+            for connection in memory['connections']:
+                child_node = await build_tree(connection['memory_id'], depth + 1, connection['explanation'])
+                if child_node:
+                    children.append(child_node)
+        
+        return MemoryConnectionNode(
+            memory_id=memory_id,
+            explanation=explanation,
+            memory=memory if is_include_memory else None,
+            children=children
+        )
     
-    return nodes[root_id]
+    forest = []
+    for memory_id in memory_ids:
+        if memory_id not in visited:
+            tree = await build_tree(memory_id, 0)
+            if tree:
+                forest.append(tree)
+    
+    return forest
 
-def get_all_memories_from_tree(node: MemoryConnectionNode, is_only_id: bool = False) -> List[Memory]:
+async def build_memory_forest(uid: str, memory_ids: List[str], max_depth: int, is_include_memory: bool = False) -> List[MemoryConnectionNode]:
+    logger.info(f"Building memory forest for {len(memory_ids)} memories with max depth {max_depth}")
+    return await build_memory_connection_forest(uid, memory_ids, max_depth, is_include_memory)
+
+def get_all_memories_from_tree(node: MemoryConnectionNode, is_only_id: bool = False) -> Union[List[Dict], List[str]]:
+    if node is None:
+        return []
+    
     if is_only_id:
         nodes = [node.memory_id]
     else:
+        assert node.memory is not None, "Memory is None"
         nodes = [node.memory]
 
     for child in node.children:
         nodes.extend(get_all_memories_from_tree(child, is_only_id))
     return nodes
 
-async def build_memory_forest(uid: str, memory_ids: List[str], max_depth: int, is_include_memory: bool = False) -> List[MemoryConnectionNode]:
-    forest = []
-    visited = set()
+def get_all_memories_from_forest(forest: List[MemoryConnectionNode], is_only_id: bool = False) -> Union[List[Dict], List[str]]:
+    if not forest:
+        return []
     
-    for memory_id in memory_ids:
-        if memory_id not in visited:
-            tree = await build_memory_connection_tree(uid, memory_id, max_depth, is_include_memory)
-            forest.append(tree)
-            visited.update(get_all_memories_from_tree(tree, is_only_id=True))
-
-    return forest
-
-def get_all_memories_from_forest(forest: List[MemoryConnectionNode], is_only_id: bool = False) -> List[Memory]:
     memories = []
     for tree in forest:
         memories.extend(get_all_memories_from_tree(tree, is_only_id))

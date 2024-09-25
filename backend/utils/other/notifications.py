@@ -10,7 +10,7 @@ import database.chat as chat_db
 import database.memories as memories_db
 import database.notifications as notification_db
 import database.diary as diaries_db
-from models.diary import DiaryDB
+from models.diary import DiaryConfig, diary_from_configs
 from models.notification_message import NotificationMessage
 from utils.llm import get_memory_summary
 from utils.notifications import send_notification, send_bulk_notification
@@ -113,16 +113,15 @@ async def _generate_dairy_and_send_notification(user_data: tuple):
 
         start_at_utc = datetime.now(pytz.utc) - timedelta(days=1)
         end_at_utc = datetime.now(pytz.utc)
-        memories = memories_db.filter_memories_by_date(uid, start_at_utc, end_at_utc)
-        if len(memories) == 0:
-            logger.info(f'{uid} has no memory between {start_at_utc} and {end_at_utc}, skip diary generation')
-            return
-    
-        logger.info(f'generating diary for {uid} using {len(memories)} memories')
-        diary = DiaryDB.from_memories(uid, memories, user_specified_created_at=end_at_utc)
+        config = DiaryConfig(
+            uid=uid,
+            diary_start_utc=datetime.fromisoformat(start_at_utc),
+            diary_end_utc=datetime.fromisoformat(end_at_utc)
+        )
+        diary = await diary_from_configs(config)
         diaries_db.save_diary(uid, diary.dict())
 
-        diary_notification_title = f'{len(memories)} memories consolidated to your digital brain. Check it out!'
+        diary_notification_title = "Memories consolidated to your digital brain. Check the diary out!"
         diary_notification_body = "Wear your Kepler Star and capture more personal conversation memories tomorrow."
         send_notification(fcm_token, diary_notification_title, diary_notification_body)
 

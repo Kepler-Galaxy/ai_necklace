@@ -479,21 +479,16 @@ def new_facts_extractor(uid: str, segments: List[TranscriptSegment]) -> List[Fac
 # ************* Diary **************
 # **********************************
 
-def obtain_diary(user_name: str, user_facts: List[Fact], topic_to_memories: dict[str, List[Memory]]) -> str:
-    string_parts = []
-    for topic, memories in topic_to_memories.items():
-        string_parts.append(f'Topic {topic} with the following memories: \n')
-        string_parts.append(Memory.memories_to_string(memories, include_action_items=False)+"\n")
-    topic_conversations = ''.join(string_parts)
-
+async def obtain_diary(conversation_history: str, articles_read: str, related_memories: str) -> str:
     prompt = f"""
-    You are an AI assistant tasked with writing a daily diary entry for a user. The diary should reflect on the user's day, incorporating insights from their conversations and articles they've read. 
+    You are an AI assistant tasked with writing diary entries for a user. The diary should reflect on the user's experiences, 
+    incorporating insights from conversations, articles read, and related memories.
 
     **Guidelines:**
     - **Tone:** Reflective and personal
     - **Style:** First-person narrative, informal
     - **Length:** Between 200 to 500 words
-    - **Language:** English
+    - **Language:** Chinese
 
     **Conversation History:**
     ```
@@ -505,13 +500,24 @@ def obtain_diary(user_name: str, user_facts: List[Fact], topic_to_memories: dict
     {articles_read}
     ```
 
+    **Related Past Memories and why they are related:**
+    ```
+    {related_memories}
+    ```
+
     **Task:**
     Write a coherent and engaging diary entry that:
-    - Summarizes key points from the conversations and articles.
-    - Reflects on how these interactions and readings impacted the user's thoughts and feelings.
+    - Only uses the conversation history, articles read, and related memories. Don't make up non-existingpersonal experiences.
+    - Begins with a brief overview of main events.
+    - Summarizes key points from conversations and articles, including vivid details or quotes.
+    - Reflects on how these interactions and readings impacted thoughts and feelings throughout the day.
+    - Describes any challenges faced and how they were addressed.
     - Includes personal insights or lessons learned.
-    - Maintains a natural and conversational tone.
+    - Connects today's experiences with past related memories when relevant.
+
+    Maintain a natural, conversational tone as if the user is talking to a close friend or to themself.
     """.replace('    ', '').strip()
+    logger.info(prompt)
     return llm.invoke(prompt).content
 
 # **************************************************

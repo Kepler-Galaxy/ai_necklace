@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, UploadFile, File
 from loguru import logger
 import os
 import aiofiles
-from utils.memories.memory_forest import build_memory_connection_tree, get_all_nodes
+from utils.memories.memory_forest import build_memory_forest
 
 import database.memories as memories_db
 import database.redis_db as redis_db
@@ -316,14 +316,6 @@ async def get_memory_connections_graph(request: MemoryConnectionsGraphRequest, u
     memory_ids = request.memory_ids
     depth = request.memory_connection_depth
     
-    forest = []
-    visited = set()
-    
-    for memory_id in memory_ids:
-        if memory_id not in visited:
-            tree = await build_memory_connection_tree(uid, memory_id, depth)
-            forest.append(tree)
-            visited.update(get_all_nodes(tree))
-    
+    forest = await build_memory_forest(uid, memory_ids, depth)
     return MemoryConnectionsGraphResponse(forest=forest)
 

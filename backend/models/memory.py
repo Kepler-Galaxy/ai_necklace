@@ -81,7 +81,9 @@ class Structured(BaseModel):
 
     def __str__(self):
         result = (f"{str(self.title).capitalize()} ({str(self.category.value).capitalize()})\n"
-                  f"{str(self.overview).capitalize()}\n")
+                  f"{str(self.overview).capitalize()}\n"
+                  f"Key Points:\n"
+                  f"{str(self.key_points).capitalize()}\n")
 
         if self.action_items:
             result += "Action Items:\n"
@@ -191,7 +193,8 @@ class Memory(BaseModel):
             memory_str = (f"Memory #{i + 1}\n"
                           f"{formatted_date} ({str(memory.structured.category.value).capitalize()})\n"
                           f"{str(memory.structured.title).capitalize()}\n"
-                          f"{str(memory.structured.overview).capitalize()}\n")
+                          f"{str(memory.structured.overview).capitalize()}\n"
+                          f"{str(memory.structured.key_points).capitalize()}\n")
 
             if include_action_items and memory.structured.action_items:
                 memory_str += "Action Items:\n"
@@ -236,7 +239,7 @@ class MemoryConnectionNode(BaseModel):
     memory_id: str
     children: List['MemoryConnectionNode'] = []
     explanation: Optional[str] = None
-    memory: Optional[Memory] = None
+    memory: Optional[Dict] = None
 
 class MemoryConnectionsGraphResponse(BaseModel):
     forest: List[MemoryConnectionNode]

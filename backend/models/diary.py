@@ -2,58 +2,123 @@ from datetime import datetime
 from typing import Optional
 
 from pydantic import BaseModel, Field
-from database._client import document_id_from_seed
-from utils.diary.process_diary import generate_diary_for_uid
+from typing import Tuple
 from models.memory import Memory
-from utils.memories.memory_forest import build_memory_forest, 
+from database._client import document_id_from_seed
+from utils.llm import obtain_diary
+from utils.memories.memory_forest import build_memory_forest, get_all_memories_from_forest
+from database.memories import filter_memories_by_date, get_memories_by_id
+from database.diary import get_diaries_by_id
+from loguru import logger
+
+class DiaryConfig(BaseModel):
+    uid: str
+    diary_start_utc: datetime
+    diary_end_utc: datetime
+    
+class DiaryUserConfig(BaseModel):
+    # TODO(yiqi): allow user to edit the memory ids, in which way?
+    memory_ids_to_add: list[str]
+    memory_ids_to_remove: list[str]
+    diary_ids_to_add: list[str]
+    diary_ids_to_remove: list[str]
+
 
 class DiaryDescription(BaseModel):
-    uid: str = Field(description="The user id")
-    diary_start_utc: datetime = Field(description="The start time of the memories")
-    diary_end_utc: datetime = Field(description="The end time of the memories")
-    memory_ids: list[str] = Field(description="Selected memories ids within the time range")
-    reference_memory_ids: list[str] = Field(description="The memory ids that are related to the selected memories")
-    reference_diary_ids: list[str] = Field(description="The diary ids that are related for this diary generation")
+    memory_ids: list[str]
+    reference_memory_ids: list[str]
+    reference_diary_ids: list[str]
 
-    async def diary_description_from_daily_memories(uid: str, memories: list[Memory], start_utc: datetime = None, 
-                                                    end_utc: datetime = None) -> 'DiaryDescription':
-        forest = []
-        visited = set()
+class DiaryRawMaterials(BaseModel):
+    memories: list[dict]
+    reference_memories: list[dict]
+    reference_diaries: list[dict]
 
-        for memory_id in memory_ids:
-            if memory_id not in visited:
-                tree = await build_memory_connection_tree(uid, memory_id, depth)
-                forest.append(tree)
-                visited.update(get_all_nodes(tree))
+async def description_and_raw_materials_from_configs(config: DiaryConfig, user_config: DiaryUserConfig = None) -> Tuple[DiaryDescription, DiaryRawMaterials]:
+    memories = filter_memories_by_date(config.uid, config.diary_start_utc, config.diary_end_utc)
+    
+    if user_config:
+        memories = [memory for memory in memories if memory['id'] not in user_config.memory_ids_to_remove]
+        memories_to_add = get_memories_by_id(config.uid, user_config.memory_ids_to_add)
+        memories.extend(memories_to_add)
+    
+    memory_ids = [memory['id'] for memory in memories]
+    forest = await build_memory_forest(config.uid, memory_ids, max_depth=2, is_include_memory=True)
+    reference_memories = get_all_memories_from_forest(forest)
+    reference_memories = [memory for memory in reference_memories if memory['id'] not in memory_ids]
+    
+    if reference_memories:
+        reference_memory_ids = [memory['id'] for memory in reference_memories]
+    else:
+        reference_memory_ids = []
+    
+    # TODO: Implement reference memories and diaries retrieval
+    reference_diaries = []
+    
+    description = DiaryDescription(
+        memory_ids=memory_ids,
+        reference_memory_ids=reference_memory_ids,
+        reference_diary_ids=[]
+    )
+    raw_materials = DiaryRawMaterials(
+        memories=memories,
+        reference_memories=[memory.dict() for memory in reference_memories],
+        reference_diaries=reference_diaries
+    )
+    
+    return description, raw_materials
 
-        return DiaryDescription(
-            uid=uid,
-            diary_start_utc=start_utc,
-            diary_end_utc=end_utc,
-            memory_ids=[memory['id'] for memory in memories],
-            reference_memory_ids=[]
-            reference_diary_ids=[]
-        )
+async def raw_materials_from_description(description: DiaryDescription) -> DiaryRawMaterials:
+    memories = get_memories_by_id(description.memory_ids)
+    reference_memories = get_memories_by_id(description.reference_memory_ids)
+    reference_diaries = get_diaries_by_id(description.reference_diary_ids)
+    
+    return DiaryRawMaterials(
+        memories=memories,
+        reference_memories=reference_memories,
+        reference_diaries=reference_diaries
+    )
+ 
+async def diary_content_from_raw_materials(raw_materials: DiaryRawMaterials) -> str:
+    conversation_history = []
+    articles_read = []
+    related_memories = []
 
-    async def diary_description_from_memory_ids(uid: str, memory_ids: list[str], start_utc: datetime = None, 
-                                                end_utc: datetime = None) -> 'DiaryDescription':
-        return DiaryDescription(
-            uid=uid,
-            memory_start_utc=start_utc,
-            memory_end_utc=end_utc,
-            memory_ids=memory_ids,
-            reference_memory_ids=[]
-        )
+    for memory in raw_materials.memories:
+        if 'external_link' in memory and memory['external_link']:
+            articles_read.append(memory)
+        elif 'transcript_segments' in memory and memory['transcript_segments']:
+            conversation_history.append(memory)
+        else:
+            logger.warning(f"Memory {memory.get('id', 'unknown')} doesn't have external_link or transcript_segments")
+
+    related_memories = raw_materials.reference_memories
+
+    conversation_history_str = Memory.memories_to_string(conversation_history)
+    articles_read_str = Memory.memories_to_string(articles_read, include_action_items=False)
+    related_memories_str = Memory.memories_to_string(related_memories, include_action_items=True)
+
+    result = await obtain_diary(conversation_history_str, articles_read_str, related_memories_str)
+    logger.info(result)
+
+    return result
 
 class DiaryContent(BaseModel):
     footprint_jpeg: Optional[str] = Field(description="The serialized content of the footprint jpeg")
     content: str = Field(description="The diary content generated by llm")
 
     @staticmethod
-    async def generate_content(metadata: 'DiaryMetadata') -> 'DiaryContent':
+    async def generate_content(raw_materials: 'DiaryRawMaterials') -> 'DiaryContent':
+        if len(raw_materials.memories) == 0:
+            logger.info(f"No memories found for diary generation, skip it")
+            return DiaryContent(
+                footprint_jpeg="",
+                content=""
+            )
+        
         return DiaryContent(
             footprint_jpeg="",
-            content=await generate_diary_for_uid(metadata.uid, metadata.memory_ids)
+            content=await diary_content_from_raw_materials(raw_materials)
         )
     
 class Diary(BaseModel):
@@ -61,20 +126,38 @@ class Diary(BaseModel):
     created_at: datetime
     updated_at: datetime
     user_deleted: bool = False
-
+    
+    config: DiaryConfig
+    user_config: Optional[DiaryUserConfig]
     description: DiaryDescription
+    # Don't store raw materials in the diary, it's too large
     content: DiaryContent
 
-    @staticmethod
-    async def from_description(uid: str, memories: list[Memory], user_specified_created_at: None) -> 'DiaryMetadata':
-        memory_ids=[memory['id'] for memory in memories]
+async def diary_from_configs(config: DiaryConfig, user_config: DiaryUserConfig = None) -> Diary:
+    description, raw_materials = await description_and_raw_materials_from_configs(config, user_config)
+    content = await DiaryContent.generate_content(raw_materials)
+    return Diary(
+        id=document_id_from_seed("".join(description.memory_ids)),
+        created_at=datetime.utcnow(),
+        updated_at=datetime.utcnow(),
+        user_deleted=False,
+        config=config,
+        user_config=user_config,
+        description=description,
+        content=content,
+    )
 
-        return DiaryMetadata(
-            id=document_id_from_seed(uid.join(memory_ids)),
-            uid=uid,
-            created_at=user_specified_created_at if user_specified_created_at else datetime.utcnow(),
-            updated_at=datetime.utcnow(),
-            memory_ids = memory_ids,
-            reference_memory_ids=[],
-            user_deleted=False
-        )
+async def diary_regeneration_from_description(description: DiaryDescription) -> Diary:
+    raw_materials = await raw_materials_from_description(description)
+    content = await DiaryContent.generate_content(raw_materials)
+    return Diary(
+        id=description.id,
+        created_at=description.created_at,
+        updated_at=datetime.utcnow(),
+        user_deleted=False,
+
+        config=description.config,
+        user_config=description.user_config,
+        description=description,
+        content=content,
+    )
