@@ -7,6 +7,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 import firebase_admin
+from google.cloud import firestore
 
 from fastapi import FastAPI, BackgroundTasks
 from utils.mgdbstore import client
@@ -20,8 +21,15 @@ else:
     print('initializing firebase without credentials')
     firebase_admin.initialize_app()
 
+def test_stream():
+    users_ref = (
+        client.db.collection("users").order_by('created_at', direction=firestore.Query.DESCENDING).limit(1).offset(1)
+    )
 
-if __name__ == "__main__":
+    for doc in users_ref.stream():
+        print(doc.id, doc.to_dict())
+
+def database_migration():
     for user in fdb.collection("users").stream(timeout=3600):
         print(user.id, user.to_dict())
         user_dict = user.to_dict()
@@ -57,3 +65,9 @@ if __name__ == "__main__":
             processing_memory_dict["uid"] = user.id
             client.db.collection("processing_memories").document(processing_memory.id).set(processing_memory_dict)
             # fdb.collection("users").document(user.id).collection("processing_memories").document(processing_memory.id).update(processing_memory_dict)
+
+
+if __name__ == "__main__":
+    test_stream()
+
+

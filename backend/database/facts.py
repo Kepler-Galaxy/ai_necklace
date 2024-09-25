@@ -2,9 +2,10 @@ from datetime import datetime, timezone
 from typing import List
 
 from google.cloud import firestore
-from google.cloud.firestore_v1 import FieldFilter
+# from google.cloud.firestore_v1 import FieldFilter
 
-from ._client import db
+# from ._client import db
+from utils.mgdbstore.client import db, FieldFilter
 
 
 def get_facts(uid: str, limit: int = 100, offset: int = 0):

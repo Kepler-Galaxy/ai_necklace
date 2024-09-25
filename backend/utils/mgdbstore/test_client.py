@@ -31,7 +31,7 @@ def test_document_reference_set_and_get(mongo_test_db):
     doc_ref.set(data)
 
     # 获取文档
-    result = doc_ref.get()
+    result = doc_ref.get().to_dict()
     assert result['name'] == "John Doe"
     assert result['email'] == "john@example.com"
     assert result['age'] == 30
@@ -69,8 +69,8 @@ def test_write_batch(mongo_test_db):
     batch.commit()
 
     # 验证插入是否成功
-    assert doc_ref_1.get()["name"] == "User 3"
-    assert doc_ref_2.get()["name"] == "User 4"
+    assert doc_ref_1.get().to_dict()["name"] == "User 3"
+    assert doc_ref_2.get().to_dict()["name"] == "User 4"
 
 #
 # # 测试 where 过滤查询
@@ -100,6 +100,6 @@ def test_subcollection_reference(mongo_test_db):
     subcollection_ref.set(data)
 
     # 验证插入成功
-    result = subcollection_ref.get()
+    result = subcollection_ref.get().to_dict()
     assert result["title"] == "First Memory"
     assert result["description"] == "A great memory"

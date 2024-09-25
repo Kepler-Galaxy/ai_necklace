@@ -1,4 +1,4 @@
-from google.cloud.firestore_v1.async_client import AsyncClient
+# from google.cloud.firestore_v1.async_client import AsyncClient
 import asyncio
 import json
 import uuid
@@ -6,12 +6,15 @@ from datetime import datetime
 from typing import List, Tuple
 
 from google.cloud import firestore
-from google.cloud.firestore_v1 import FieldFilter
+# from google.cloud.firestore_v1 import FieldFilter
 
 import utils.other.hume as hume
 from models.memory import MemoryPhoto, PostProcessingStatus, PostProcessingModel
 from models.transcript_segment import TranscriptSegment
-from ._client import db
+# from ._client import db
+from utils.mgdbstore.client import db, FieldFilter
+from utils.mgdbstore.async_client import AsyncClient
+
 
 
 def upsert_memory(uid: str, memory_data: dict):
