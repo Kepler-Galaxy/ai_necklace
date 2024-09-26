@@ -25,7 +25,7 @@ class _DiaryPageState extends State<DiaryPage> {
   late DateTime _selectedDay;
   late DateTime _focusedDay;
   bool _isLoading = true;
-  List<ServerMemory> _selectedDayMemories = [];
+  List<String> _selectedDayMemoryIds = [];
   List<MemoryConnectionNode> _memoryChainForest = [];
 
   @override
@@ -38,12 +38,16 @@ class _DiaryPageState extends State<DiaryPage> {
     // _loadDiaries();
     // _loadMemoryChainData();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      _loadDiaries();
-      _loadMemoryChainData();
+      _loadDiariesAndMemoryChainData();
     });
   }
 
-  void _loadDiaries() async {
+  Future<void> _loadDiariesAndMemoryChainData() async {
+    await _loadDiaries();
+    await _loadMemoryChainData();
+  }
+
+  Future<void> _loadDiaries() async {
     setState(() => _isLoading = true);
     try {
       final diaryProvider = Provider.of<DiaryProvider>(context, listen: false);
@@ -53,7 +57,7 @@ class _DiaryPageState extends State<DiaryPage> {
         _focusedDay = _selectedDay;
         _isLoading = false;
       });
-      _loadMemoriesForSelectedDay();
+      _updateSelectedDayMemoryIds();
     } catch (e) {
       print("Error loading diaries: $e");
       setState(() {
@@ -62,60 +66,91 @@ class _DiaryPageState extends State<DiaryPage> {
     }
   }
 
-  void _loadMemoriesForSelectedDay() async {
-    _selectedDayMemories = [];
+  void _updateSelectedDayMemoryIds() {
     final diaryProvider = Provider.of<DiaryProvider>(context, listen: false);
-    // TODO(yiqi): Bug due to timezone issues.
-    debugPrint('Loading memories for selected day: $_selectedDay');
     final diaries = diaryProvider.getDiariesForDay(_selectedDay);
     if (diaries.isNotEmpty) {
-      debugPrint('diary is not empty');
       final diary = diaries.first;
-      final memoryProvider =
-          Provider.of<MemoryProvider>(context, listen: false);
-      List<ServerMemory> selectedDayMemories =
-          await memoryProvider.getMemoriesByIds(diary.memoryIds);
       setState(() {
-        _selectedDayMemories = selectedDayMemories;
+        _selectedDayMemoryIds = diary.description.memoryIds;
+      });
+    } else {
+      setState(() {
+        _selectedDayMemoryIds = [];
       });
     }
   }
 
   Future<void> _loadMemoryChainData() async {
-    _memoryChainForest = [];
-    if (_selectedDayMemories.isEmpty) {
+    if (_selectedDayMemoryIds.isEmpty) {
+      debugPrint("No memory IDs selected for the day");
+      setState(() {
+        _memoryChainForest = [];
+        _isLoading = false;
+      });
       return;
     }
 
+    setState(() {
+      _isLoading = true;
+    });
+
     try {
+      debugPrint("Fetching memory connections graph for ids: $_selectedDayMemoryIds");
       final response = await getMemoryConnectionsGraph(
-        _selectedDayMemories.map((m) => m.id).toList(),
+        _selectedDayMemoryIds,
         3, // Number of levels
       );
 
-      setState(() {
-        debugPrint('memory chain forest is not empty');
-        _memoryChainForest = (response['forest'] as List)
-            .map((tree) => _parseMemoryConnectionNode(tree))
-            .toList();
-      });
+      debugPrint("Received response: $response");
+
+      if (response['forest'] != null) {
+        debugPrint("Forest data: ${response['forest']}");
+        if (response['forest'] is List) {
+          final forest = (response['forest'] as List)
+              .map((tree) => _parseMemoryConnectionNode(tree))
+              .toList();
+
+          if (mounted) {
+            setState(() {
+              _memoryChainForest = forest;
+              _isLoading = false;
+            });
+            debugPrint("Memory chain forest length: ${_memoryChainForest.length}");
+          } else {
+            debugPrint("Widget was disposed before setState could be called");
+          }
+        } else {
+          debugPrint("Forest is not a List: ${response['forest'].runtimeType}");
+          if (mounted) {
+            setState(() {
+              _memoryChainForest = [];
+              _isLoading = false;
+            });
+          }
+        }
+      } else {
+        debugPrint("Forest is null in the response");
+        if (mounted) {
+          setState(() {
+            _memoryChainForest = [];
+            _isLoading = false;
+          });
+        }
+      }
     } catch (e) {
       debugPrint('Error loading memory connections graph: $e');
-      setState(() {
-        _memoryChainForest = [];
-      });
+      if (mounted) {
+        setState(() {
+          _memoryChainForest = [];
+          _isLoading = false;
+        });
+      }
     }
   }
 
   MemoryConnectionNode _parseMemoryConnectionNode(Map<String, dynamic> node) {
-    return MemoryConnectionNode(
-      memoryId: node['memory_id'],
-      explanation: node['explanation'],
-      children: (node['children'] as List?)
-              ?.map((child) => _parseMemoryConnectionNode(child))
-              .toList() ??
-          [],
-    );
+    return MemoryConnectionNode.fromJson(node);
   }
 
   DateTime? _findClosestDiaryDate(DateTime date) {
@@ -222,7 +257,7 @@ class _DiaryPageState extends State<DiaryPage> {
                 _isCalendarExpanded =
                     false; // Collapse the calendar when a day is selected
               });
-              _loadMemoriesForSelectedDay();
+              _updateSelectedDayMemoryIds();
               _loadMemoryChainData();
             },
             calendarStyle: CalendarStyle(
@@ -277,74 +312,74 @@ class _DiaryPageState extends State<DiaryPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          if (diary.footprintJpeg == null || diary.footprintJpeg!.isEmpty)
+          if (diary.content.footprintJpeg == null || diary.content.footprintJpeg!.isEmpty)
             Text(
                 'Footprint image not available, try set app location permission to always allow to enable this feature',
                 style: TextStyle(color: const Color.fromARGB(255, 189, 0, 157)))
           else
             Image.memory(
-              base64Decode(diary.footprintJpeg!),
+              base64Decode(diary.content.footprintJpeg!),
             ),
           SizedBox(height: 16),
-          Text(diary.content.decodeSting),
-          SizedBox(height: 16),
-          Text('Related Memories:',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-          ..._selectedDayMemories.map((memory) => _buildMemoryItem(memory)),
+          Text(utf8.decode(diary.content.content.codeUnits)),
+          // SizedBox(height: 16),
+          // Text('Related Memories:',
+          //     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+          // ..._selectedDayMemoryIds.map((memoryId) => _buildMemoryItem(memoryId)),
         ],
       ),
     );
   }
 
-  Widget _buildMemoryItem(ServerMemory memory) {
-    return Container(
-      padding: const EdgeInsets.fromLTRB(16, 8, 8, 0),
-      margin: const EdgeInsets.fromLTRB(18, 0, 18, 0),
-      decoration: const BoxDecoration(
-        color: Colors.black,
-        borderRadius: BorderRadius.all(Radius.circular(16)),
-        border: GradientBoxBorder(
-          gradient: LinearGradient(colors: [
-            Color.fromARGB(127, 208, 208, 208),
-            Color.fromARGB(127, 188, 99, 121),
-            Color.fromARGB(127, 86, 101, 182),
-            Color.fromARGB(127, 126, 190, 236)
-          ]),
-          width: 1,
-        ),
-        shape: BoxShape.rectangle,
-      ),
-      child: ListTile(
-        contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-        title: Text(
-          memory.structured.title,
-          style: TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
-            fontSize: 18,
-          ),
-        ),
-        subtitle: Text(
-          memory.structured.category,
-          style: TextStyle(
-            color: Colors.white.withOpacity(0.8),
-            fontSize: 14,
-          ),
-        ),
-        trailing: Icon(
-          Icons.arrow_forward_ios,
-          color: Colors.white,
-        ),
-        onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) =>
-                  MemoryDetailPage(memory: memory, isPopup: true),
-            ),
-          );
-        },
-      ),
-    );
-  }
+  // Widget _buildMemoryItem(ServerMemory memory) {
+  //   return Container(
+  //     padding: const EdgeInsets.fromLTRB(16, 8, 8, 0),
+  //     margin: const EdgeInsets.fromLTRB(18, 0, 18, 0),
+  //     decoration: const BoxDecoration(
+  //       color: Colors.black,
+  //       borderRadius: BorderRadius.all(Radius.circular(16)),
+  //       border: GradientBoxBorder(
+  //         gradient: LinearGradient(colors: [
+  //           Color.fromARGB(127, 208, 208, 208),
+  //           Color.fromARGB(127, 188, 99, 121),
+  //           Color.fromARGB(127, 86, 101, 182),
+  //           Color.fromARGB(127, 126, 190, 236)
+  //         ]),
+  //         width: 1,
+  //       ),
+  //       shape: BoxShape.rectangle,
+  //     ),
+  //     child: ListTile(
+  //       contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+  //       title: Text(
+  //         memory.structured.title,
+  //         style: TextStyle(
+  //           color: Colors.white,
+  //           fontWeight: FontWeight.bold,
+  //           fontSize: 18,
+  //         ),
+  //       ),
+  //       subtitle: Text(
+  //         memory.structured.category,
+  //         style: TextStyle(
+  //           color: Colors.white.withOpacity(0.8),
+  //           fontSize: 14,
+  //         ),
+  //       ),
+  //       trailing: Icon(
+  //         Icons.arrow_forward_ios,
+  //         color: Colors.white,
+  //       ),
+  //       onTap: () {
+  //         Navigator.push(
+  //           context,
+  //           MaterialPageRoute(
+  //             builder: (context) =>
+  //                 MemoryDetailPage(memory: memory, isPopup: true),
+  //           ),
+  //         );
+  //       },
+  //     ),
+  //   );
+  // }
 }

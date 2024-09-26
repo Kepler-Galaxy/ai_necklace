@@ -316,6 +316,6 @@ async def get_memory_connections_graph(request: MemoryConnectionsGraphRequest, u
     memory_ids = request.memory_ids
     depth = request.memory_connection_depth
     
-    forest = await build_memory_forest(uid, memory_ids, depth)
+    forest = await build_memory_forest(uid, memory_ids, depth, is_include_memory=True)
     return MemoryConnectionsGraphResponse(forest=forest)
 
