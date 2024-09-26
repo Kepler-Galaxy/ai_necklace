@@ -150,7 +150,7 @@ def process_memory(uid: str, language_code: str, memory: Union[Memory, CreateMem
         logger.info(f'This memory has {len(memory.connections)} related memories')
         logger.info(f"inserting memory to pinecone and memory db")
 
-        vector = generate_embedding(str(structured))
+        vector = generate_embedding(memory.memories_to_string([memory], include_raw_data=True))
         upsert_vector(uid, memory, vector)
         # don't run plugins and extract facts for web article
         if (memory.source != MemorySource.web_link):

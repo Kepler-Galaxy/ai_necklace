@@ -5,7 +5,7 @@ from pydantic import BaseModel, Field
 from typing import Tuple
 from models.memory import Memory
 from database._client import document_id_from_seed
-from utils.llm import obtain_diary
+from utils.llm import obtain_recent_summary
 from utils.memories.memory_forest import build_memory_forest, get_all_memories_from_forest
 from database.memories import filter_memories_by_date, get_memories_by_id
 from database.diary import get_diaries_by_id
@@ -62,7 +62,7 @@ async def description_and_raw_materials_from_configs(config: DiaryConfig, user_c
     )
     raw_materials = DiaryRawMaterials(
         memories=memories,
-        reference_memories=[memory.dict() for memory in reference_memories],
+        reference_memories=reference_memories,  # No need to call .dict() here
         reference_diaries=reference_diaries
     )
     
@@ -94,11 +94,11 @@ async def diary_content_from_raw_materials(raw_materials: DiaryRawMaterials) -> 
 
     related_memories = raw_materials.reference_memories
 
-    conversation_history_str = Memory.memories_to_string(conversation_history)
-    articles_read_str = Memory.memories_to_string(articles_read, include_action_items=False)
-    related_memories_str = Memory.memories_to_string(related_memories, include_action_items=True)
+    conversation_history_str = Memory.memories_to_string(conversation_history, include_raw_data=True)
+    articles_read_str = Memory.memories_to_string(articles_read, include_action_items=False, include_raw_data=True)
+    related_memories_str = Memory.memories_to_string(related_memories, include_action_items=True, include_raw_data=False)
 
-    result = await obtain_diary(conversation_history_str, articles_read_str, related_memories_str)
+    result = await obtain_recent_summary(conversation_history_str, articles_read_str, related_memories_str)
     logger.info(result)
 
     return result
