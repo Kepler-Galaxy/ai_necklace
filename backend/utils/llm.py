@@ -18,6 +18,7 @@ from models.trend import TrendEnum, ceo_options, company_options, software_produ
 from utils.memories.facts import get_prompt_facts
 from utils.string import words_count
 from utils.memories.web_content import WebContentResponse
+from openai import RateLimitError
 
 llm_mini = ChatOpenAI(model='gpt-4o-mini')
 embeddings = OpenAIEmbeddings(model="text-embedding-3-large")
@@ -78,7 +79,7 @@ def get_transcript_structure(transcript: str, started_at: datetime, language_cod
     prompt = ChatPromptTemplate.from_messages([(
         'system',
         '''Your task is to provide structure and clarity to the recording transcription of a conversation.
-        The conversation language is {language_code}. Use English for your response.
+        The conversation language is {language_code}. Use Chinese for your response.
         
         For the title, use the main topic of the conversation.
         For the overview, condense the conversation into a summary with the main topics discussed, make sure to capture the key points and important details from the conversation.
@@ -169,7 +170,7 @@ def summarize_experience_text(text: str) -> Structured:
 def get_memory_summary(uid: str, memories: List[Memory]) -> str:
     user_name, facts_str = get_prompt_facts(uid)
 
-    conversation_history = Memory.memories_to_string(memories)
+    conversation_history = Memory.memories_to_string(memories, include_raw_data=False)
 
     prompt = f"""
     You are an experienced mentor, that helps people achieve their goals and improve their lives.
@@ -529,28 +530,77 @@ def trends_extractor(memory: Memory) -> List[Item]:
 # ************* Diary **************
 # **********************************
 
-def obtain_diary(user_name: str, user_facts: List[Fact], topic_to_memories: dict[str, List[Memory]]) -> str:
-    string_parts = []
-    for topic, memories in topic_to_memories.items():
-        string_parts.append(f'Topic {topic} with the following memories: \n')
-        string_parts.append(Memory.memories_to_string(memories, include_action_items=False)+"\n")
-    topic_conversations = ''.join(string_parts)
-
+async def obtain_recent_summary(conversation_history: str, articles_read: str, related_memories: str) -> str:
     prompt = f"""
-    
-    You are a personal assisstant, that helps people to keep diary. This diary will be used by the owner in the future to examine what happened in the past days, to highlight the achievements in work and life challenges, and to celebrate the happy and leisurely time spent with friends or family.
-    You are serving {user_name} right now, this is what you know about {user_name}: {Fact.get_facts_as_str(user_facts)}
-    
-    
-    The following are {user_name}'s memory on different topics, each topic has a few memories with its transcripts and a summary.
-    Note that the transcripts are recorded by a careless recorder and contains a lot of errors. Words are recorded incorrectly due to similar pronunciation. so figure out what might be the real transcript with your own judgement.
-  
-    your reponse should be in Chinese. Between 200 words to 1000 words. in plain text without markdown, just like writting a diary.
+    As a personal assistant, your task is to create a comprehensive summary of the user's recent experiences, focusing on conversations, articles read, and related memories.
+
+    **Guidelines:**
+    - Use second person (you, your, yours) when referring to the user and their experiences.
+    - Write in Chinese.
+    - Limit the summary to 1500 words, prioritizing the most impactful information.
+
+    **Conversation History:**
     ```
-    ${topic_conversations}
+    {conversation_history}
     ```
-    """.replace('    ', '').strip()
-    return llm.invoke(prompt).content
+
+    **Articles Read:**
+    ```
+    {articles_read}
+    ```
+
+    **Related Past Experiences:**
+    ```
+    {related_memories}
+    ```
+
+    **Task:**
+    Create a structured summary with these sections:
+
+    1. 对话概述 (Conversation Overview):
+       - Summarize main topics from all conversations.
+       - For each topic:
+         * Highlight key points and important details.
+         * Identify potential action items.
+         * If relevant, incorporate insights from articles or related memories for context.
+       - Prioritize topics most relevant to the user's current goals.
+
+    2. 阅读分析 (Reading Analysis):
+       - For each article:
+         * Briefly summarize its main points.
+         * Explain any significant insights, using the article's tone.
+         * If applicable, include relevant quotes to reinforce key ideas.
+         * For articles with deeper implications, pose reflective questions.
+       - Draw connections between articles when possible.
+       - Relate article content to past experiences or conversations where relevant.
+
+    3. 综合洞察 (Integrated Insights):
+       - Identify emerging patterns or themes in the user's interests or activities.
+       - If enough information is provided, list the specific tasks or actionable next steps in work and life.
+
+    Important Notes:
+    - Strictly adhere to the provided information. Do not invent or assume additional details.
+    - Prioritize information most relevant to the user's current goals and recent experiences.
+    - Draw connections between different pieces of information to provide a cohesive overview.
+    - If certain sections lack substantial information, briefly acknowledge this and focus on areas with more content.
+    """
+
+    try:
+        # First, try with gpt-4o, if rate limit is exceeded, openai will not charge us
+        return llm.invoke(prompt).content
+    except RateLimitError as e:
+        logger.warning(f"Rate limit exceeded for gpt-4o. Falling back to gpt-4o-mini. Error: {str(e)}")
+        try:
+            # Fallback to gpt-4o-mini
+            mini_llm = ChatOpenAI(model="gpt-4o-mini")
+            return mini_llm.invoke(prompt).content
+        except Exception as e:
+            logger.error(f"Error occurred while using gpt-4o-mini: {str(e)}")
+            raise
+
+    except Exception as e:
+        logger.error(f"Unexpected error occurred: {str(e)}")
+        raise
 
 # **************************************************
 # ************* WECHAT ARTICLE SUMMARIZATION ********
@@ -616,8 +666,8 @@ def explain_relationship(memory: Memory, related_memory: Memory) -> ExplainRelat
     parser = PydanticOutputParser(pydantic_object=ExplainRelationshipOutput)
     chain = prompt | llm | parser
     response = chain.invoke({
-        'memory1_str': str(memory.structured), 
-        'memory2_str': str(related_memory.structured), 
+        'memory1_str': Memory.memories_to_string([memory], include_raw_data=True),
+        'memory2_str': Memory.memories_to_string([related_memory], include_raw_data=True), 
         'format_instructions': parser.get_format_instructions()})
 
     return response

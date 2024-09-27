@@ -56,7 +56,8 @@ def _get_structured(
         if memory.external_link:
             memory.external_link.web_content_response = extract_web_content(memory.external_link.external_link_description.link)
             if memory.external_link.web_content_response.success:    
-                logger.info(f"article_content: {memory.external_link.web_content_response.main_content}")
+                logger.info(f"extracted {memory.external_link.web_content_response.title} with " +
+                            f"{len(memory.external_link.web_content_response.main_content)} characters")
                 return summarize_article(memory.external_link.web_content_response), False
             else:
                 logger.error(f"Failed to extract web content: {memory.external_link.web_content_response.url}")
@@ -156,9 +157,10 @@ def process_memory(uid: str, language_code: str, memory: Union[Memory, CreateMem
         # TODO(yiqi): don't do memory consolidation in memory creation. Like human do it during sleep, we can do it
         # during post processing or diary generation.
         memory.connections = explain_related_memories(memory, uid)
-        logger.info(f"inserting memory to pinecone and memory db, {memory.dict()}")
+        logger.info(f'This memory has {len(memory.connections)} related memories')
+        logger.info(f"inserting memory to pinecone and memory db")
 
-        vector = generate_embedding(str(structured))
+        vector = generate_embedding(memory.memories_to_string([memory], include_raw_data=True))
         upsert_vector(uid, memory, vector)
         # don't run plugins and extract facts for web article
         if (memory.source != MemorySource.web_link):

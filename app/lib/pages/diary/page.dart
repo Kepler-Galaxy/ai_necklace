@@ -1,17 +1,12 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:table_calendar/table_calendar.dart';
 import 'package:provider/provider.dart';
 import 'package:friend_private/providers/diary_provider.dart';
-import 'package:friend_private/backend/schema/memory.dart';
-import 'package:friend_private/widgets/extensions/string.dart';
-import 'package:gradient_borders/box_borders/gradient_box_border.dart';
-import 'package:friend_private/providers/memory_provider.dart';
-import 'package:friend_private/pages/memory_detail/page.dart';
 import 'package:friend_private/pages/diary/memory_chains_view.dart';
 import 'package:friend_private/backend/http/api/memories.dart';
 import 'package:friend_private/backend/schema/memory_connection.dart';
-import 'package:friend_private/utils/other/temp.dart';
+import 'package:table_calendar/table_calendar.dart';
+import 'package:friend_private/pages/diary/calandar_widget.dart';
 
 class DiaryPage extends StatefulWidget {
   const DiaryPage({Key? key}) : super(key: key);
@@ -21,101 +16,77 @@ class DiaryPage extends StatefulWidget {
 }
 
 class _DiaryPageState extends State<DiaryPage> {
-  bool _isCalendarExpanded = false;
-  late DateTime _selectedDay;
-  late DateTime _focusedDay;
-  bool _isLoading = true;
-  List<ServerMemory> _selectedDayMemories = [];
+  DateTime? _currentDiaryDate;
+
+  List<String> _selectedDayMemoryIds = [];
   List<MemoryConnectionNode> _memoryChainForest = [];
+  bool _isLoading = false;
 
   @override
   void initState() {
     super.initState();
-    _focusedDay = DateTime.now();
-    _selectedDay = _focusedDay;
-    // TODO(yiqi): don't load diaries and related memories every time the page is loaded.
-    // Use cached data if available.
-    // _loadDiaries();
-    // _loadMemoryChainData();
+    _currentDiaryDate = DateTime.now();
+    // TODO(yiqi): cache diarys and memory chains data on the device.
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      _loadDiaries();
-      _loadMemoryChainData();
+      _loadDiariesAndMemoryChainData();
     });
   }
 
-  void _loadDiaries() async {
+  Future<void> _loadDiariesAndMemoryChainData() async {
+    await _loadDiaries();
+    await _loadMemoryChainData();
+  }
+
+  Future<void> _loadDiaries() async {
     setState(() => _isLoading = true);
-    try {
-      final diaryProvider = Provider.of<DiaryProvider>(context, listen: false);
-      await diaryProvider.loadAllDiaries();
-      setState(() {
-        _selectedDay = _findClosestDiaryDate(DateTime.now()) ?? DateTime.now();
-        _focusedDay = _selectedDay;
-        _isLoading = false;
-      });
-      _loadMemoriesForSelectedDay();
-    } catch (e) {
-      print("Error loading diaries: $e");
-      setState(() {
-        _isLoading = false;
-      });
-    }
-  }
-
-  void _loadMemoriesForSelectedDay() async {
-    _selectedDayMemories = [];
     final diaryProvider = Provider.of<DiaryProvider>(context, listen: false);
-    // TODO(yiqi): Bug due to timezone issues.
-    debugPrint('Loading memories for selected day: $_selectedDay');
-    final diaries = diaryProvider.getDiariesForDay(_selectedDay);
+    await diaryProvider.loadAllDiaries();
+
+    setState(() {
+      _currentDiaryDate =
+          _findClosestDiaryDate(DateTime.now()) ?? DateTime.now();
+      _isLoading = false;
+    });
+    _updateSelectedDayMemoryIds();
+  }
+
+  void _updateSelectedDayMemoryIds() {
+    final diaryProvider = Provider.of<DiaryProvider>(context, listen: false);
+    // TODO(yiqi): How to let user choose from multiple diaries in the UI?
+    final diaries = diaryProvider.getDiariesForDay(_currentDiaryDate!);
     if (diaries.isNotEmpty) {
-      debugPrint('diary is not empty');
       final diary = diaries.first;
-      final memoryProvider =
-          Provider.of<MemoryProvider>(context, listen: false);
-      List<ServerMemory> selectedDayMemories =
-          await memoryProvider.getMemoriesByIds(diary.memoryIds);
       setState(() {
-        _selectedDayMemories = selectedDayMemories;
+        _selectedDayMemoryIds = diary.description.memoryIds;
+      });
+    } else {
+      setState(() {
+        _selectedDayMemoryIds = [];
       });
     }
   }
 
+  // TODO(yiqi): Memory chain data should be cached in someway. Maybe through a different provider.
   Future<void> _loadMemoryChainData() async {
-    _memoryChainForest = [];
-    if (_selectedDayMemories.isEmpty) {
+    if (_selectedDayMemoryIds.isEmpty) {
+      setState(() {
+        _memoryChainForest = [];
+        _isLoading = false;
+      });
       return;
     }
 
-    try {
-      final response = await getMemoryConnectionsGraph(
-        _selectedDayMemories.map((m) => m.id).toList(),
-        3, // Number of levels
-      );
-
-      setState(() {
-        debugPrint('memory chain forest is not empty');
-        _memoryChainForest = (response['forest'] as List)
-            .map((tree) => _parseMemoryConnectionNode(tree))
-            .toList();
-      });
-    } catch (e) {
-      debugPrint('Error loading memory connections graph: $e');
-      setState(() {
-        _memoryChainForest = [];
-      });
-    }
-  }
-
-  MemoryConnectionNode _parseMemoryConnectionNode(Map<String, dynamic> node) {
-    return MemoryConnectionNode(
-      memoryId: node['memory_id'],
-      explanation: node['explanation'],
-      children: (node['children'] as List?)
-              ?.map((child) => _parseMemoryConnectionNode(child))
-              .toList() ??
-          [],
-    );
+    setState(() {
+      _isLoading = true;
+    });
+    final response = await getMemoryConnectionsGraph(_selectedDayMemoryIds, 3);
+    final forest = (response['forest'] as List)
+        .map((tree) => MemoryConnectionNode.fromJson(tree))
+        .toList();
+    setState(() {
+      _memoryChainForest = forest;
+      _isLoading = false;
+    });
   }
 
   DateTime? _findClosestDiaryDate(DateTime date) {
@@ -145,8 +116,19 @@ class _DiaryPageState extends State<DiaryPage> {
       backgroundColor: Colors.black,
       body: Column(
         children: [
-          SizedBox(
-            child: _buildCalendar(),
+          CalendarWidget(
+            selectedDay: _currentDiaryDate ?? DateTime.now(),
+            focusedDay: _currentDiaryDate ?? DateTime.now(),
+            diaryDates: Provider.of<DiaryProvider>(context).getDiaryDates(),
+            onDaySelected: (selectedDay, focusedDay) {
+              if (!isSameDay(_currentDiaryDate, selectedDay)) {
+                setState(() {
+                  _currentDiaryDate = selectedDay;
+                });
+                _updateSelectedDayMemoryIds();
+                _loadMemoryChainData();
+              }
+            },
           ),
           Expanded(
             child: _isLoading
@@ -170,96 +152,9 @@ class _DiaryPageState extends State<DiaryPage> {
     );
   }
 
-  Widget _buildCalendar() {
-    final diaryProvider = Provider.of<DiaryProvider>(context, listen: false);
-    return Column(
-      children: [
-        Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                dateTimeFormat('MMM d, yyyy', _selectedDay),
-                style: TextStyle(color: Colors.white, fontSize: 16),
-              ),
-              ElevatedButton(
-                onPressed: () {
-                  setState(() {
-                    _isCalendarExpanded = !_isCalendarExpanded;
-                  });
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.transparent,
-                  elevation: 0,
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      'Select Another Day',
-                      style: TextStyle(color: Colors.white, fontSize: 16),
-                    ),
-                    SizedBox(width: 4),
-                    Icon(Icons.event, color: Colors.white, size: 20),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
-        if (_isCalendarExpanded)
-          TableCalendar(
-            firstDay: DateTime.utc(2022, 10, 16),
-            lastDay: DateTime.utc(2025, 3, 14),
-            focusedDay: _focusedDay,
-            selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
-            eventLoader: (day) => diaryProvider.getDiariesForDay(day),
-            onDaySelected: (selectedDay, focusedDay) {
-              setState(() {
-                _selectedDay = selectedDay;
-                _focusedDay = focusedDay;
-                _isCalendarExpanded =
-                    false; // Collapse the calendar when a day is selected
-              });
-              _loadMemoriesForSelectedDay();
-              _loadMemoryChainData();
-            },
-            calendarStyle: CalendarStyle(
-              markersMaxCount: 1,
-              markerDecoration: BoxDecoration(
-                color: Colors.blue,
-                shape: BoxShape.circle,
-              ),
-              cellMargin: EdgeInsets.only(left: 4.0, right: 4.0),
-              cellPadding: EdgeInsets.zero,
-              tablePadding: EdgeInsets.symmetric(horizontal: 50),
-              markerSize: 8,
-              markerMargin: EdgeInsets.symmetric(horizontal: 1),
-              markersAnchor: 1,
-            ),
-            daysOfWeekStyle: DaysOfWeekStyle(
-              weekdayStyle: TextStyle(fontSize: 10, color: Colors.white),
-              weekendStyle: TextStyle(fontSize: 10, color: Colors.white),
-            ),
-            headerStyle: HeaderStyle(
-              formatButtonVisible: false,
-              titleTextStyle: TextStyle(fontSize: 16, color: Colors.white),
-              leftChevronIcon:
-                  Icon(Icons.chevron_left, size: 20, color: Colors.white),
-              rightChevronIcon:
-                  Icon(Icons.chevron_right, size: 20, color: Colors.white),
-            ),
-            rowHeight: 25,
-            daysOfWeekHeight: 20,
-          ),
-      ],
-    );
-  }
-
   Widget _buildDiaryContent() {
     final diaryProvider = Provider.of<DiaryProvider>(context, listen: false);
-    final diaries = diaryProvider.getDiariesForDay(_selectedDay);
+    final diaries = diaryProvider.getDiariesForDay(_currentDiaryDate!);
     if (diaries.isEmpty) {
       return Padding(
         padding: const EdgeInsets.all(16.0),
@@ -277,73 +172,18 @@ class _DiaryPageState extends State<DiaryPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          if (diary.footprintJpeg == null || diary.footprintJpeg!.isEmpty)
-            Text(
-                'Footprint image not available, try set app location permission to always allow to enable this feature',
-                style: TextStyle(color: const Color.fromARGB(255, 189, 0, 157)))
-          else
-            Image.memory(
-              base64Decode(diary.footprintJpeg!),
-            ),
-          SizedBox(height: 16),
-          Text(diary.content.decodeSting),
-          SizedBox(height: 16),
-          Text('Related Memories:',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-          ..._selectedDayMemories.map((memory) => _buildMemoryItem(memory)),
+          // if (diary.content.footprintJpeg == null ||
+          //     diary.content.footprintJpeg!.isEmpty)
+          //   Text(
+          //       'Footprint image not available, try set app location permission to always allow to enable this feature',
+          //       style: TextStyle(color: const Color.fromARGB(255, 189, 0, 157)))
+          // else
+          //   Image.memory(
+          //     base64Decode(diary.content.footprintJpeg!),
+          //   ),
+          // SizedBox(height: 16),
+          Text(utf8.decode(diary.content.content.codeUnits)),
         ],
-      ),
-    );
-  }
-
-  Widget _buildMemoryItem(ServerMemory memory) {
-    return Container(
-      padding: const EdgeInsets.fromLTRB(16, 8, 8, 0),
-      margin: const EdgeInsets.fromLTRB(18, 0, 18, 0),
-      decoration: const BoxDecoration(
-        color: Colors.black,
-        borderRadius: BorderRadius.all(Radius.circular(16)),
-        border: GradientBoxBorder(
-          gradient: LinearGradient(colors: [
-            Color.fromARGB(127, 208, 208, 208),
-            Color.fromARGB(127, 188, 99, 121),
-            Color.fromARGB(127, 86, 101, 182),
-            Color.fromARGB(127, 126, 190, 236)
-          ]),
-          width: 1,
-        ),
-        shape: BoxShape.rectangle,
-      ),
-      child: ListTile(
-        contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-        title: Text(
-          memory.structured.title,
-          style: TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
-            fontSize: 18,
-          ),
-        ),
-        subtitle: Text(
-          memory.structured.category,
-          style: TextStyle(
-            color: Colors.white.withOpacity(0.8),
-            fontSize: 14,
-          ),
-        ),
-        trailing: Icon(
-          Icons.arrow_forward_ios,
-          color: Colors.white,
-        ),
-        onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) =>
-                  MemoryDetailPage(memory: memory, isPopup: true),
-            ),
-          );
-        },
       ),
     );
   }

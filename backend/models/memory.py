@@ -82,7 +82,9 @@ class Structured(BaseModel):
 
     def __str__(self):
         result = (f"{str(self.title).capitalize()} ({str(self.category.value).capitalize()})\n"
-                  f"{str(self.overview).capitalize()}\n")
+                  f"{str(self.overview).capitalize()}\n"
+                  f"Key Points:\n"
+                  f"{str(self.key_points).capitalize()}\n")
 
         if self.action_items:
             result += "Action Items:\n"
@@ -184,7 +186,7 @@ class Memory(BaseModel):
     connections: List[MemoryConnection] = []
 
     @staticmethod
-    def memories_to_string(memories: List['Memory'], include_action_items = True) -> str:
+    def memories_to_string(memories: List['Memory'], include_action_items=True, include_raw_data=False, include_connections=False) -> str:
         result = []
         for i, memory in enumerate(memories):
             if isinstance(memory, dict):
@@ -193,14 +195,23 @@ class Memory(BaseModel):
             memory_str = (f"Memory #{i + 1}\n"
                           f"{formatted_date} ({str(memory.structured.category.value).capitalize()})\n"
                           f"{str(memory.structured.title).capitalize()}\n"
-                          f"{str(memory.structured.overview).capitalize()}\n")
+                          f"{str(memory.structured.overview).capitalize()}\n"
+                          f"{str(memory.structured.key_points).capitalize()}\n")
 
             if include_action_items and memory.structured.action_items:
                 memory_str += "Action Items:\n"
                 for item in memory.structured.action_items:
                     memory_str += f"- {item.description}\n"
 
-            if memory.connections:
+            if include_raw_data:
+                if memory.transcript_segments:
+                    memory_str += "Transcript Segments:\n"
+                    memory_str += memory.get_transcript(include_timestamps=True) + "\n"
+                elif memory.external_link and memory.external_link.web_content_response:
+                    memory_str += "Web Article:\n"
+                    memory_str += f"{memory.get_web_article()}\n"
+
+            if include_connections and memory.connections:
                 memory_str += "Connections:\n"
                 for connection in memory.connections:
                     memory_str += f"- {connection.memory_id}: {connection.explanation}\n"
@@ -212,6 +223,11 @@ class Memory(BaseModel):
     def get_transcript(self, include_timestamps: bool) -> str:
         # Warn: missing transcript for workflow source
         return TranscriptSegment.segments_as_string(self.transcript_segments, include_timestamps=include_timestamps)
+    
+    def get_web_article(self) -> Optional[str]:
+        if self.external_link and self.external_link.web_content_response:
+            return f"Title: {self.external_link.web_content_response.title}\nContent: {self.external_link.web_content_response.main_content}"
+        return None
     
 class CreateMemory(BaseModel):
     started_at: datetime
@@ -238,6 +254,7 @@ class MemoryConnectionNode(BaseModel):
     memory_id: str
     children: List['MemoryConnectionNode'] = []
     explanation: Optional[str] = None
+    memory: Optional[Dict] = None
 
 class MemoryConnectionsGraphResponse(BaseModel):
     forest: List[MemoryConnectionNode]

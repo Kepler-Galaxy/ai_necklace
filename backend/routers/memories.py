@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, UploadFile, File
 from loguru import logger
 import os
 import aiofiles
-from utils.memories.memory_forest import build_memory_connection_tree, get_all_nodes
+from utils.memories.memory_forest import build_memory_forest
 
 import database.memories as memories_db
 import database.redis_db as redis_db
@@ -324,17 +324,9 @@ def create_memory_from_wechat_article(
     
 @router.post("/v1/memories/connections_graph", response_model=MemoryConnectionsGraphResponse, tags=['memories'])
 async def get_memory_connections_graph(request: MemoryConnectionsGraphRequest, uid: str = Depends(auth.get_current_user_uid)):
-    memory_ids = set(request.memory_ids)
+    memory_ids = request.memory_ids
     depth = request.memory_connection_depth
     
-    forest = []
-    visited = set()
-    
-    for memory_id in memory_ids:
-        if memory_id not in visited:
-            tree = await build_memory_connection_tree(uid, memory_id, depth)
-            forest.append(tree)
-            visited.update(get_all_nodes(tree))
-    
+    forest = await build_memory_forest(uid, memory_ids, depth, is_include_memory=True)
     return MemoryConnectionsGraphResponse(forest=forest)
 
