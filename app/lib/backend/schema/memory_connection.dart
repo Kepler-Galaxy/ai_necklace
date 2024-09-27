@@ -14,16 +14,26 @@ class MemoryConnectionNode {
   });
 
   static MemoryConnectionNode fromJson(Map<String, dynamic> json) {
+    ServerMemory? parsedMemory;
+    if (json['memory'] != null) {
+      try {
+        parsedMemory = ServerMemory.fromJson(json['memory'] as Map<String, dynamic>);
+      } catch (e) {
+        // some old memory's format maybe inconsistent
+        print('Error parsing memory: $e');
+      }
+    }
+
     return MemoryConnectionNode(
       memoryId: json['memory_id'] as String? ?? '',
       explanation: json['explanation'] as String?,
       children: _parseChildren(json['children']),
-      memory: json['memory'] != null ? ServerMemory.fromJson(json['memory'] as Map<String, dynamic>) : null,
+      memory: parsedMemory,
     );
   }
 
   static List<MemoryConnectionNode> _parseChildren(dynamic childrenJson) {
-    if (childrenJson == null) {
+    if (childrenJson == null || childrenJson.isEmpty) {
       return [];
     }
     if (childrenJson is! List) {
@@ -31,11 +41,8 @@ class MemoryConnectionNode {
       return [];
     }
     return childrenJson
-        .map((child) => child is Map<String, dynamic> 
-            ? MemoryConnectionNode.fromJson(child)
-            : null)
-        .where((child) => child != null)
-        .cast<MemoryConnectionNode>()
+        .where((child) => child is Map<String, dynamic>)
+        .map((child) => MemoryConnectionNode.fromJson(child as Map<String, dynamic>))
         .toList();
   }
 
