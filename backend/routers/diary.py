@@ -25,6 +25,6 @@ async def add_diary_for_datetime_range(start_at_utc: str, end_at_utc: str, uid: 
         diary_start_utc=datetime.fromisoformat(start_at_utc),
         diary_end_utc=datetime.fromisoformat(end_at_utc)
     )
-    diary = await diary_from_configs(config)
+    diary = await diary_from_configs(config, use_end_utc_for_debug=True)
     diaries_db.save_diary(uid, diary.dict())
     return {'status': 'ok'}

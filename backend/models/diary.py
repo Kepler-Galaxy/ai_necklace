@@ -133,12 +133,12 @@ class Diary(BaseModel):
     # Don't store raw materials in the diary, it's too large
     content: DiaryContent
 
-async def diary_from_configs(config: DiaryConfig, user_config: DiaryUserConfig = None) -> Diary:
+async def diary_from_configs(config: DiaryConfig, user_config: DiaryUserConfig = None, use_end_utc_for_debug: bool = False) -> Diary:
     description, raw_materials = await description_and_raw_materials_from_configs(config, user_config)
     content = await DiaryContent.generate_content(raw_materials)
     return Diary(
         id=document_id_from_seed("".join(description.memory_ids)),
-        created_at=datetime.utcnow(),
+        created_at=datetime.utcnow() if not use_end_utc_for_debug else config.diary_end_utc,
         updated_at=datetime.utcnow(),
         user_deleted=False,
         config=config,
