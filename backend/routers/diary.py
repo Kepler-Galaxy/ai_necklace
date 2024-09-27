@@ -1,12 +1,10 @@
 from datetime import datetime
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends
 
-import database.memories as memories_db
 import database.diary as diaries_db
 from utils.other import endpoints as auth
 from models.diary import diary_from_configs, DiaryConfig
-from loguru import logger
 
 router = APIRouter()
 

@@ -5,7 +5,6 @@ import database.memories as memories_db
 from loguru import logger
 
 async def build_memory_connection_forest(uid: str, memory_ids: List[str], max_depth: int, is_include_memory: bool = False) -> List[MemoryConnectionNode]:
-    logger.info(f"Building memory connection forest for {len(memory_ids)} memories with max depth {max_depth}")
     visited = set()
     memory_cache = {}
     

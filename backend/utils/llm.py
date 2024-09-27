@@ -534,7 +534,6 @@ async def obtain_recent_summary(conversation_history: str, articles_read: str, r
     - Draw connections between different pieces of information to provide a cohesive overview.
     - If certain sections lack substantial information, briefly acknowledge this and focus on areas with more content.
     """
-    logger.info(prompt)
 
     try:
         # First, try with gpt-4o, if rate limit is exceeded, openai will not charge us

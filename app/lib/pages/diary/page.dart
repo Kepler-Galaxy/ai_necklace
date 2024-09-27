@@ -26,6 +26,7 @@ class _DiaryPageState extends State<DiaryPage> {
   void initState() {
     super.initState();
     _currentDiaryDate = DateTime.now();
+    // TODO(yiqi): cache diarys and memory chains data on the device.
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _loadDiariesAndMemoryChainData();
     });
