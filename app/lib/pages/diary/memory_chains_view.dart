@@ -24,13 +24,15 @@ class MemoryChainsView extends StatelessWidget {
           scrollDirection: Axis.horizontal,
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: forest.map((tree) => _buildTree(context, tree, 0)).toList(),
+            children:
+                forest.map((tree) => _buildTree(context, tree, 0)).toList(),
           ),
         ),
       ],
     );
   }
 
+  // TODO(yiqi): Improve the layout.
   Widget _buildTree(
       BuildContext context, MemoryConnectionNode node, int level) {
     return Column(
@@ -44,11 +46,33 @@ class MemoryChainsView extends StatelessWidget {
                 child: Column(
                   children: [
                     SizedBox(height: 20),
-                    Text(
-                      node.explanation ?? '',
-                      style: TextStyle(fontSize: 12, color: Colors.grey),
-                    ),
-                    Icon(Icons.arrow_forward, size: 16),
+                    if (node.explanation != null &&
+                        node.explanation!.isNotEmpty)
+                      GestureDetector(
+                        onTap: () {
+                          showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return AlertDialog(
+                                title: Text('Explanation'),
+                                content: Text(node.explanation!),
+                                actions: <Widget>[
+                                  TextButton(
+                                    child: Text('Close'),
+                                    onPressed: () {
+                                      Navigator.of(context).pop();
+                                    },
+                                  ),
+                                ],
+                              );
+                            },
+                          );
+                        },
+                        child: Icon(Icons.bolt, size: 16, color: Colors.blue),
+                      )
+                    else
+                      SizedBox(width: 16), // Placeholder for alignment
+                    Icon(Icons.arrow_downward, size: 16), // Changed to arrow_downward
                   ],
                 ),
               ),
@@ -115,19 +139,9 @@ class MemoryChainsView extends StatelessWidget {
                 Text(
                   memory.structured.category,
                   style: TextStyle(
-                    color: Colors.white.withOpacity(0.8),
+                    color: Colors.white.withOpacity(0.7),
                     fontSize: 12,
                   ),
-                ),
-                SizedBox(height: 4),
-                Text(
-                  memory.structured.overview,
-                  style: TextStyle(
-                    color: Colors.white.withOpacity(0.6),
-                    fontSize: 12,
-                  ),
-                  maxLines: 3,
-                  overflow: TextOverflow.ellipsis,
                 ),
               ],
             ),

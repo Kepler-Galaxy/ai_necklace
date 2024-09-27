@@ -63,6 +63,7 @@ def filter_memories_by_date(uid, start_date, end_date):
         .where(filter=FieldFilter('created_at', '>=', start_date))
         .where(filter=FieldFilter('created_at', '<=', end_date))
         .where(filter=FieldFilter('discarded', '==', False))
+        .where(filter=FieldFilter('deleted', '==', False))
         .order_by('created_at', direction=firestore.Query.DESCENDING)
     )
     return [doc.to_dict() for doc in query.stream()]

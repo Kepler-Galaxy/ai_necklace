@@ -28,15 +28,20 @@ class DiaryProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  // Normalize the date to the start of the day so that it can be stable key in the map
+  DateTime _normalizeDate(DateTime date) {
+    return DateTime(date.year, date.month, date.day);
+  }
+
   void _updateDiaryEventMap() {
     diaryEventMap = Map.fromIterable(
       _diaries,
-      key: (diary) => DateTime(
-          diary.createdAt.year, diary.createdAt.month, diary.createdAt.day),
+      key: (diary) => _normalizeDate(diary.createdAt),
       value: (diary) => _diaries
           .where((d) => isSameDay(d.createdAt, diary.createdAt))
           .toList(),
     );
+    print('diaryEventMap: $diaryEventMap');
   }
 
   Future<void> deleteDiary(String diaryId) async {
@@ -51,7 +56,8 @@ class DiaryProvider extends ChangeNotifier {
   }
 
   List<ServerDiary> getDiariesForDay(DateTime day) {
-    return diaryEventMap[day] ?? [];
+    print('diary in diaryEventMap: $diaryEventMap[_normalizeDate(day)]');
+    return diaryEventMap[_normalizeDate(day)] ?? [];
   }
 
   void selectDiary(DateTime day) {
@@ -61,12 +67,14 @@ class DiaryProvider extends ChangeNotifier {
   }
 
   bool isSameDay(DateTime date1, DateTime date2) {
-    return date1.year == date2.year &&
-        date1.month == date2.month &&
-        date1.day == date2.day;
+    return _normalizeDate(date1) == _normalizeDate(date2);
   }
 
   Map<DateTime, List<ServerDiary>> getDiaryEventMap() {
     return diaryEventMap;
+  }
+
+  Set<DateTime> getDiaryDates() {
+    return _diaries.map((diary) => _normalizeDate(diary.createdAt)).toSet();
   }
 }

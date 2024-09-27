@@ -1,12 +1,10 @@
 from datetime import datetime
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends
 
-import database.memories as memories_db
 import database.diary as diaries_db
 from utils.other import endpoints as auth
-from models.diary import DiaryDB
-from loguru import logger
+from models.diary import diary_from_configs, DiaryConfig
 
 router = APIRouter()
 
@@ -20,13 +18,13 @@ def delete_diary(diary_id: str, uid: str = Depends(auth.get_current_user_uid)):
     return {'status': 'ok'}
 
 @router.post('/v1/diaries/', tags=['diaries'])
-def add_diary_for_datetime_range(start_at_utc: str, end_at_utc: str, uid: str = Depends(auth.get_current_user_uid)):
-    memories = memories_db.filter_memories_by_date(uid, datetime.fromisoformat(start_at_utc), datetime.fromisoformat(end_at_utc))
-    if len(memories) == 0:
-        logger.info(f'{uid} has no memory between {start_at_utc} and {end_at_utc}, skip diary generation')
-        return {'status': 'ok'}
+async def add_diary_for_datetime_range(start_at_utc: str, end_at_utc: str, uid: str = Depends(auth.get_current_user_uid)):
     
-    logger.info(f'generating diary for {uid} using {len(memories)} memories')
-    diary = DiaryDB.from_memories(uid, memories, user_specified_created_at=datetime.fromisoformat(end_at_utc))
+    config = DiaryConfig(
+        uid=uid,
+        diary_start_utc=datetime.fromisoformat(start_at_utc),
+        diary_end_utc=datetime.fromisoformat(end_at_utc)
+    )
+    diary = await diary_from_configs(config, use_end_utc_for_debug=True)
     diaries_db.save_diary(uid, diary.dict())
     return {'status': 'ok'}

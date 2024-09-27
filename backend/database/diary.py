@@ -21,3 +21,8 @@ def delete_diary(uid, diary_id):
     user_ref = db.collection('users').document(uid)
     diary_ref = user_ref.collection('diaries').document(diary_id)
     diary_ref.update({'user_deleted': True})
+
+def get_diaries_by_id(uid: str, diary_ids: List[str]) -> List[dict]:
+    diaries_ref = db.collection('users').document(uid).collection('diaries')
+    diaries_ref = diaries_ref.where(filter=FieldFilter('id', 'in', diary_ids))
+    return [doc.to_dict() for doc in diaries_ref.stream()]
