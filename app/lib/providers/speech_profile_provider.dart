@@ -13,7 +13,6 @@ import 'package:friend_private/backend/schema/memory.dart';
 import 'package:friend_private/backend/schema/message_event.dart';
 import 'package:friend_private/backend/schema/structured.dart';
 import 'package:friend_private/backend/schema/transcript_segment.dart';
-import 'package:friend_private/providers/capture_provider.dart';
 import 'package:friend_private/providers/device_provider.dart';
 import 'package:friend_private/services/devices.dart';
 import 'package:friend_private/services/services.dart';
@@ -132,6 +131,11 @@ class SpeechProfileProvider extends ChangeNotifier
       throw Exception("Can not create new speech profile socket");
     }
     _socket?.subscribe(this, this);
+  }
+
+  int getWordsCount() {
+    String text = segments.map((e) => e.text).join(' ').trim();
+    return wordsCount(text);
   }
 
   _handleCompletion() async {
