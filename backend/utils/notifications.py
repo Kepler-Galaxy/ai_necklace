@@ -2,12 +2,12 @@ import asyncio
 import math
 
 from firebase_admin import messaging
-
+from loguru import logger
 import database.notifications as notification_db
 
 
 def send_notification(token: str, title: str, body: str, data: dict = None):
-    print('send_notification')
+    logger.info('send_notification')
     notification = messaging.Notification(title=title, body=body)
     message = messaging.Message(notification=notification, token=token)
 
@@ -16,12 +16,12 @@ def send_notification(token: str, title: str, body: str, data: dict = None):
 
     try:
         response = messaging.send(message)
-        print('send_notification success:', response)
+        logger.info('send_notification success:', response)
     except Exception as e:
         error_message = str(e)
         if "Requested entity was not found" in error_message:
             notification_db.remove_token(token)
-        print('send_notification failed:', e)
+        logger.error('send_notification failed:', e)
 
 
 async def send_bulk_notification(user_tokens: list, title: str, body: str):
@@ -49,4 +49,4 @@ async def send_bulk_notification(user_tokens: list, title: str, body: str):
         await asyncio.gather(*tasks)
 
     except Exception as e:
-        print("Error sending message:", e)
+        logger.error("Error sending message:", e)

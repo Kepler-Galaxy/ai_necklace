@@ -60,7 +60,7 @@ def create_memory(
         create_memory.language = language_code
 
     if create_memory.processing_memory_id:
-        print(
+        logger.warning(
             f"warn: split-brain in memory (maybe) by forcing new memory creation during processing. uid: {uid}, processing_memory_id: {create_memory.processing_memory_id}")
 
     memory = process_memory(uid, language_code, create_memory, force_process=source == 'speech_profile_onboarding')
@@ -85,7 +85,7 @@ def reprocess_memory(
     Whenever a user wants to reprocess a memory, or wants to force process a discarded one
     :return: The updated memory after reprocessing.
     """
-    print('')
+    logger.info('')
     memory = memories_db.get_memory(uid, memory_id)
     if memory is None:
         raise HTTPException(status_code=404, detail="Memory not found")
@@ -123,7 +123,7 @@ def get_memory_transcripts_by_models(memory_id: str, uid: str = Depends(auth.get
 
 @router.delete("/v1/memories/{memory_id}", status_code=204, tags=['memories'])
 def delete_memory(memory_id: str, uid: str = Depends(auth.get_current_user_uid)):
-    print('delete_memory', memory_id, uid)
+    logger.info('delete_memory', memory_id, uid)
     memories_db.delete_memory(uid, memory_id)
     delete_vector(memory_id)
     return {"status": "Ok"}
@@ -216,7 +216,7 @@ def set_assignee_memory_segment(
 def set_memory_visibility(
         memory_id: str, value: MemoryVisibility, uid: str = Depends(auth.get_current_user_uid)
 ):
-    print('update_memory_visibility', memory_id, value, uid)
+    logger.info('update_memory_visibility', memory_id, value, uid)
     _get_memory_by_id(uid, memory_id)
     memories_db.set_memory_visibility(uid, memory_id, value)
     if value == MemoryVisibility.private:

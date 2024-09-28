@@ -5,6 +5,7 @@ from typing import List, Optional
 
 import modal.gpu
 import torch
+from loguru import logger
 from fastapi import File, UploadFile, Form
 from modal import App, web_endpoint, Secret, Image
 from pydantic import BaseModel
@@ -40,7 +41,7 @@ def sample_same_speaker_as_segment(sample_audio: str, segment: str) -> float:
             return float(score[0])
         return 0
     except Exception as e:
-        print(e)
+        logger.error(e)
         return 0
 
 
@@ -54,7 +55,7 @@ def classify_segments(
     # TODO: do per segment cleaning later. 1 by 1, maybe running pyannote VAD here (gpu), or using silero
     # cleaning start, end doesn't do anything, cause segments are already pointing that
 
-    print('Duration:', AudioSegment.from_wav(audio_file_path).duration_seconds)
+    logger.info('Duration:', AudioSegment.from_wav(audio_file_path).duration_seconds)
 
     file_name = os.path.basename(audio_file_path)
     for i, segment in enumerate(segments):
@@ -77,7 +78,7 @@ def classify_segments(
 
         if not by_chunk_matches:
             continue
-        print(by_chunk_matches)
+        logger.info(by_chunk_matches)
         max_match = max(by_chunk_matches, key=by_chunk_matches.get)
         matches[i] = {'is_user': max_match == 'user', 'person_id': None if max_match == 'user' else max_match}
 
@@ -135,7 +136,7 @@ def endpoint(uid: str, audio_file: UploadFile = File(...), segments: str = Form(
     people = []
     try:
         result = classify_segments(audio_file.filename, profile_path, people, transcript_segments)
-        print(result)
+        logger.info(result)
         return result
     except:
         return default

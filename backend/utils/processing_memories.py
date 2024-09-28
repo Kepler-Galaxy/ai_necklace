@@ -1,5 +1,6 @@
 from datetime import datetime, timezone
 
+from loguru import logger
 import database.memories as memories_db
 import database.processing_memories as processing_memories_db
 from models.memory import CreateMemory, PostProcessingModel, PostProcessingStatus, MemoryPostProcessing
@@ -13,14 +14,14 @@ async def create_memory_by_processing_memory(uid: str, processing_memory_id: str
     # Fetch new
     processing_memories = processing_memories_db.get_processing_memories_by_id(uid, [processing_memory_id])
     if len(processing_memories) == 0:
-        print("processing memory is not found")
+        logger.info("processing memory is not found")
         return
     processing_memory = ProcessingMemory(uid=uid, **processing_memories[0])
 
     # Create memory
     transcript_segments = processing_memory.transcript_segments
     if not transcript_segments or len(transcript_segments) == 0:
-        print("Transcript segments is invalid")
+        logger.warning("Transcript segments is invalid")
         return
     timer_segment_start = processing_memory.timer_segment_start if processing_memory.timer_segment_start else processing_memory.timer_start
     segment_end = transcript_segments[-1].end
@@ -61,7 +62,7 @@ def update_basic_processing_memory(uid: str,
     # Fetch new
     processing_memory = processing_memories_db.get_processing_memory_by_id(uid, update_processing_memory.id)
     if not processing_memory:
-        print("processing memory is not found")
+        logger.warning("processing memory is not found")
         return
 
     processing_memory = ProcessingMemory(uid=uid, **processing_memories[0])

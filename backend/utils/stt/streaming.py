@@ -63,7 +63,7 @@ headers = {
 
 
 async def send_initial_file_path(file_path: str, transcript_socket_async_send):
-    print('send_initial_file_path')
+    logger.info('send_initial_file_path')
     start = time.time()
     # Reading and sending in chunks
     with open(file_path, "rb") as file:
@@ -75,7 +75,7 @@ async def send_initial_file_path(file_path: str, transcript_socket_async_send):
             await transcript_socket_async_send(bytes(chunk))
             await asyncio.sleep(0.0001)  # if it takes too long to transcribe
 
-    print('send_initial_file_path', time.time() - start)
+    logger.info('send_initial_file_path', time.time() - start)
 
 
 async def send_initial_file(data: List[List[int]], transcript_socket):
@@ -97,7 +97,7 @@ async def process_audio_dg(
         stream_transcript, stream_id: int, language: str, sample_rate: int, channels: int,
         preseconds: int = 0,
 ):
-    print('process_audio_dg', language, sample_rate, channels, preseconds)
+    logger.info('process_audio_dg', language, sample_rate, channels, preseconds)
 
     def on_message(self, result, **kwargs):
         # print(f"Received message from Deepgram")  # Log when message is received
@@ -159,27 +159,27 @@ def connect_to_deepgram(on_message, on_error, language: str, sample_rate: int, c
         dg_connection.on(LiveTranscriptionEvents.Error, on_error)
 
         def on_open(self, open, **kwargs):
-            print("Connection Open")
+            logger.info("Connection Open")
 
         def on_metadata(self, metadata, **kwargs):
-            print(f"Metadata: {metadata}")
+            logger.info(f"Metadata: {metadata}")
 
         def on_speech_started(self, speech_started, **kwargs):
-            print("Speech Started")
+            logger.info("Speech Started")
 
         def on_utterance_end(self, utterance_end, **kwargs):
-            print("Utterance End")
+            logger.info("Utterance End")
             global is_finals
             if len(is_finals) > 0:
                 utterance = " ".join(is_finals)
-                print(f"Utterance End: {utterance}")
+                logger.info(f"Utterance End: {utterance}")
                 is_finals = []
 
         def on_close(self, close, **kwargs):
-            print("Connection Closed")
+            logger.info("Connection Closed")
 
         def on_unhandled(self, unhandled, **kwargs):
-            print(f"Unhandled Websocket Message: {unhandled}")
+            logger.info(f"Unhandled Websocket Message: {unhandled}")
 
         dg_connection.on(LiveTranscriptionEvents.Open, on_open)
         dg_connection.on(LiveTranscriptionEvents.Metadata, on_metadata)
@@ -247,13 +247,13 @@ async def process_audio_soniox(stream_transcript, stream_id: int, sample_rate: i
 
     try:
         # Connect to Soniox WebSocket
-        print("Connecting to Soniox WebSocket...")
+        logger.info("Connecting to Soniox WebSocket...")
         soniox_socket = await websockets.connect(uri)
-        print("Connected to Soniox WebSocket.")
+        logger.info("Connected to Soniox WebSocket.")
 
         # Send the initial request
         await soniox_socket.send(json.dumps(request))
-        print(f"Sent initial request: {request}")
+        logger.info(f"Sent initial request: {request}")
 
         # Start listening for messages from Soniox
         async def on_message():
@@ -305,13 +305,13 @@ async def process_audio_soniox(stream_transcript, stream_id: int, sample_rate: i
                     if segments:
                         stream_transcript(segments, stream_id)
             except websockets.exceptions.ConnectionClosedOK:
-                print("Soniox connection closed normally.")
+                logger.warning("Soniox connection closed normally.")
             except Exception as e:
-                print(f"Error receiving from Soniox: {e}")
+                logger.error(f"Error receiving from Soniox: {e}")
             finally:
                 if not soniox_socket.closed:
                     await soniox_socket.close()
-                    print("Soniox WebSocket closed in on_message.")
+                    logger.warning("Soniox WebSocket closed in on_message.")
 
         # Start the on_message coroutine
         asyncio.create_task(on_message())
@@ -320,7 +320,7 @@ async def process_audio_soniox(stream_transcript, stream_id: int, sample_rate: i
         return soniox_socket
 
     except Exception as e:
-        print(f"Exception in process_audio_soniox: {e}")
+        logger.error(f"Exception in process_audio_soniox: {e}")
         raise  # Re-raise the exception to be handled by the caller
 
 
@@ -354,12 +354,12 @@ async def process_audio_speechmatics(stream_transcript, stream_id: int, sample_r
         # }
     }
     try:
-        print("Connecting to Speechmatics WebSocket...")
+        logger.info("Connecting to Speechmatics WebSocket...")
         socket = await websockets.connect(uri, extra_headers={"Authorization": f"Bearer {api_key}"})
-        print("Connected to Speechmatics WebSocket.")
+        logger.info("Connected to Speechmatics WebSocket.")
 
         await socket.send(json.dumps(request))
-        print(f"Sent initial request: {request}")
+        logger.info(f"Sent initial request: {request}")
 
         async def on_message():
             try:
@@ -385,7 +385,7 @@ async def process_audio_speechmatics(stream_transcript, stream_id: int, sample_r
                             r_content = r_data['content']
                             r_confidence = r_data['confidence']
                             if r_confidence < 0.4:
-                                print('Low confidence:', r)
+                                logger.info('Low confidence:', r)
                                 continue
                             r_speaker = r_data['speaker'][1:] if r_data['speaker'] != 'UU' else '1'
                             speaker = f"SPEAKER_0{r_speaker}"
@@ -423,18 +423,18 @@ async def process_audio_speechmatics(stream_transcript, stream_id: int, sample_r
                             stream_transcript(segments, stream_id)
                         # print('---')
                     else:
-                        print(response)
+                        logger.info(response)
             except websockets.exceptions.ConnectionClosedOK:
-                print("Speechmatics connection closed normally.")
+                logger.info("Speechmatics connection closed normally.")
             except Exception as e:
-                print(f"Error receiving from Speechmatics: {e}")
+                logger.info(f"Error receiving from Speechmatics: {e}")
             finally:
                 if not socket.closed:
                     await socket.close()
-                    print("Speechmatics WebSocket closed in on_message.")
+                    logger.warning("Speechmatics WebSocket closed in on_message.")
 
         asyncio.create_task(on_message())
         return socket
     except Exception as e:
-        print(f"Exception in process_audio_speechmatics: {e}")
+        logger.error(f"Exception in process_audio_speechmatics: {e}")
         raise
