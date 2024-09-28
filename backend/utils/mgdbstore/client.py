@@ -1,5 +1,6 @@
 import os
 
+from loguru import logger
 from pymongo import MongoClient, UpdateOne
 from typing import Any, Dict, List, Optional
 
@@ -39,7 +40,7 @@ class DocumentReference:
         # full_collection_name = f"{self.collection_name}.{self.document_id}.{subcollection_name}"
         print(subcollection_name)
         if self.collection_name == "users":
-            return CollectionReference(self.db, subcollection_name, FieldFilter(ID_Field_DICT.get(self.collection_name), "=", self.document_id))
+            return CollectionReference(self.db, subcollection_name, FieldFilter(ID_Field_DICT.get(self.collection_name), "==", self.document_id))
         else:
             return CollectionReference(self.db, subcollection_name)
 
@@ -202,8 +203,8 @@ class MongoDBClient:
         # Initialize the MongoDB client
         self.mongodb_uri = os.getenv("MONGODB_URI")
         self.database = os.getenv("MONGODB_DATABASE")
-        print(self.mongodb_uri)
-        print(self.database)
+        logger.info(self.mongodb_uri)
+        logger.info(self.database)
         self.client = MongoClient(self.mongodb_uri)
         self.db = self.client[self.database]
 
