@@ -25,8 +25,6 @@ class AuthenticationProvider extends BaseProvider {
     return AuthClient.currentUser != null;
   }
 
-
-
   AuthenticationProvider() {
     _listenAuthingUserChanges();
   }
