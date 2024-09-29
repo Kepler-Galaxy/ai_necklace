@@ -150,7 +150,7 @@ class _SettingsPageState extends State<SettingsPage> {
                 }, icon: Icons.code),
                 const SizedBox(height: 32),
                 getItemAddOn2('Sign Out', () async {
-                  await showDialog(
+                  showDialog(
                     context: context,
                     builder: (ctx) {
                       return getDialog(context, () {
