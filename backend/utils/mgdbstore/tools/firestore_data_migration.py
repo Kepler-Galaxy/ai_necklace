@@ -50,7 +50,6 @@ def database_migration():
         for diary in fdb.collection("users").document(user.id).collection("diaries").stream(timeout=3600):
             diary_dict = diary.to_dict()
             diary_dict["uid"] = user.id
-
             client.db.collection("diaries").document(diary.id).set(diary_dict)
             # fdb.collection("users").document(user.id).collection("diaries").document(diary.id).update(diary_dict)
 
@@ -68,6 +67,6 @@ def database_migration():
 
 
 if __name__ == "__main__":
-    test_stream()
+    database_migration()
 
 

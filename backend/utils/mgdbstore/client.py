@@ -214,12 +214,12 @@ class MongoDBClient:
     def batch(self):
         return WriteBatch(self.db)
 
-    def get_all(self, doc_refs: list):
+    def get_all(self, doc_refs: list[DocumentReference]):
         """根据文档引用批量获取文档"""
         for doc_ref in doc_refs:
             doc_data = doc_ref.get()  # 假设 DocumentReference 类有 get() 方法
             if doc_data is not None:
-                yield DocumentSnapshot(doc_ref.document_id, doc_data)
+                yield DocumentSnapshot(doc_ref.document_id, doc_data.to_dict())
             else:
                 yield DocumentSnapshot(doc_ref.document_id)
 
