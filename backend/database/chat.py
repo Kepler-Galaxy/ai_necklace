@@ -2,11 +2,12 @@ import uuid
 from datetime import datetime, timezone
 from typing import Optional
 
+from loguru import logger
 from google.cloud import firestore
 
 from models.chat import Message
-from ._client import db
-
+# from ._client import db
+from utils.mgdbstore.client import db
 
 def add_message(uid: str, message_data: dict):
     del message_data['memories']
@@ -18,6 +19,7 @@ def add_message(uid: str, message_data: dict):
 def add_plugin_message(text: str, plugin_id: str, uid: str, memory_id: Optional[str] = None) -> Message:
     ai_message = Message(
         id=str(uuid.uuid4()),
+        uid=uid,
         text=text,
         created_at=datetime.now(timezone.utc),
         sender='ai',
@@ -33,6 +35,7 @@ def add_plugin_message(text: str, plugin_id: str, uid: str, memory_id: Optional[
 def add_summary_message(text: str, uid: str) -> Message:
     ai_message = Message(
         id=str(uuid.uuid4()),
+        uid=uid,
         text=text,
         created_at=datetime.now(timezone.utc),
         sender='ai',
@@ -53,6 +56,7 @@ def get_messages(uid: str, limit: int = 20, offset: int = 0, include_memories: b
         .limit(limit)
         .offset(offset)
     )
+
     messages = []
     memories_id = set()
 
@@ -65,7 +69,7 @@ def get_messages(uid: str, limit: int = 20, offset: int = 0, include_memories: b
 
         messages.append(message)
         memories_id.update(message.get('memories_id', []))
-
+    logger.info(f"Fetching messages for user: {uid}, messages total: {len(messages)}")
     if not include_memories:
         return messages
 
@@ -101,7 +105,7 @@ def batch_delete_messages(parent_doc_ref, batch_size=450):
         docs_list = list(docs)
 
         if not docs_list:
-            print("No more messages to delete")
+            logger.info("No more messages to delete")
             break
 
         batch = db.batch()
@@ -112,7 +116,7 @@ def batch_delete_messages(parent_doc_ref, batch_size=450):
         batch.commit()
 
         if len(docs_list) < batch_size:
-            print("Processed all messages")
+            logger.info("Processed all messages")
             break
 
         last_doc = docs_list[-1]
@@ -121,7 +125,7 @@ def batch_delete_messages(parent_doc_ref, batch_size=450):
 def clear_chat(uid: str):
     try:
         user_ref = db.collection('users').document(uid)
-        print(f"Deleting messages for user: {uid}")
+        logger.info(f"Deleting messages for user: {uid}")
         if not user_ref.get().exists:
             return {"message": "User not found"}
         batch_delete_messages(user_ref)

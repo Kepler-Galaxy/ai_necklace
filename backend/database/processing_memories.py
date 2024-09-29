@@ -1,7 +1,8 @@
-from ._client import db
 from google.cloud import firestore
 from typing import List
 
+# from ._client import db
+from utils.mgdbstore.client import db, FieldFilter
 
 def upsert_processing_memory(uid: str, processing_memory_data: dict):
     user_ref = db.collection('users').document(uid)

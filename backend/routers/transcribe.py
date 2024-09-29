@@ -217,10 +217,10 @@ async def _websocket_util(
             )
             if duration:
                 await send_initial_file_path(file_path, speechmatics_socket.send)
-                print('speech_profile speechmatics duration', duration)
+                logger.info('speech_profile speechmatics duration', duration)
 
     except Exception as e:
-        print(f"Initial processing error: {e}")
+        logger.error(f"Initial processing error: {e}")
         websocket_close_code = 1011
         await websocket.close(code=websocket_close_code)
         return
@@ -270,7 +270,7 @@ async def _websocket_util(
                     if elapsed_seconds > duration or not dg_socket2:
                         dg_socket1.send(data)
                         if dg_socket2:
-                            print('Killing socket2')
+                            logger.warning('Killing socket2')
                             dg_socket2.finish()
                             dg_socket2 = None
                     else:
@@ -310,7 +310,7 @@ async def _websocket_util(
 
                 # timeout
                 if time.time() - started_at >= timeout_seconds:
-                    print(f"Session timeout is hit by soft timeout {timeout_seconds}, session {session_id}")
+                    logger.info(f"Session timeout is hit by soft timeout {timeout_seconds}, session {session_id}")
                     websocket_close_code = 1001
                     websocket_active = False
         except WebSocketDisconnect:
@@ -322,14 +322,14 @@ async def _websocket_util(
             websocket_active = False
 
     async def _send_message_event(msg: MessageEvent):
-        print(f"Message: ${msg.to_json()}")
+        logger.info(f"Message: ${msg.to_json()}")
         try:
             await websocket.send_json(msg.to_json())
             return True
         except WebSocketDisconnect:
-            print("WebSocket disconnected")
+            logger.warning("WebSocket disconnected")
         except RuntimeError as e:
-            print(f"Can not send message event, error: {e}")
+            logger.error(f"Can not send message event, error: {e}")
 
         return False
 
@@ -354,6 +354,7 @@ async def _websocket_util(
         if not processing_memory:
             processing_memory = ProcessingMemory(
                 id=str(uuid.uuid4()),
+                uid=uid,
                 created_at=datetime.now(timezone.utc),
                 timer_start=timer_start,
                 timer_segment_start=timer_start + segment_start,
@@ -413,7 +414,7 @@ async def _websocket_util(
         # Message: creating
         ok = await _send_message_event(MessageEvent(event_type="new_memory_creating"))
         if not ok:
-            print("Can not send message event new_memory_creating")
+            logger.warning("Can not send message event new_memory_creating")
 
         # Not existed memory then create new one
         messages = []
@@ -422,12 +423,12 @@ async def _websocket_util(
                 uid, processing_memory.id
             )
             if not new_memory:
-                print("Can not create new memory")
+                logger.warning("Can not create new memory")
 
                 # Message: failed
                 ok = await _send_message_event(MessageEvent(event_type="new_memory_create_failed"))
                 if not ok:
-                    print("Can not send message event new_memory_create_failed")
+                    logger.warning("Can not send message event new_memory_create_failed")
                 return
 
             memory = new_memory
@@ -437,7 +438,7 @@ async def _websocket_util(
             # Or process the existed with new transcript
             memory_data = memories_db.get_memory(uid, processing_memory.memory_id)
             if memory_data is None:
-                print(f"Memory is not found. Uid: {uid}. Memory: {processing_memory.memory_id}")
+                logger.warning(f"Memory is not found. Uid: {uid}. Memory: {processing_memory.memory_id}")
                 return
             memory = Memory(**memory_data)
 
@@ -463,7 +464,7 @@ async def _websocket_util(
         )
         ok = await _send_message_event(msg)
         if not ok:
-            print("Can not send message event new_memory_created")
+            logger.warning("Can not send message event new_memory_created")
 
         return memory
 
@@ -472,7 +473,7 @@ async def _websocket_util(
         nonlocal memory_watching
         nonlocal websocket_active
         while memory_watching and websocket_active:
-            print(f"new memory watch, uid: {uid}, session: {session_id}")
+            logger.info(f"new memory watch, uid: {uid}, session: {session_id}")
             await asyncio.sleep(5)
             await _try_flush_new_memory_with_lock()
 
@@ -489,17 +490,17 @@ async def _websocket_util(
         nonlocal processing_memory_synced
 
         if not timer_start:
-            print("not timer start")
+            logger.info("not timer start")
             return
 
         # Validate last segment
         if not segment_end:
-            print("Not last segment or last segment invalid")
+            logger.warning("Not last segment or last segment invalid")
             return
 
         # First chunk, create processing memory
         should_create_processing_memory = not processing_memory and len(memory_transcript_segements) > 0
-        print(f"Should create processing {should_create_processing_memory}")
+        logger.info(f"Should create processing {should_create_processing_memory}")
         if should_create_processing_memory:
             await _create_processing_memory()
 
@@ -521,12 +522,12 @@ async def _websocket_util(
                     break
 
         should_create_memory = should_create_memory_time and should_create_memory_time_words
-        print(
+        logger.info(
             f"Should create memory {should_create_memory} - {timer_start} {segment_end} {min_seconds_limit} {now} - {time_validate}, session {session_id}")
         if should_create_memory:
             memory = await _create_memory()
             if not memory:
-                print(
+                logger.warning(
                     f"Can not create new memory uid: ${uid}, processing memory: {processing_memory.id if processing_memory else 0}")
                 return
 

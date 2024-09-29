@@ -1,10 +1,13 @@
 from datetime import datetime, timezone
 from typing import List
 
+from loguru import logger
 from google.cloud import firestore
-from google.cloud.firestore_v1 import FieldFilter
 
-from ._client import db
+# from google.cloud.firestore_v1 import FieldFilter
+
+# from ._client import db
+from utils.mgdbstore.client import db, FieldFilter
 
 
 def get_facts(uid: str, limit: int = 100, offset: int = 0):
@@ -17,9 +20,9 @@ def get_facts(uid: str, limit: int = 100, offset: int = 0):
     )
     facts_ref = facts_ref.limit(limit).offset(offset)
     facts = [doc.to_dict() for doc in facts_ref.stream()]
-    print('get_facts', len(facts))
+    logger.info('get_facts', len(facts))
     result = [fact for fact in facts if fact['user_review'] is not False]
-    print('get_facts', len(result))
+    logger.info('get_facts', len(result))
     return result
 
 
@@ -91,4 +94,4 @@ def delete_facts_for_memory(uid: str, memory_id: str):
         batch.update(doc.reference, {'deleted': True})
         removed_ids.append(doc.id)
     batch.commit()
-    print('delete_facts_for_memory', memory_id, len(removed_ids))
+    logger.info('delete_facts_for_memory', memory_id, len(removed_ids))

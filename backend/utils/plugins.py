@@ -131,14 +131,14 @@ def trigger_realtime_integrations(uid: str, token: str, segments: List[dict]) ->
         try:
             response = requests.post(url, json={"session_id": uid, "segments": segments})
             if response.status_code != 200:
-                print('trigger_realtime_integrations', plugin.id, 'result:', response.content)
+                logger.warning('trigger_realtime_integrations', plugin.id, 'result:', response.content)
                 return
 
             response_data = response.json()
             if not response_data:
                 return
             message = response_data.get('message', '')
-            print('Plugin', plugin.id, 'response:', message)
+            logger.info('Plugin', plugin.id, 'response:', message)
             if message and len(message) > 5:
                 send_plugin_notification(token, plugin.name, plugin.id, message)
                 results[plugin.id] = message

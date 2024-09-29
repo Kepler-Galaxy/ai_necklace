@@ -57,4 +57,4 @@ def query_vectors(query: str, uid: str, starts_at: int = None, ends_at: int = No
 def delete_vector(memory_id: str):
     # TODO: does this work?
     result = index.delete(ids=[memory_id], namespace="ns1")
-    print('delete_vector', result)
+    logger.info('delete_vector', result)

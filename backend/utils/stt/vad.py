@@ -30,7 +30,7 @@ def is_speech_present(data, vad_iterator, window_size_samples=256):
             break
         speech_dict = vad_iterator(chunk, return_seconds=False)
         if speech_dict:
-            print(speech_dict)
+            logger.info(speech_dict)
             vad_iterator.reset_states()
             return SpeechState.speech_found
 
@@ -61,7 +61,7 @@ def vad_is_empty(file_path, return_segments: bool = False):
     """Uses vad_modal/vad.py deployment (Best quality)"""
     try:
         file_duration = AudioSegment.from_wav(file_path).duration_seconds
-        print('vad_is_empty file duration:', file_duration)
+        logger.info('vad_is_empty file duration:', file_duration)
         with open(file_path, 'rb') as file:
             files = {'file': (file_path.split('/')[-1], file, 'audio/wav')}
             response = requests.post(os.getenv('HOSTED_VAD_API_URL'), files=files)

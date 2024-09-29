@@ -33,10 +33,10 @@ from routers import workflow, chat, firmware, plugins, memories, transcribe, not
     agents, facts, users, processing_memories, trends, sdcard, diary
 from utils.other.notifications import start_cron_job
 if(os.environ.get('ENV') == 'dev' or os.environ.get('ENV') == None):
-    print('loding dev environments from .env.dev')
+    logger.info('loding dev environments from .env.dev')
     load_dotenv('./.env.dev')
 else:
-    print('loding prod environments from .env')
+    logger.info('loding prod environments from .env')
     load_dotenv()
 
 # TODO(yiqi): How to set the environment variable GOOGLE_APPLICATION_CREDENTIALS to the path of generated file google-credentials.json, where is it?
@@ -45,7 +45,7 @@ if os.environ.get('SERVICE_ACCOUNT_JSON'):
     credentials = firebase_admin.credentials.Certificate(service_account_info)
     firebase_admin.initialize_app(credentials)
 else:
-    print('initializing firebase without credentials')
+    logger.info('initializing firebase without credentials')
     firebase_admin.initialize_app()
 
 from modal import Image, App, asgi_app, Secret, Cron
@@ -122,7 +122,7 @@ async def webhook(data: dict):
             else:
                 joined.append(speaker)
 
-    print(data['jobId'], json.dumps(joined))
+    logger.info(data['jobId'], json.dumps(joined))
     # openn scripts/stt/diarization.json, get jobId=memoryId, delete but get memoryId, and save memoryId=joined
     with open('scripts/stt/diarization.json', 'r') as f:
         diarization_data = json.loads(f.read())
