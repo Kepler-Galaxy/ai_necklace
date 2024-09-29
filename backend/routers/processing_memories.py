@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException
-from numba.cuda.cudadrv.nvvm import logger
+from loguru import logger
 
 import utils.processing_memories as processing_memory_utils
 from models.processing_memory import UpdateProcessingMemoryResponse, UpdateProcessingMemory
