@@ -85,6 +85,55 @@ class GetSummaryWidgets extends StatelessWidget {
                     enabled: context.read<MemoryDetailProvider>().editingTitle,
                     overview: memory.structured.overview,
                   ),
+            if (memory.structured.keyPoints.isNotEmpty) ...[
+              const SizedBox(height: 24),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Key Points',
+                    style: Theme.of(context).textTheme.titleLarge!.copyWith(fontSize: 26),
+                  ),
+                  IconButton(
+                    onPressed: () {
+                      Clipboard.setData(ClipboardData(
+                          text: '- ${memory.structured.keyPoints.join('\n- ')}'));
+                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                        content: Text('Key points copied to clipboard'),
+                        duration: Duration(seconds: 2),
+                      ));
+                      // MixpanelManager().copiedMemoryDetails(memory, source: 'Key Points');
+                    },
+                    icon: const Icon(Icons.copy_rounded, color: Colors.white, size: 20),
+                  )
+                ],
+              ),
+              const SizedBox(height: 8),
+              ...memory.structured.keyPoints.map((keyPoint) {
+                return Padding(
+                  padding: const EdgeInsets.only(top: 10),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(top: 4.0),
+                        child: Icon(Icons.star, color: Colors.grey.shade300, size: 20),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: SelectionArea(
+                          child: Text(
+                            utf8.decode(keyPoint.codeUnits),
+                            style: TextStyle(color: Colors.grey.shade300, fontSize: 16, height: 1.3),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              }),
+            ],
             memory.discarded ? const SizedBox.shrink() : const SizedBox(height: 40),
             memory.structured.actionItems.isNotEmpty
                 ? Row(

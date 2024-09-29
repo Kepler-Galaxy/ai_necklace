@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:friend_private/backend/auth.dart';
+import 'package:friend_private/providers/auth_provider.dart';
 import 'package:friend_private/backend/preferences.dart';
 import 'package:friend_private/main.dart';
 import 'package:friend_private/pages/plugins/page.dart';
@@ -156,7 +156,7 @@ class _SettingsPageState extends State<SettingsPage> {
                       return getDialog(context, () {
                         Navigator.of(context).pop();
                       }, () {
-                        signOut();
+                        AuthenticationProvider.logout();
                         Navigator.of(context).pop();
                         routeToPage(context, const DeciderWidget(), replace: true);
                       }, "Sign Out?", "Are you sure you want to sign out?");
