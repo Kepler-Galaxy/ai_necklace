@@ -155,10 +155,10 @@ class _SettingsPageState extends State<SettingsPage> {
                     builder: (ctx) {
                       return getDialog(context, () {
                         Navigator.of(context).pop();
-                      }, () {
-                        AuthenticationProvider.logout();
+                      }, () async {
+                        await AuthenticationProvider.logout();
                         Navigator.of(context).pop();
-                        routeToPage(context, const DeciderWidget(), replace: true);
+                        await routeToPage(context, const DeciderWidget(), replace: true);
                       }, "Sign Out?", "Are you sure you want to sign out?");
                     },
                   );
