@@ -16,7 +16,7 @@ async def create_memory_by_processing_memory(uid: str, processing_memory_id: str
     if len(processing_memories) == 0:
         logger.info("processing memory is not found")
         return
-    processing_memory = ProcessingMemory(uid=uid, **processing_memories[0])
+    processing_memory = ProcessingMemory(**processing_memories[0])
 
     # Create memory
     transcript_segments = processing_memory.transcript_segments
@@ -65,7 +65,7 @@ def update_basic_processing_memory(uid: str,
         logger.warning("processing memory is not found")
         return
 
-    processing_memory = ProcessingMemory(uid=uid, **processing_memories[0])
+    processing_memory = BasicProcessingMemory(**processing_memory)
 
     # geolocation
     if update_processing_memory.geolocation:
