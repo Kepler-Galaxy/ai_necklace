@@ -339,13 +339,39 @@ async def _websocket_util(
         nonlocal memory_transcript_segements
         nonlocal processing_memory_synced
 
-        processing_memory = ProcessingMemory(
-            id=str(uuid.uuid4()),
-            uid=uid,
-            session_id=session_id,
-            created_at=datetime.now(timezone.utc),
-            timer_start=timer_start,
-            language=language,
+        # Check the last processing memory
+        last_processing_memory_data = processing_memories_db.get_last(uid)
+        if last_processing_memory_data:
+            last_processing_memory = ProcessingMemory(**last_processing_memory_data)
+            last_segment_end = 0
+            for segment in last_processing_memory.transcript_segments:
+                last_segment_end = max(last_segment_end, segment.end)
+            timer_segment_start = last_processing_memory.timer_segment_start if last_processing_memory.timer_segment_start else last_processing_memory.timer_start
+            if timer_segment_start + last_segment_end + min_seconds_limit > time.time():
+                processing_memory = last_processing_memory
+
+        # Or create new
+        if not processing_memory:
+            processing_memory = ProcessingMemory(
+                id=str(uuid.uuid4()),
+                uid=uid,
+                created_at=datetime.now(timezone.utc),
+                timer_start=timer_start,
+                timer_segment_start=timer_start + segment_start,
+                language=language,
+            )
+
+        # Track session changes
+        processing_memory.session_id = session_id
+        processing_memory.session_ids.append(session_id)
+
+        # Track timer start
+        processing_memory.timer_starts.append(timer_start)
+
+        # Transcript with delta
+        memory_transcript_segements = TranscriptSegment.combine_segments(
+            processing_memory.transcript_segments, memory_transcript_segements,
+            timer_start - processing_memory.timer_start
         )
 
         processing_memory_synced = len(memory_transcript_segements)
