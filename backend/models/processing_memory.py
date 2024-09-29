@@ -9,6 +9,7 @@ from models.transcript_segment import TranscriptSegment
 
 class ProcessingMemory(BaseModel):
     id: str
+    uid: str
     session_id: Optional[str] = None
     session_ids: List[str] = []
     audio_url: Optional[str] = None

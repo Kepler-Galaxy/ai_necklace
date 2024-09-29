@@ -1,7 +1,8 @@
-from google.cloud.firestore_v1 import FieldFilter
+# from google.cloud.firestore_v1 import FieldFilter
 
-from ._client import db
+# from ._client import db
 
+from utils.mgdbstore.client import db, FieldFilter
 
 def get_user_store_recording_permission(uid: str):
     user_ref = db.collection('users').document(uid)

@@ -28,6 +28,7 @@ class MessageMemory(BaseModel):
 
 class Message(BaseModel):
     id: str
+    uid: str
     text: str
     created_at: datetime
     sender: MessageSender

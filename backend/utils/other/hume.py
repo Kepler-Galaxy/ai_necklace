@@ -1,7 +1,7 @@
 import os
 
 import requests
-
+from loguru import logger
 
 class HumePredictionEmotionResponseModel:
     def __init__(
@@ -187,7 +187,7 @@ class HumeClient:
                 },
             }
         if err is not None:
-            print(err)
+            logger.error(err)
             return err
 
         return {"result": HumeJobResponseModel.from_dict(resp.json())}

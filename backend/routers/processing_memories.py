@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException
+from loguru import logger
 
 import utils.processing_memories as processing_memory_utils
 from models.processing_memory import UpdateProcessingMemoryResponse, UpdateProcessingMemory
@@ -22,7 +23,7 @@ def update_processing_memory(
     :return: The new processing_memory updated.
     """
 
-    print(f"Update processing memory {processing_memory_id}")
+    logger.info(f"Update processing memory {processing_memory_id}")
 
     update_processing_memory.id = processing_memory_id
     processing_memory = processing_memory_utils.update_basic_processing_memory(uid, update_processing_memory)

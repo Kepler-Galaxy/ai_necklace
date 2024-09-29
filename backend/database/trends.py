@@ -1,6 +1,7 @@
 from datetime import datetime
 from typing import Dict, List
 
+from loguru import logger
 from firebase_admin import firestore
 from google.api_core.retry import Retry
 
@@ -34,7 +35,7 @@ def get_trends_data() -> List[Dict]:
             category_data['topics'] = cleaned_topics
             trends_data.append(category_data)
         except Exception as e:
-            print(e)
+            logger.error(e)
             continue
 
     return trends_data
