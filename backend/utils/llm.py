@@ -585,22 +585,8 @@ async def obtain_recent_summary(conversation_history: str, articles_read: str, r
     - If certain sections lack substantial information, briefly acknowledge this and focus on areas with more content.
     """
 
-    try:
-        # First, try with gpt-4o, if rate limit is exceeded, openai will not charge us
-        return llm.invoke(prompt).content
-    except RateLimitError as e:
-        logger.warning(f"Rate limit exceeded for gpt-4o. Falling back to gpt-4o-mini. Error: {str(e)}")
-        try:
-            # Fallback to gpt-4o-mini
-            mini_llm = ChatOpenAI(model="gpt-4o-mini")
-            return mini_llm.invoke(prompt).content
-        except Exception as e:
-            logger.error(f"Error occurred while using gpt-4o-mini: {str(e)}")
-            raise
+    return llm_mini.invoke(prompt).content
 
-    except Exception as e:
-        logger.error(f"Unexpected error occurred: {str(e)}")
-        raise
 
 # **************************************************
 # ************* WECHAT ARTICLE SUMMARIZATION ********
@@ -624,7 +610,7 @@ def summarize_article(web_content_response: WebContentResponse) -> Structured:
         You should leave the events and action items as empty lists.
         {format_instructions}'''.replace('    ', '').strip()
     )])
-    chain = prompt | llm | parser
+    chain = prompt | llm_mini | parser
 
     response = chain.invoke({
         'title': web_content_response.title,
@@ -664,7 +650,7 @@ def explain_relationship(memory: Memory, related_memory: Memory) -> ExplainRelat
     )])
 
     parser = PydanticOutputParser(pydantic_object=ExplainRelationshipOutput)
-    chain = prompt | llm | parser
+    chain = prompt | llm_mini | parser
     response = chain.invoke({
         'memory1_str': Memory.memories_to_string([memory], include_raw_data=True),
         'memory2_str': Memory.memories_to_string([related_memory], include_raw_data=True), 

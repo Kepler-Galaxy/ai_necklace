@@ -33,6 +33,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:upgrader/upgrader.dart';
 import 'package:friend_private/pages/diary/page.dart';
+import 'package:friend_private/widgets/web_link_input.dart';
 
 class HomePageWrapper extends StatefulWidget {
   const HomePageWrapper({super.key});
@@ -538,15 +539,51 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver, Ticker
                           memoryProvider.isLoadingMemories) {
                         return const SizedBox.shrink();
                       }
-                      return IconButton(
-                          onPressed: memoryProvider.toggleDiscardMemories,
-                          icon: Icon(
-                            SharedPreferencesUtil().showDiscardedMemories
-                                ? Icons.filter_list_off_sharp
-                                : Icons.filter_list,
-                            color: Colors.white,
-                            size: 24,
-                          ));
+                      return Row(
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.all(4.0),
+                            child: GestureDetector(
+                              onTap: memoryProvider.isCreatingWeChatMemory ? null : () {
+                                _showWebLinkArticleInput(context);
+                              },
+                              child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    memoryProvider.isCreatingWeChatMemory ? 'Creating Memory' : 'Import Article',
+                                    style: TextStyle(color: Colors.white, fontSize: 12),
+                                  ),
+                                  const SizedBox(width: 4),
+                                  memoryProvider.isCreatingWeChatMemory
+                                      ? SizedBox(
+                                          width: 12,
+                                          height: 12,
+                                          child: CircularProgressIndicator(
+                                            valueColor: AlwaysStoppedAnimation<Color>(Colors.green),
+                                            strokeWidth: 2,
+                                          ),
+                                        )
+                                      : const Icon(
+                                          Icons.add,
+                                          color: Colors.white,
+                                        ),
+                                ],
+                              ),
+                            ),
+                          ),
+                          IconButton(
+                              onPressed: memoryProvider.toggleDiscardMemories,
+                              icon: Icon(
+                                SharedPreferencesUtil().showDiscardedMemories
+                                    ? Icons.filter_list_off_sharp
+                                    : Icons.filter_list,
+                                color: Colors.white,
+                                size: 24,
+                              )),
+                        ],
+                      );
                     }),
                     IconButton(
                       icon: const Icon(Icons.settings, color: Colors.white, size: 30),
@@ -577,6 +614,19 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver, Ticker
       }),
     );
   }
+
+void _showWebLinkArticleInput(BuildContext context) {
+  showModalBottomSheet(
+    context: context,
+    isScrollControlled: true,
+    shape: const RoundedRectangleBorder(
+      borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+    ),
+    builder: (BuildContext context) {
+      return WebLinkArticleInputWidget();
+    },
+  );
+}
 
   _getPluginsDropdownItems(BuildContext context, PluginProvider provider) {
     var items = [

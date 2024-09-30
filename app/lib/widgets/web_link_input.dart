@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:friend_private/providers/memory_provider.dart';
 import 'package:provider/provider.dart';
 
-class WeChatArticleInputWidget extends StatefulWidget {
+class WebLinkArticleInputWidget extends StatefulWidget {
   @override
-  _WeChatArticleInputWidgetState createState() =>
-      _WeChatArticleInputWidgetState();
+  _WebLinkArticleInputWidgetState createState() =>
+      _WebLinkArticleInputWidgetState();
 }
 
-class _WeChatArticleInputWidgetState extends State<WeChatArticleInputWidget> {
+class _WebLinkArticleInputWidgetState extends State<WebLinkArticleInputWidget> {
   final TextEditingController _linkController = TextEditingController();
   bool _isLoading = false;
 
@@ -57,6 +57,6 @@ class _WeChatArticleInputWidgetState extends State<WeChatArticleInputWidget> {
   void _submitLink() async {
     Navigator.of(context).pop();
     await Provider.of<MemoryProvider>(context, listen: false)
-        .addWeChatMemory(_linkController.text);
+        .addWebLinkMemory(_linkController.text);
   }
 }

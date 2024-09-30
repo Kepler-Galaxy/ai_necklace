@@ -113,8 +113,10 @@ class MemoryProvider extends ChangeNotifier {
   }
 
   void toggleDiscardMemories() {
-    MixpanelManager().showDiscardedMemoriesToggled(!SharedPreferencesUtil().showDiscardedMemories);
-    SharedPreferencesUtil().showDiscardedMemories = !SharedPreferencesUtil().showDiscardedMemories;
+    MixpanelManager().showDiscardedMemoriesToggled(
+        !SharedPreferencesUtil().showDiscardedMemories);
+    SharedPreferencesUtil().showDiscardedMemories =
+        !SharedPreferencesUtil().showDiscardedMemories;
     filterMemories('');
     populateMemoriesWithDates();
     notifyListeners();
@@ -152,7 +154,8 @@ class MemoryProvider extends ChangeNotifier {
     for (var memory in memories) {
       if (memory.structured.events.isNotEmpty &&
           !memory.structured.events.first.created &&
-          memory.startedAt!.isAfter(DateTime.now().add(const Duration(days: -1)))) {
+          memory.startedAt!
+              .isAfter(DateTime.now().add(const Duration(days: -1)))) {
         _handleCalendarCreation(memory);
       }
     }
@@ -272,7 +275,7 @@ class MemoryProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> addWeChatMemory(String articleLink) async {
+  Future<void> addWebLinkMemory(String articleLink) async {
     setCreatingWeChatMemory(true);
     try {
       final memory = await createMemoryFromWeChatArticle(articleLink);
