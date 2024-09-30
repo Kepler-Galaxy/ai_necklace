@@ -10,6 +10,8 @@ RUN pip install ffmpeg
 COPY ./requirements.txt /tmp/requirements.txt
 RUN pip install --no-cache-dir -r /tmp/requirements.txt
 
+RUN apt-get install -y libopus0 libopus-dev
+
 COPY . /app
 RUN rm /app/.env /app/.env.dev /app/docker-compose.yml /app/docker-compose-dev.yml
 

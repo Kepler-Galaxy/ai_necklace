@@ -10,7 +10,7 @@ services:
     volumes:
       - .env:/app/.env
       - .env.dev:/app/.env.dev
-      # - ./credentials.json:/app/credentials.json
+      - ./credentials.json:/app/credentials.json
     environment:
       - ENV=dev
 
