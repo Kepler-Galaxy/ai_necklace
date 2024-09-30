@@ -261,6 +261,7 @@ class SummaryTab extends StatelessWidget {
       builder: (context, isDiscaarded, child) {
         return ListView(
           shrinkWrap: true,
+          physics: NeverScrollableScrollPhysics(),
           children: [
             const GetSummaryWidgets(),
             isDiscaarded ? const ReprocessDiscardedWidget() : const GetPluginsWidgets(),
@@ -279,9 +280,7 @@ class TranscriptWidgets extends StatelessWidget {
   Widget build(BuildContext context) {
     return Consumer<MemoryDetailProvider>(
       builder: (context, provider, child) {
-        return ListView(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
+        return Column(
           children: [
             SizedBox(height: provider.memory.transcriptSegments.isEmpty ? 16 : 0),
             // provider.memory.isPostprocessing()
@@ -364,46 +363,45 @@ class WebContentWidgets extends StatelessWidget {
         final String title = webContentResponse?.title ?? 'No title available';
         final String url = webContentResponse?.url ?? '';
         
-        return ListView(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          children: [
-            const SizedBox(height: 16),
-            Text(
-              utf8.decode(title.codeUnits),
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(color: Colors.grey.shade300),
-            ),
-            const SizedBox(height: 8),
-            if (url.isNotEmpty)
-              InkWell(
-                onTap: () async {
-                  final Uri uri = Uri.parse(url);
-                  if (await canLaunchUrl(uri)) {
-                    await launchUrl(uri);
-                  } else {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('Could not launch $url')),
-                    );
-                  }
-                },
-                child: Text(
-                  url,
-                  style: TextStyle(
-                    color: Colors.blue.shade300,
-                    decoration: TextDecoration.underline,
+        return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const SizedBox(height: 16),
+              Text(
+                title,
+                style: Theme.of(context).textTheme.titleLarge?.copyWith(color: Colors.grey.shade300),
+              ),
+              const SizedBox(height: 8),
+              if (url.isNotEmpty)
+                InkWell(
+                  onTap: () async {
+                    final Uri uri = Uri.parse(url);
+                    if (await canLaunchUrl(uri)) {
+                      await launchUrl(uri);
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('Could not launch $url')),
+                      );
+                    }
+                  },
+                  child: Text(
+                    url,
+                    style: TextStyle(
+                      color: Colors.blue.shade300,
+                      decoration: TextDecoration.underline,
+                    ),
                   ),
                 ),
+              const SizedBox(height: 16),
+              ExpandableTextWidget(
+                text: webContent,
+                maxLines: 10000,
+                linkColor: Colors.grey.shade300,
+                style: TextStyle(color: Colors.grey.shade300, fontSize: 15, height: 1.3),
+                isExpanded: provider.isTranscriptExpanded,
+                toggleExpand: () => provider.toggleIsTranscriptExpanded(),
               ),
-            const SizedBox(height: 16),
-            ExpandableTextWidget(
-              text: utf8.decode(webContent.codeUnits),
-              maxLines: 10000,
-              linkColor: Colors.grey.shade300,
-              style: TextStyle(color: Colors.grey.shade300, fontSize: 15, height: 1.3),
-              isExpanded: provider.isTranscriptExpanded,
-              toggleExpand: () => provider.toggleIsTranscriptExpanded(),
-            ),
-            const SizedBox(height: 32)
+              const SizedBox(height: 32),
           ],
         );
       },

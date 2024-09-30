@@ -22,7 +22,6 @@ import 'package:friend_private/widgets/expandable_text.dart';
 import 'package:gradient_borders/box_borders/gradient_box_border.dart';
 import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
-import 'dart:convert';
 
 import 'maps_util.dart';
 
@@ -124,7 +123,7 @@ class GetSummaryWidgets extends StatelessWidget {
                       Expanded(
                         child: SelectionArea(
                           child: Text(
-                            utf8.decode(keyPoint.codeUnits),
+                            keyPoint,
                             style: TextStyle(color: Colors.grey.shade300, fontSize: 16, height: 1.3),
                           ),
                         ),

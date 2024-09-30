@@ -542,7 +542,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver, Ticker
                       return Row(
                         children: [
                           Padding(
-                            padding: const EdgeInsets.all(8.0),
+                            padding: const EdgeInsets.all(4.0),
                             child: GestureDetector(
                               onTap: memoryProvider.isCreatingWeChatMemory ? null : () {
                                 _showWebLinkArticleInput(context);
@@ -555,7 +555,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver, Ticker
                                     memoryProvider.isCreatingWeChatMemory ? 'Creating Memory' : 'Import Article',
                                     style: TextStyle(color: Colors.white, fontSize: 12),
                                   ),
-                                  const SizedBox(width: 8),
+                                  const SizedBox(width: 4),
                                   memoryProvider.isCreatingWeChatMemory
                                       ? SizedBox(
                                           width: 12,
