@@ -14,8 +14,12 @@ import 'package:instabug_flutter/instabug_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class AuthenticationProvider extends BaseProvider {
-  User? user;
+
   String? authToken;
+
+  User?get user {
+    return AuthClient.currentUser;
+  }
 
   bool isSignedIn() {
     return AuthClient.currentUser != null;
@@ -125,12 +129,7 @@ class AuthenticationProvider extends BaseProvider {
   static Future<void> logout() async {
     await AuthClient.logout();
     AuthClient.currentUser = null;
-    SharedPreferencesUtil().clear();
-    // SharedPreferencesUtil().refershToken = "";
-    // SharedPreferencesUtil().authToken = "";
-    // SharedPreferencesUtil().uid = "";
-    // SharedPreferencesUtil().tokenExpirationTime = 0;
-    // SharedPreferencesUtil().onboardingCompleted = false;
+    await SharedPreferencesUtil().clear();
   }
 
   Future<String?> _getIdToken() async {
