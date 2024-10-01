@@ -12,6 +12,8 @@ import 'package:friend_private/utils/enums.dart';
 import 'package:friend_private/utils/other/temp.dart';
 import 'package:friend_private/widgets/dialog.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:friend_private/generated/l10n.dart';
 
 class MemoryCaptureWidget extends StatefulWidget {
   final ServerProcessingMemory? memory;
@@ -99,9 +101,9 @@ class _MemoryCaptureWidgetState extends State<MemoryCaptureWidget> {
             await provider.streamRecording();
             MixpanelManager().phoneMicRecordingStarted();
           },
-          'Limited Capabilities',
-          'Recording with your phone microphone has a few limitations, including but not limited to: speaker profiles, background reliability.',
-          okButtonText: 'Ok, I understand',
+          S.current.LimitedCapabilities,
+          S.current.DescriptionOfRecordingWithPhoneMicrophone,
+          okButtonText: S.current.OkIUnderstand,
         ),
       );
     }
@@ -262,7 +264,7 @@ getPhoneMicRecordingButton(BuildContext context, toggleRecording, RecordingState
         Text(
           state == RecordingState.initialising
               ? 'Initialising Recorder'
-              : (state == RecordingState.record ? 'Stop Recording' : 'Try With Phone Mic'),
+              : (state == RecordingState.record ? S.current.StopRecording : S.current.TryWithPhoneMic),
           style: Theme.of(context).textTheme.bodyMedium!.copyWith(color: Colors.white, fontWeight: FontWeight.w600),
         ),
         const SizedBox(width: 4),

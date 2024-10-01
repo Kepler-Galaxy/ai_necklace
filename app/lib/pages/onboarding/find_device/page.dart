@@ -77,24 +77,24 @@ class _FindDevicesPageState extends State<FindDevicesPage> {
               isFromOnboarding: widget.isFromOnboarding,
             ),
             if (provider.deviceList.isEmpty && provider.enableInstructions) const SizedBox(height: 48),
-            if (provider.deviceList.isEmpty && provider.enableInstructions)
-              ElevatedButton(
-                onPressed: () => launchUrl(Uri.parse('mailto:team@basedhardware.com')),
-                child: Container(
-                  width: double.infinity,
-                  height: 45,
-                  alignment: Alignment.center,
-                  child: const Text(
-                    'Contact Support?',
-                    style: TextStyle(
-                      fontWeight: FontWeight.w400,
-                      fontSize: 16,
-                      color: Colors.white,
-                      decoration: TextDecoration.underline,
-                    ),
-                  ),
-                ),
-              ),
+            // if (provider.deviceList.isEmpty && provider.enableInstructions)
+            //   ElevatedButton(
+            //     onPressed: () => {},
+            //     child: Container(
+            //       width: double.infinity,
+            //       height: 45,
+            //       alignment: Alignment.center,
+            //       child: const Text(
+            //         'Contact Support?',
+            //         style: TextStyle(
+            //           fontWeight: FontWeight.w400,
+            //           fontSize: 16,
+            //           color: Colors.white,
+            //           decoration: TextDecoration.underline,
+            //         ),
+            //       ),
+            //     ),
+            //   ),
             if (widget.includeSkip && provider.deviceList.isEmpty)
               ElevatedButton(
                 onPressed: () {

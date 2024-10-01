@@ -22,9 +22,27 @@ class MessageLookup extends MessageLookupByLibrary {
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
+        "ArticleLinkWeChatArticleorOthers":
+            MessageLookupByLibrary.simpleMessage("从微信文章或者其他网址获取记忆"),
+        "Cancel": MessageLookupByLibrary.simpleMessage("取消"),
         "Chat": MessageLookupByLibrary.simpleMessage("闲谈"),
+        "ConnectYourKstar": MessageLookupByLibrary.simpleMessage("连接你的音灵"),
+        "CreateMemory": MessageLookupByLibrary.simpleMessage("创建记忆"),
+        "CreatingMemory": MessageLookupByLibrary.simpleMessage("记忆构建中"),
+        "DescriptionOfRecordingWithPhoneMicrophone":
+            MessageLookupByLibrary.simpleMessage(
+                "使用手机麦克风录音存在一些限制，包括但不限于音色特性和背景噪音的干扰"),
         "Diary": MessageLookupByLibrary.simpleMessage("札记"),
+        "ImportArticle": MessageLookupByLibrary.simpleMessage("记忆获取"),
+        "LimitedCapabilities": MessageLookupByLibrary.simpleMessage("录音限制"),
         "Memories": MessageLookupByLibrary.simpleMessage("追忆"),
+        "NoDeviceFound": MessageLookupByLibrary.simpleMessage("未连接任何音灵"),
+        "OkIUnderstand": MessageLookupByLibrary.simpleMessage("已了解"),
+        "PasteArticleLinkHere": MessageLookupByLibrary.simpleMessage("粘贴链接"),
+        "SearchingForDevices":
+            MessageLookupByLibrary.simpleMessage("正在搜索音灵..."),
+        "StopRecording": MessageLookupByLibrary.simpleMessage("停止录制"),
+        "TryWithPhoneMic": MessageLookupByLibrary.simpleMessage("麦克风测试"),
         "hello": MessageLookupByLibrary.simpleMessage("你好")
       };
 }
