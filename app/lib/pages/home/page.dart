@@ -34,6 +34,8 @@ import 'package:provider/provider.dart';
 import 'package:upgrader/upgrader.dart';
 import 'package:friend_private/pages/diary/page.dart';
 import 'package:friend_private/widgets/web_link_input.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:friend_private/generated/l10n.dart';
 
 class HomePageWrapper extends StatefulWidget {
   const HomePageWrapper({super.key});
@@ -294,7 +296,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver, Ticker
                             tabs: [
                               Tab(
                                 child: Text(
-                                  'Memories',
+                                  S.current.Memories,
                                   style: TextStyle(
                                     color: home.selectedIndex == 0 ? Colors.white : Colors.grey,
                                     fontSize: 16,
@@ -303,7 +305,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver, Ticker
                               ),
                               Tab(
                                 child: Text(
-                                  'Diary',
+                                  S.current.Diary,
                                   style: TextStyle(
                                     color: home.selectedIndex == 1 ? Colors.white : Colors.grey,
                                     fontSize: 16,
@@ -312,7 +314,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver, Ticker
                               ),
                               Tab(
                                 child: Text(
-                                  'Chat',
+                                  S.current.Chat,
                                   style: TextStyle(
                                     color: home.selectedIndex == 2 ? Colors.white : Colors.grey,
                                     fontSize: 16,
