@@ -2,5 +2,19 @@
     "hello": "你好",
     "Memories": "追忆",
     "Diary": "札记",
-    "Chat": "闲谈"
+    "Chat": "闲谈",
+    "CreatingMemory": "记忆构建中",
+    "ImportArticle": "记忆获取",
+    "StopRecording": "停止录制",
+    "TryWithPhoneMic": "麦克风测试",
+    "NoDeviceFound": "未连接任何音灵",
+    "ArticleLinkWeChatArticleorOthers": "从微信文章或者其他网址获取记忆",
+    "PasteArticleLinkHere": "粘贴链接",
+    "CreateMemory": "创建记忆",
+    "ConnectYourKstar": "连接你的音灵",
+    "SearchingForDevices": "正在搜索音灵...",
+    "LimitedCapabilities": "录音限制",
+    "DescriptionOfRecordingWithPhoneMicrophone": "使用手机麦克风录音存在一些限制，包括但不限于音色特性和背景噪音的干扰",
+    "OkIUnderstand": "已了解",
+    "Cancel": "取消"
 } 

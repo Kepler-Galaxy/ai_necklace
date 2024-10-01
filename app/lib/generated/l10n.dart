@@ -89,6 +89,146 @@ class S {
       args: [],
     );
   }
+
+  /// `Creating Memory`
+  String get CreatingMemory {
+    return Intl.message(
+      'Creating Memory',
+      name: 'CreatingMemory',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Import Article`
+  String get ImportArticle {
+    return Intl.message(
+      'Import Article',
+      name: 'ImportArticle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Stop Recording`
+  String get StopRecording {
+    return Intl.message(
+      'Stop Recording',
+      name: 'StopRecording',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Try With Phone Mic`
+  String get TryWithPhoneMic {
+    return Intl.message(
+      'Try With Phone Mic',
+      name: 'TryWithPhoneMic',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No device found`
+  String get NoDeviceFound {
+    return Intl.message(
+      'No device found',
+      name: 'NoDeviceFound',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Article Link: WeChat Article or Others`
+  String get ArticleLinkWeChatArticleorOthers {
+    return Intl.message(
+      'Article Link: WeChat Article or Others',
+      name: 'ArticleLinkWeChatArticleorOthers',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Paste article link here`
+  String get PasteArticleLinkHere {
+    return Intl.message(
+      'Paste article link here',
+      name: 'PasteArticleLinkHere',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Create Memory`
+  String get CreateMemory {
+    return Intl.message(
+      'Create Memory',
+      name: 'CreateMemory',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Connect Your Audio Fairy`
+  String get ConnectYourKstar {
+    return Intl.message(
+      'Connect Your Audio Fairy',
+      name: 'ConnectYourKstar',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Searching for devices...`
+  String get SearchingForDevices {
+    return Intl.message(
+      'Searching for devices...',
+      name: 'SearchingForDevices',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Limited Capabilities`
+  String get LimitedCapabilities {
+    return Intl.message(
+      'Limited Capabilities',
+      name: 'LimitedCapabilities',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Recording with your phone microphone has a few limitations, including but not limited to: speaker profiles, background reliability.`
+  String get DescriptionOfRecordingWithPhoneMicrophone {
+    return Intl.message(
+      'Recording with your phone microphone has a few limitations, including but not limited to: speaker profiles, background reliability.',
+      name: 'DescriptionOfRecordingWithPhoneMicrophone',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Ok, I understand`
+  String get OkIUnderstand {
+    return Intl.message(
+      'Ok, I understand',
+      name: 'OkIUnderstand',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Cancel`
+  String get Cancel {
+    return Intl.message(
+      'Cancel',
+      name: 'Cancel',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

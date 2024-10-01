@@ -2,5 +2,19 @@
     "hello": "hello",
     "Memories": "Memories",
     "Diary": "Diary",
-    "Chat": "Chat"
+    "Chat": "Chat",
+    "CreatingMemory": "Creating Memory",
+    "ImportArticle": "Import Article",
+    "StopRecording": "Stop Recording",
+    "TryWithPhoneMic": "Try With Phone Mic",
+    "NoDeviceFound": "No device found",
+    "ArticleLinkWeChatArticleorOthers": "Article Link: WeChat Article or Others",
+    "PasteArticleLinkHere": "Paste article link here",
+    "CreateMemory": "Create Memory",
+    "ConnectYourKstar": "Connect Your Audio Fairy",
+    "SearchingForDevices": "Searching for devices...",
+    "LimitedCapabilities": "Limited Capabilities",
+    "DescriptionOfRecordingWithPhoneMicrophone": "Recording with your phone microphone has a few limitations, including but not limited to: speaker profiles, background reliability.",
+    "OkIUnderstand": "Ok, I understand",
+    "Cancel": "Cancel"
 }

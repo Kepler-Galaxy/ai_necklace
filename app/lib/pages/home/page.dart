@@ -466,7 +466,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver, Ticker
                                   )
                                 : isMemoriesPage
                                     ? Text(
-                                        "No device found",
+                                        S.current.NoDeviceFound,
                                         style: Theme.of(context).textTheme.bodyMedium!.copyWith(color: Colors.white),
                                       )
                                     : const SizedBox.shrink(),
@@ -554,7 +554,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver, Ticker
                                 mainAxisAlignment: MainAxisAlignment.start,
                                 children: [
                                   Text(
-                                    memoryProvider.isCreatingWeChatMemory ? 'Creating Memory' : 'Import Article',
+                                    memoryProvider.isCreatingWeChatMemory ? S.current.CreatingMemory : S.current.ImportArticle,
                                     style: TextStyle(color: Colors.white, fontSize: 12),
                                   ),
                                   const SizedBox(width: 4),

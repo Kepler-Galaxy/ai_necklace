@@ -6,6 +6,8 @@ import 'package:friend_private/providers/onboarding_provider.dart';
 import 'package:friend_private/widgets/dialog.dart';
 import 'package:gradient_borders/gradient_borders.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:friend_private/generated/l10n.dart';
 
 class FoundDevices extends StatefulWidget {
   final bool isFromOnboarding;
@@ -74,7 +76,7 @@ class _FoundDevicesState extends State<FoundDevices> {
             !provider.isConnected
                 ? Text(
                     provider.deviceList.isEmpty
-                        ? 'Searching for devices...'
+                        ? S.current.SearchingForDevices
                         : '${provider.deviceList.length} ${provider.deviceList.length == 1 ? "DEVICE" : "DEVICES"} FOUND NEARBY',
                     style: const TextStyle(
                       fontWeight: FontWeight.w400,

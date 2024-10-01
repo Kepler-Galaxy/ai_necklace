@@ -2,6 +2,8 @@ import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:friend_private/generated/l10n.dart';
 
 //TODO: switch to required named parameters
 getDialog(
@@ -23,7 +25,7 @@ getDialog(
       : [
           TextButton(
             onPressed: () => onCancel(),
-            child: const Text('Cancel', style: TextStyle(color: Colors.white)),
+            child: Text(S.current.Cancel, style: TextStyle(color: Colors.white)),
           ),
           TextButton(
               onPressed: () => onConfirm(), child: Text(okButtonText, style: const TextStyle(color: Colors.white))),

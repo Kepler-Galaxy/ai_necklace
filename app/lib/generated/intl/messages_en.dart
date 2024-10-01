@@ -22,9 +22,35 @@ class MessageLookup extends MessageLookupByLibrary {
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
+        "ArticleLinkWeChatArticleorOthers":
+            MessageLookupByLibrary.simpleMessage(
+                "Article Link: WeChat Article or Others"),
+        "Cancel": MessageLookupByLibrary.simpleMessage("Cancel"),
         "Chat": MessageLookupByLibrary.simpleMessage("Chat"),
+        "ConnectYourKstar":
+            MessageLookupByLibrary.simpleMessage("Connect Your Audio Fairy"),
+        "CreateMemory": MessageLookupByLibrary.simpleMessage("Create Memory"),
+        "CreatingMemory":
+            MessageLookupByLibrary.simpleMessage("Creating Memory"),
+        "DescriptionOfRecordingWithPhoneMicrophone":
+            MessageLookupByLibrary.simpleMessage(
+                "Recording with your phone microphone has a few limitations, including but not limited to: speaker profiles, background reliability."),
         "Diary": MessageLookupByLibrary.simpleMessage("Diary"),
+        "ImportArticle": MessageLookupByLibrary.simpleMessage("Import Article"),
+        "LimitedCapabilities":
+            MessageLookupByLibrary.simpleMessage("Limited Capabilities"),
         "Memories": MessageLookupByLibrary.simpleMessage("Memories"),
+        "NoDeviceFound":
+            MessageLookupByLibrary.simpleMessage("No device found"),
+        "OkIUnderstand":
+            MessageLookupByLibrary.simpleMessage("Ok, I understand"),
+        "PasteArticleLinkHere":
+            MessageLookupByLibrary.simpleMessage("Paste article link here"),
+        "SearchingForDevices":
+            MessageLookupByLibrary.simpleMessage("Searching for devices..."),
+        "StopRecording": MessageLookupByLibrary.simpleMessage("Stop Recording"),
+        "TryWithPhoneMic":
+            MessageLookupByLibrary.simpleMessage("Try With Phone Mic"),
         "hello": MessageLookupByLibrary.simpleMessage("hello")
       };
 }
