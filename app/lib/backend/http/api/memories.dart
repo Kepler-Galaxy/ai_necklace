@@ -96,7 +96,8 @@ Future<ServerMemory?> reProcessMemoryServer(String memoryId) async {
   if (response == null) return null;
   debugPrint('reProcessMemoryServer: ${response.body}');
   if (response.statusCode == 200) {
-    return ServerMemory.fromJson(jsonDecode(response.body));
+    var body = utf8.decode(response.bodyBytes);
+    return ServerMemory.fromJson(jsonDecode(body));
   }
   return null;
 }
@@ -123,7 +124,8 @@ Future<ServerMemory?> getMemoryById(String memoryId) async {
   if (response == null) return null;
   debugPrint('getMemoryById: ${response.body}');
   if (response.statusCode == 200) {
-    return ServerMemory.fromJson(jsonDecode(response.body));
+    var body = utf8.decode(response.bodyBytes);
+    return ServerMemory.fromJson(jsonDecode(body));
   }
   return null;
 }
@@ -138,7 +140,8 @@ Future<ServerProcessingMemory?> getProcessingMemoryById(String id) async {
   if (response == null) return null;
   debugPrint('getProcessingMemoryById: ${response.body}');
   if (response.statusCode == 200) {
-    return ServerProcessingMemory.fromJson(jsonDecode(response.body));
+    var body = utf8.decode(response.bodyBytes);
+    return ServerProcessingMemory.fromJson(jsonDecode(body));
   }
   return null;
 }
@@ -361,7 +364,7 @@ Future<ServerMemory> createMemoryFromWeChatArticle(String articleLink) async {
   }
 
   if (response.statusCode == 200) {
-    final jsonResponse = json.decode(response.body);
+    final jsonResponse = json.decode(utf8.decode(response.bodyBytes));
     return ServerMemory.fromJson(jsonResponse);
   } else {
     throw Exception(
