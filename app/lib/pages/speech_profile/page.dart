@@ -135,7 +135,7 @@ class _SpeechProfilePageState extends State<SpeechProfilePage> with TickerProvid
                   () {},
                   'Invalid recording detected',
                   'There is not enough speech detected. Please speak more and try again.',
-                  okButtonText: 'Ok',
+                  okButtonText: S.current.Ok,
                   singleButton: true,
                 ),
                 barrierDismissible: false,
@@ -153,7 +153,7 @@ class _SpeechProfilePageState extends State<SpeechProfilePage> with TickerProvid
                   // TODO: improve this
                   'Invalid recording detected',
                   'Please make sure you speak for at least 5 seconds and not more than 90.',
-                  okButtonText: 'Ok',
+                  okButtonText: S.current.Ok,
                   singleButton: true,
                 ),
                 barrierDismissible: false,

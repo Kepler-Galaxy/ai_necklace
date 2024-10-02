@@ -12,6 +12,8 @@ import 'package:friend_private/utils/analytics/gleap.dart';
 import 'package:friend_private/utils/analytics/mixpanel.dart';
 import 'package:instabug_flutter/instabug_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:friend_private/generated/l10n.dart';
 
 class AuthenticationProvider extends BaseProvider {
 
@@ -55,7 +57,7 @@ class AuthenticationProvider extends BaseProvider {
       String code = codeController.text.trim();
 
       if (phone.isEmpty || code.isEmpty) {
-        AppSnackbar.showSnackbar('Please enter both phone number and code.');
+        AppSnackbar.showSnackbar(S.current.PleaseEnterPhoneNumberAndCode);
         setLoadingState(false);
         return;
       }
@@ -84,7 +86,7 @@ class AuthenticationProvider extends BaseProvider {
           codeController.clear();
           setIsCodeSentState(false);
         } else {
-          AppSnackbar.showSnackbarError('Failed to sign in: ${result.message}');
+          AppSnackbar.showSnackbarError('${S.current.FailedSignIn}: ${result.message}');
         }
       } catch (e) {
         AppSnackbar.showSnackbarError('Error: $e');
@@ -100,7 +102,7 @@ class AuthenticationProvider extends BaseProvider {
       String phone = phoneController.text.trim();
 
       if (phone.isEmpty) {
-        AppSnackbar.showSnackbar('Please enter a phone number.');
+        AppSnackbar.showSnackbar(S.current.PleaseEnterPhoneNumber);
         setLoadingState(false);
         return;
       }
@@ -109,7 +111,7 @@ class AuthenticationProvider extends BaseProvider {
         AuthResult result = await AuthClient.sendSms(phone, "CHANNEL_LOGIN");
         if (result.statusCode == 200) {
           setIsCodeSentState(true);
-          AppSnackbar.showSnackbar('Verification code sent.');
+          AppSnackbar.showSnackbar(S.current.VerificationCodeSent);
         } else {
           AppSnackbar.showSnackbarError(
               'Failed to send code: ${result.message}');

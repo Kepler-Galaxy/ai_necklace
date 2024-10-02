@@ -110,9 +110,9 @@ class _PermissionsWidgetState extends State<PermissionsWidget> {
                   }
                 }
               },
-              title: const Text(
-                'Enable background location access for Omi\'s full experience.',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+              title:  Text(
+                S.current.EnableBackgroundLocationAccess,
+                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
               ),
               contentPadding: const EdgeInsets.only(left: 8),
               // controlAffinity: ListTileControlAffinity.leading,
@@ -129,9 +129,9 @@ class _PermissionsWidgetState extends State<PermissionsWidget> {
                   }
                 }
               },
-              title: const Text(
-                'Enable notification access for Omi\'s full experience.',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+              title: Text(
+                S.current.EnableNotificationAccess,
+                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
               ),
               contentPadding: const EdgeInsets.only(left: 8),
               // controlAffinity: ListTileControlAffinity.leading,

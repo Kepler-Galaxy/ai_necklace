@@ -3,6 +3,8 @@ import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:friend_private/main.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:friend_private/generated/l10n.dart';
 
 class AppDialog {
   static _getDialog({
@@ -24,12 +26,12 @@ class AppDialog {
         : [
             TextButton(
               onPressed: () => onCancel?.call() ?? Navigator.pop(context),
-              child: const Text('Cancel', style: TextStyle(color: Colors.white)),
+              child: Text(S.current.Cancel, style: TextStyle(color: Colors.white)),
             ),
             TextButton(
               onPressed: () => onConfirm?.call() ?? Navigator.pop(context),
               child: Text(
-                okButtonText,
+                S.current.Ok,
                 style: const TextStyle(
                   color: Colors.white,
                 ),
@@ -65,7 +67,7 @@ class AppDialog {
         onConfirm: onConfirm,
         title: title,
         content: content,
-        okButtonText: okButtonText,
+        okButtonText: S.current.Ok,
       ),
     );
   }

@@ -170,11 +170,11 @@ class S {
     );
   }
 
-  /// `Connect Your Audio Fairy`
-  String get ConnectYourKstar {
+  /// `Connect Your AudioFairy`
+  String get ConnectYourAudioFairy {
     return Intl.message(
-      'Connect Your Audio Fairy',
-      name: 'ConnectYourKstar',
+      'Connect Your AudioFairy',
+      name: 'ConnectYourAudioFairy',
       desc: '',
       args: [],
     );
@@ -250,10 +250,10 @@ class S {
     );
   }
 
-  /// `No diary entry for this date, wear Audio Fairy to automatically record your diary`
+  /// `No diary entry for this date, wear AudioFairy to automatically record your diary`
   String get NoDiaryNote {
     return Intl.message(
-      'No diary entry for this date, wear Audio Fairy to automatically record your diary',
+      'No diary entry for this date, wear AudioFairy to automatically record your diary',
       name: 'NoDiaryNote',
       desc: '',
       args: [],
@@ -300,10 +300,10 @@ class S {
     );
   }
 
-  /// `Ask your Audio Fairy anything`
+  /// `Ask your AudioFairy anything`
   String get AskYourAudioFairyAnything {
     return Intl.message(
-      'Ask your Audio Fairy anything',
+      'Ask your AudioFairy anything',
       name: 'AskYourAudioFairyAnything',
       desc: '',
       args: [],
@@ -425,6 +425,176 @@ class S {
     return Intl.message(
       'Skip',
       name: 'Skip',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Sign Out`
+  String get SignOut {
+    return Intl.message(
+      'Sign Out',
+      name: 'SignOut',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `OK`
+  String get Ok {
+    return Intl.message(
+      'OK',
+      name: 'Ok',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Are you sure you want to sign out?`
+  String get AreYouSureSignOut {
+    return Intl.message(
+      'Are you sure you want to sign out?',
+      name: 'AreYouSureSignOut',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Phone Number`
+  String get PhoneNumber {
+    return Intl.message(
+      'Phone Number',
+      name: 'PhoneNumber',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Verification Code`
+  String get VerificationCode {
+    return Intl.message(
+      'Verification Code',
+      name: 'VerificationCode',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Send Verification Code`
+  String get SendVerificationCode {
+    return Intl.message(
+      'Send Verification Code',
+      name: 'SendVerificationCode',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Sign In / Sign Up`
+  String get SignIn {
+    return Intl.message(
+      'Sign In / Sign Up',
+      name: 'SignIn',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Please enter a phone number.`
+  String get PleaseEnterPhoneNumber {
+    return Intl.message(
+      'Please enter a phone number.',
+      name: 'PleaseEnterPhoneNumber',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Verification code sent.`
+  String get VerificationCodeSent {
+    return Intl.message(
+      'Verification code sent.',
+      name: 'VerificationCodeSent',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Failed to sign in`
+  String get FailedSignIn {
+    return Intl.message(
+      'Failed to sign in',
+      name: 'FailedSignIn',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Please enter both phone number and code.`
+  String get PleaseEnterPhoneNumberAndCode {
+    return Intl.message(
+      'Please enter both phone number and code.',
+      name: 'PleaseEnterPhoneNumberAndCode',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `How should AudioFairy call you?`
+  String get HowShouldAudioFairyCallYou {
+    return Intl.message(
+      'How should AudioFairy call you?',
+      name: 'HowShouldAudioFairyCallYou',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Enable background location access for Omi's full experience.`
+  String get EnableBackgroundLocationAccess {
+    return Intl.message(
+      'Enable background location access for Omi\'s full experience.',
+      name: 'EnableBackgroundLocationAccess',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Enable notification access for Omi's full experience.`
+  String get EnableNotificationAccess {
+    return Intl.message(
+      'Enable notification access for Omi\'s full experience.',
+      name: 'EnableNotificationAccess',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Connect My AudioFairy`
+  String get ConnectMyAudioFairy {
+    return Intl.message(
+      'Connect My AudioFairy',
+      name: 'ConnectMyAudioFairy',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Connect Later`
+  String get ConnectLater {
+    return Intl.message(
+      'Connect Later',
+      name: 'ConnectLater',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No memories generated yet.`
+  String get NoMemoriesGeneratedYet {
+    return Intl.message(
+      'No memories generated yet.',
+      name: 'NoMemoriesGeneratedYet',
       desc: '',
       args: [],
     );

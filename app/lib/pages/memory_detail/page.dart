@@ -140,7 +140,7 @@ class _MemoryDetailPageState extends State<MemoryDetailPage> with TickerProvider
                               'Options not available',
                               'This memory failed when processing. Options are not available yet, please try again later.',
                               singleButton: true,
-                              okButtonText: 'Ok',
+                              okButtonText: S.current.Ok,
                             ),
                           );
                           return;

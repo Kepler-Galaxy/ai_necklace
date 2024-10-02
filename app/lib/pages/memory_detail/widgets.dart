@@ -742,7 +742,7 @@ class _GetDevToolsOptionsState extends State<GetDevToolsOptions> {
                   () => Navigator.pop(context),
                   'Result:',
                   response,
-                  okButtonText: 'Ok',
+                  okButtonText: S.current.Ok,
                   singleButton: true,
                 ),
               );

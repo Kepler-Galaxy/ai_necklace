@@ -63,7 +63,7 @@ getConnectionStateWidgets(
                     !connectivityProvider.isConnected
                         ? 'Your device is offline. Transcription is paused until connection is restored.'
                         : 'Unable to connect to the transcript service. Please restart the app or contact support if the problem persists.',
-                    okButtonText: 'Ok',
+                    okButtonText: S.current.Ok,
                     singleButton: true,
                   ),
                 );
@@ -339,7 +339,7 @@ connectionStatusWidgets(
             isWifiDisconnected
                 ? 'Your device is offline. Transcription is paused until connection is restored.'
                 : 'Unable to connect to the transcript service. Please restart the app or contact support if the problem persists.',
-            okButtonText: 'Ok',
+            okButtonText: S.current.Ok,
             singleButton: true,
           ),
         );

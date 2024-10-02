@@ -19,7 +19,7 @@ class _ConnectDevicePageState extends State<ConnectDevicePage> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text(S.current.ConnectYourKstar),
+          title: Text(S.current.ConnectYourAudioFairy),
           backgroundColor: Theme.of(context).colorScheme.primary,
           actions: [
             IconButton(
