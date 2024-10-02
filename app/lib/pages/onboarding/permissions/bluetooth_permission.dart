@@ -3,6 +3,8 @@ import 'package:friend_private/providers/onboarding_provider.dart';
 import 'package:gradient_borders/box_borders/gradient_box_border.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:friend_private/generated/l10n.dart';
 
 class BluetoothPermissionWidget extends StatefulWidget {
   final VoidCallback goNext;
@@ -116,7 +118,7 @@ class _BluetoothPermissionWidgetState extends State<BluetoothPermissionWidget> {
                         }
                       },
                       child: Text(
-                        provider.hasBluetoothPermission ? 'Continue' : 'Skip',
+                        provider.hasBluetoothPermission ? S.current.Continue : S.current.Skip,
                         style: TextStyle(
                           decoration: provider.hasBluetoothPermission ? TextDecoration.none : TextDecoration.underline,
                         ),

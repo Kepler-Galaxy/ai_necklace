@@ -22,27 +22,73 @@ class MessageLookup extends MessageLookupByLibrary {
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
+        "AreYouSureSignOut": MessageLookupByLibrary.simpleMessage("确定是否退出登录？"),
         "ArticleLinkWeChatArticleorOthers":
             MessageLookupByLibrary.simpleMessage("从微信文章或者其他网址获取记忆"),
+        "AskYourAudioFairyAnything":
+            MessageLookupByLibrary.simpleMessage("和你的音灵对话"),
         "Cancel": MessageLookupByLibrary.simpleMessage("取消"),
         "Chat": MessageLookupByLibrary.simpleMessage("闲谈"),
-        "ConnectYourKstar": MessageLookupByLibrary.simpleMessage("连接你的音灵"),
+        "CloudNotLoadMaps": MessageLookupByLibrary.simpleMessage("不能载入地图"),
+        "ConnectLater": MessageLookupByLibrary.simpleMessage("稍后再连接"),
+        "ConnectMyAudioFairy": MessageLookupByLibrary.simpleMessage("连接我的音灵"),
+        "ConnectYourAudioFairy": MessageLookupByLibrary.simpleMessage("连接你的音灵"),
+        "Continue": MessageLookupByLibrary.simpleMessage("下一步"),
         "CreateMemory": MessageLookupByLibrary.simpleMessage("创建记忆"),
         "CreatingMemory": MessageLookupByLibrary.simpleMessage("记忆构建中"),
         "DescriptionOfRecordingWithPhoneMicrophone":
             MessageLookupByLibrary.simpleMessage(
                 "使用手机麦克风录音存在一些限制，包括但不限于音色特性和背景噪音的干扰"),
         "Diary": MessageLookupByLibrary.simpleMessage("札记"),
+        "EnableBackgroundLocationAccess":
+            MessageLookupByLibrary.simpleMessage("开启后台位置访问，以充分体验全部功能"),
+        "EnableNotificationAccess":
+            MessageLookupByLibrary.simpleMessage("开启通知权限，以充分体验全部功能"),
+        "EnablePlugins": MessageLookupByLibrary.simpleMessage("启用插件"),
+        "ExternalApps": MessageLookupByLibrary.simpleMessage("拓展应用"),
+        "FailedSignIn": MessageLookupByLibrary.simpleMessage("登录失败"),
+        "HowShouldAudioFairyCallYou":
+            MessageLookupByLibrary.simpleMessage("音灵应该如何称呼您?"),
         "ImportArticle": MessageLookupByLibrary.simpleMessage("记忆获取"),
+        "KeyPoints": MessageLookupByLibrary.simpleMessage("重点"),
         "LimitedCapabilities": MessageLookupByLibrary.simpleMessage("录音限制"),
         "Memories": MessageLookupByLibrary.simpleMessage("追忆"),
+        "MemoryChains": MessageLookupByLibrary.simpleMessage("记忆链"),
         "NoDeviceFound": MessageLookupByLibrary.simpleMessage("未连接任何音灵"),
+        "NoDiaryNote":
+            MessageLookupByLibrary.simpleMessage("此日期没有日记条目，佩戴音灵，即可自动记录你的日记"),
+        "NoMemoriesGeneratedYet":
+            MessageLookupByLibrary.simpleMessage("暂时没有生成任何记忆"),
+        "NoMessagesYet": MessageLookupByLibrary.simpleMessage("暂时没有对话内容"),
+        "Ok": MessageLookupByLibrary.simpleMessage("确定"),
         "OkIUnderstand": MessageLookupByLibrary.simpleMessage("已了解"),
+        "Overview": MessageLookupByLibrary.simpleMessage("综述"),
         "PasteArticleLinkHere": MessageLookupByLibrary.simpleMessage("粘贴链接"),
+        "Personalities": MessageLookupByLibrary.simpleMessage("个性化"),
+        "PhoneNumber": MessageLookupByLibrary.simpleMessage("手机号码"),
+        "PleaseCheckInternetConnectionNote":
+            MessageLookupByLibrary.simpleMessage("请检测你的网络连接并重试"),
+        "PleaseEnterPhoneNumber":
+            MessageLookupByLibrary.simpleMessage("请输入手机号"),
+        "PleaseEnterPhoneNumberAndCode":
+            MessageLookupByLibrary.simpleMessage("请输入手机号码和验证码"),
+        "Plugins": MessageLookupByLibrary.simpleMessage("插件"),
+        "Prompts": MessageLookupByLibrary.simpleMessage("提示词"),
         "SearchingForDevices":
             MessageLookupByLibrary.simpleMessage("正在搜索音灵..."),
+        "SelectAnotherDay": MessageLookupByLibrary.simpleMessage("日期选择"),
+        "SendVerificationCode": MessageLookupByLibrary.simpleMessage("获取验证码"),
+        "SignIn": MessageLookupByLibrary.simpleMessage("登录/注册"),
+        "SignOut": MessageLookupByLibrary.simpleMessage("退出登入"),
+        "Skip": MessageLookupByLibrary.simpleMessage("跳过"),
         "StopRecording": MessageLookupByLibrary.simpleMessage("停止录制"),
+        "Summary": MessageLookupByLibrary.simpleMessage("概览"),
+        "Transcript": MessageLookupByLibrary.simpleMessage("实录"),
         "TryWithPhoneMic": MessageLookupByLibrary.simpleMessage("麦克风测试"),
+        "VerificationCode": MessageLookupByLibrary.simpleMessage("验证码"),
+        "VerificationCodeSent": MessageLookupByLibrary.simpleMessage("验证码已发送"),
+        "WhyDontConversation":
+            MessageLookupByLibrary.simpleMessage("您可以快速开始一段对话"),
         "hello": MessageLookupByLibrary.simpleMessage("你好")
       };
 }

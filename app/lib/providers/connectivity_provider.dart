@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:friend_private/widgets/dialog.dart';
 import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:friend_private/generated/l10n.dart';
 
 class ConnectivityProvider extends ChangeNotifier {
   bool _isConnected = true;
@@ -47,7 +49,7 @@ class ConnectivityProvider extends ChangeNotifier {
         'No Internet Connection',
         'You need an internet connection to execute this action. Please check your connection and try again.',
         singleButton: true,
-        okButtonText: 'Ok',
+        okButtonText: S.current.Ok,
       ),
     );
   }

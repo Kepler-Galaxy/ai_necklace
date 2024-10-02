@@ -7,6 +7,8 @@ import 'package:friend_private/backend/http/api/memories.dart';
 import 'package:friend_private/backend/schema/memory_connection.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:friend_private/pages/diary/calandar_widget.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:friend_private/generated/l10n.dart';
 
 class DiaryPage extends StatefulWidget {
   const DiaryPage({Key? key}) : super(key: key);
@@ -159,7 +161,7 @@ class _DiaryPageState extends State<DiaryPage> {
       return Padding(
         padding: const EdgeInsets.all(16.0),
         child: Text(
-          'No diary entry for this date, wear Kepler Star to automatically record your diary',
+          S.current.NoDiaryNote,  
           textAlign: TextAlign.center,
           style: TextStyle(fontSize: 18),
         ),
