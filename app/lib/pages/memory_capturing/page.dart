@@ -7,6 +7,8 @@ import 'package:friend_private/providers/device_provider.dart';
 import 'package:friend_private/widgets/dialog.dart';
 import 'package:gradient_borders/box_borders/gradient_box_border.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:friend_private/generated/l10n.dart';
 
 class MemoryCapturingPage extends StatefulWidget {
   final String? topMemoryId;
@@ -98,9 +100,9 @@ class _MemoryCapturingPageState extends State<MemoryCapturingPage> with TickerPr
                         ? 'Photos'
                         : memorySource == MemorySource.screenpipe
                             ? 'Raw Data'
-                            : 'Transcript',
+                            : S.current.Transcript,
                   ),
-                  const Tab(text: 'Summary')
+                  Tab(text: S.current.Summary)
                 ],
                 indicator: BoxDecoration(color: Colors.transparent, borderRadius: BorderRadius.circular(16)),
               ),

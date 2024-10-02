@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:friend_private/utils/other/temp.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:friend_private/generated/l10n.dart';
 
 class CalendarWidget extends StatefulWidget {
   final DateTime selectedDay;
@@ -50,7 +52,7 @@ class _CalendarWidgetState extends State<CalendarWidget> {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
-                      'Select Another Day',
+                      S.current.SelectAnotherDay,
                       style: TextStyle(color: Colors.white, fontSize: 16),
                     ),
                     SizedBox(width: 4),

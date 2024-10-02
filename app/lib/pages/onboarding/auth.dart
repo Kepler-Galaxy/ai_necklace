@@ -10,6 +10,8 @@ import 'package:friend_private/providers/auth_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:sign_in_button/sign_in_button.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:friend_private/generated/l10n.dart';
 
 class AuthComponent extends StatefulWidget {
   final VoidCallback onSignIn;
@@ -44,9 +46,9 @@ class _AuthComponentState extends State<AuthComponent> {
               const SizedBox(height: 16),
               TextField(
                 controller: provider.phoneController,
-                decoration: const InputDecoration(
-                  labelText: 'Phone Number',
-                  prefixIcon: Icon(Icons.phone),
+                decoration: InputDecoration(
+                  labelText: S.current.PhoneNumber,
+                  prefixIcon: const Icon(Icons.phone),
                 ),
                 keyboardType: TextInputType.phone,
               ),
@@ -54,9 +56,9 @@ class _AuthComponentState extends State<AuthComponent> {
               // Add verification code input
               TextField(
                 controller: provider.codeController,
-                decoration: const InputDecoration(
-                  labelText: 'Verification Code',
-                  prefixIcon: Icon(Icons.sms),
+                decoration:  InputDecoration(
+                  labelText: S.current.VerificationCode,
+                  prefixIcon: const Icon(Icons.sms),
                 ),
                 keyboardType: TextInputType.number,
               ),
@@ -64,7 +66,7 @@ class _AuthComponentState extends State<AuthComponent> {
               provider.isCodeSent
                   ? SignInButton(
                       Buttons.anonymous,
-                      text: "登录/注册",
+                      text: S.current.SignIn,
                       padding: const EdgeInsets.symmetric(
                           horizontal: 16, vertical: 8),
                       shape: RoundedRectangleBorder(
@@ -74,7 +76,7 @@ class _AuthComponentState extends State<AuthComponent> {
                     )
                   : SignInButton(
                       Buttons.anonymous,
-                      text: "获取验证码",
+                      text: S.current.SendVerificationCode,
                       padding: const EdgeInsets.symmetric(
                           horizontal: 16, vertical: 8),
                       shape: RoundedRectangleBorder(

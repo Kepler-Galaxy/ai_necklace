@@ -4,6 +4,8 @@ import 'package:friend_private/pages/plugins/list_item.dart';
 import 'package:friend_private/providers/connectivity_provider.dart';
 import 'package:friend_private/providers/plugin_provider.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:friend_private/generated/l10n.dart';
 
 class PluginsPage extends StatefulWidget {
   final bool filterChatOnly;
@@ -35,7 +37,7 @@ class _PluginsPageState extends State<PluginsPage> {
         appBar: AppBar(
           backgroundColor: Theme.of(context).colorScheme.primary,
           automaticallyImplyLeading: true,
-          title: const Text('Plugins'),
+          title: Text(S.current.Plugins),
           centerTitle: true,
           elevation: 0,
         ),
@@ -53,14 +55,14 @@ class _PluginsPageState extends State<PluginsPage> {
                     indicatorPadding: EdgeInsets.zero,
                     labelStyle: Theme.of(context).textTheme.titleLarge!.copyWith(fontSize: 18),
                     indicatorColor: Colors.transparent,
-                    tabs: const [Tab(text: 'Memories'), Tab(text: 'Chat')],
+                    tabs: [Tab(text: S.current.Memories), Tab(text: S.current.Chat)],
                   ),
                   Expanded(
                     child: TabBarView(children: [
                       CustomScrollView(
                         slivers: [
                           _emptyPluginsWidget(provider),
-                          _getSectionTitle(context, provider, 'External Apps', '🚀'),
+                          _getSectionTitle(context, provider, S.current.ExternalApps, '🚀'),
                           SliverList(
                             delegate: SliverChildBuilderDelegate(
                               (context, index) {
@@ -76,7 +78,7 @@ class _PluginsPageState extends State<PluginsPage> {
                           provider.plugins.isNotEmpty
                               ? SliverToBoxAdapter(child: Divider(color: Colors.grey.shade800, thickness: 1))
                               : const SliverToBoxAdapter(child: SizedBox.shrink()),
-                          _getSectionTitle(context, provider, 'Prompts', '📝'),
+                          _getSectionTitle(context, provider, S.current.Prompts, '📝'),
                           SliverList(
                             delegate: SliverChildBuilderDelegate(
                               (context, index) {
@@ -94,7 +96,7 @@ class _PluginsPageState extends State<PluginsPage> {
                       CustomScrollView(
                         slivers: [
                           _emptyPluginsWidget(provider),
-                          _getSectionTitle(context, provider, 'Personalities', '🤖'),
+                          _getSectionTitle(context, provider, S.current.Personalities, '🤖'),
                           SliverList(
                             delegate: SliverChildBuilderDelegate(
                               (context, index) {
@@ -163,7 +165,7 @@ class _PluginsPageState extends State<PluginsPage> {
                 child: Text(
                   context.read<ConnectivityProvider>().isConnected
                       ? 'No plugins found'
-                      : 'Unable to fetch plugins :(\n\nPlease check your internet connection and try again.',
+                      : '${S.current.UnableFetchPlugins} :(\n\n${S.current.PleaseCheckInternetConnectionNote}',
                   style: const TextStyle(color: Colors.white, fontSize: 16),
                   textAlign: TextAlign.center,
                 ),

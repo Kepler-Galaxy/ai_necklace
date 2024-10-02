@@ -10,6 +10,8 @@ import 'package:friend_private/services/services.dart';
 import 'package:friend_private/widgets/dialog.dart';
 import 'package:gradient_borders/box_borders/gradient_box_border.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:friend_private/generated/l10n.dart';
 
 class SpeechProfileWidget extends StatefulWidget {
   final VoidCallback goNext;
@@ -117,7 +119,7 @@ class _SpeechProfileWidgetState extends State<SpeechProfileWidget> with TickerPr
                     () {},
                     'Invalid recording detected',
                     'There is not enough speech detected. Please speak more and try again.',
-                    okButtonText: 'Ok',
+                    okButtonText: S.current.Ok,
                     singleButton: true,
                   ),
                   barrierDismissible: false,
@@ -135,7 +137,7 @@ class _SpeechProfileWidgetState extends State<SpeechProfileWidget> with TickerPr
                     // TODO: improve this
                     'Invalid recording detected',
                     'Please make sure you speak for at least 5 seconds and not more than 90.',
-                    okButtonText: 'Ok',
+                    okButtonText: S.current.Ok,
                     singleButton: true,
                   ),
                   barrierDismissible: false,

@@ -20,6 +20,8 @@ import 'package:friend_private/widgets/dialog.dart';
 import 'package:gradient_borders/gradient_borders.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:friend_private/generated/l10n.dart';
 
 class ChatPage extends StatefulWidget {
   const ChatPage({
@@ -194,8 +196,8 @@ class ChatPageState extends State<ChatPage> with AutomaticKeepAliveClientMixin {
                                   padding: const EdgeInsets.only(bottom: 32.0),
                                   child: Text(
                                       connectivityProvider.isConnected
-                                          ? 'No messages yet!\nWhy don\'t you start a conversation?'
-                                          : 'Please check your internet connection and try again',
+                                          ? '${S.current.NoMessagesYet}\n${S.current.WhyDontConversation}'
+                                          : S.current.PleaseCheckInternetConnectionNote,
                                       textAlign: TextAlign.center,
                                       style: const TextStyle(color: Colors.white)),
                                 ),
@@ -265,7 +267,7 @@ class ChatPageState extends State<ChatPage> with AutomaticKeepAliveClientMixin {
                       textAlign: TextAlign.start,
                       textAlignVertical: TextAlignVertical.center,
                       decoration: InputDecoration(
-                        hintText: 'Ask your Friend anything',
+                        hintText: S.current.AskYourAudioFairyAnything,
                         hintStyle: const TextStyle(fontSize: 14.0, color: Colors.grey),
                         focusedBorder: InputBorder.none,
                         enabledBorder: InputBorder.none,
@@ -281,9 +283,9 @@ class ChatPageState extends State<ChatPage> with AutomaticKeepAliveClientMixin {
                                     _sendMessageUtil(message);
                                   } else {
                                     ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(
-                                        content: Text('Please check your internet connection and try again'),
-                                        duration: Duration(seconds: 2),
+                                      SnackBar(
+                                        content: Text(S.current.PleaseCheckInternetConnectionNote),
+                                        duration: const Duration(seconds: 2),
                                       ),
                                     );
                                   }

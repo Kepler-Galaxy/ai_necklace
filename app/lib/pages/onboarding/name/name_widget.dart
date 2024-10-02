@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:friend_private/backend/auth.dart';
 import 'package:friend_private/backend/preferences.dart';
 import 'package:gradient_borders/gradient_borders.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:friend_private/generated/l10n.dart';
 
 class NameWidget extends StatefulWidget {
   final Function goNext;
@@ -32,7 +34,7 @@ class _NameWidgetState extends State<NameWidget> {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Text(
-            'How should Omi call you?',
+            S.current.HowShouldAudioFairyCallYou,
             style: TextStyle(color: Colors.grey.shade300, fontSize: 16),
             textAlign: TextAlign.start,
           ),
@@ -47,7 +49,7 @@ class _NameWidgetState extends State<NameWidget> {
             textAlign: TextAlign.center,
             textAlignVertical: TextAlignVertical.center,
             decoration: InputDecoration(
-              hintText: 'How Omi should call you?',
+              hintText: S.current.HowShouldAudioFairyCallYou,
               // label: const Text('What should Omi call you?'),
               hintStyle: const TextStyle(fontSize: 14, color: Colors.grey),
               // border: UnderlineInputBorder(
@@ -96,9 +98,9 @@ class _NameWidgetState extends State<NameWidget> {
                         widget.goNext();
                       }
                     },
-                    child: const Text(
-                      'Continue',
-                      style: TextStyle(
+                    child: Text(
+                      S.current.Continue,
+                      style: const TextStyle(
                         decoration: TextDecoration.none,
                       ),
                     ),

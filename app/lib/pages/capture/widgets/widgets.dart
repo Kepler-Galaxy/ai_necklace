@@ -22,6 +22,8 @@ import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
 import 'package:tuple/tuple.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:friend_private/generated/l10n.dart';
 
 getConnectionStateWidgets(
   BuildContext context,
@@ -61,7 +63,7 @@ getConnectionStateWidgets(
                     !connectivityProvider.isConnected
                         ? 'Your device is offline. Transcription is paused until connection is restored.'
                         : 'Unable to connect to the transcript service. Please restart the app or contact support if the problem persists.',
-                    okButtonText: 'Ok',
+                    okButtonText: S.current.Ok,
                     singleButton: true,
                   ),
                 );
@@ -337,7 +339,7 @@ connectionStatusWidgets(
             isWifiDisconnected
                 ? 'Your device is offline. Transcription is paused until connection is restored.'
                 : 'Unable to connect to the transcript service. Please restart the app or contact support if the problem persists.',
-            okButtonText: 'Ok',
+            okButtonText: S.current.Ok,
             singleButton: true,
           ),
         );
@@ -406,7 +408,7 @@ getPhoneMicRecordingButton(VoidCallback recordingToggled, RecordingState state) 
                 Text(
                   state == RecordingState.initialising
                       ? 'Initialising Recorder'
-                      : (state == RecordingState.record ? 'Stop Recording' : 'Try With Phone Mic'),
+                      : (state == RecordingState.record ? S.current.StopRecording : S.current.TryWithPhoneMic),
                   style: const TextStyle(fontSize: 14),
                 ),
                 const SizedBox(width: 4),

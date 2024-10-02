@@ -6,6 +6,8 @@ import 'package:friend_private/widgets/dialog.dart';
 import 'package:gradient_borders/box_borders/gradient_box_border.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:friend_private/generated/l10n.dart';
 
 class PermissionsWidget extends StatefulWidget {
   final VoidCallback goNext;
@@ -108,9 +110,9 @@ class _PermissionsWidgetState extends State<PermissionsWidget> {
                   }
                 }
               },
-              title: const Text(
-                'Enable background location access for Omi\'s full experience.',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+              title:  Text(
+                S.current.EnableBackgroundLocationAccess,
+                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
               ),
               contentPadding: const EdgeInsets.only(left: 8),
               // controlAffinity: ListTileControlAffinity.leading,
@@ -127,9 +129,9 @@ class _PermissionsWidgetState extends State<PermissionsWidget> {
                   }
                 }
               },
-              title: const Text(
-                'Enable notification access for Omi\'s full experience.',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+              title: Text(
+                S.current.EnableNotificationAccess,
+                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
               ),
               contentPadding: const EdgeInsets.only(left: 8),
               // controlAffinity: ListTileControlAffinity.leading,
@@ -205,9 +207,9 @@ class _PermissionsWidgetState extends State<PermissionsWidget> {
                                 },
                               );
                             },
-                            child: const Text(
-                              'Continue',
-                              style: TextStyle(
+                            child: Text(
+                              S.current.Continue,
+                              style: const TextStyle(
                                 decoration: TextDecoration.none,
                               ),
                             ),

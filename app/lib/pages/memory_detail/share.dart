@@ -7,6 +7,8 @@ import 'package:friend_private/backend/schema/memory.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:share_plus/share_plus.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:friend_private/generated/l10n.dart';
 
 enum BottomSheetView { share, exportTranscript, exportSummary }
 
@@ -61,13 +63,13 @@ void _exportPDF(ServerMemory memory, bool isTranscript) async {
             pw.SizedBox(height: 12),
             pw.Text('Title: ${structured.title}', style: const pw.TextStyle(fontSize: 18)),
             pw.SizedBox(height: 12),
-            pw.Text('Overview', style: const pw.TextStyle(fontSize: 18)),
+            pw.Text(S.current.Overview, style: const pw.TextStyle(fontSize: 18)),
             pw.Text(structured.overview),
             pw.SizedBox(height: 12),
             pw.Text('Action Items', style: const pw.TextStyle(fontSize: 18)),
             ...structured.actionItems.map((e) => pw.Text('- ${e.description}')),
             pw.SizedBox(height: 12),
-            pw.Text('Summary', style: const pw.TextStyle(fontSize: 18)),
+            pw.Text(S.current.Summary, style: const pw.TextStyle(fontSize: 18)),
             pw.Text(structured.overview),
           ],
         ),

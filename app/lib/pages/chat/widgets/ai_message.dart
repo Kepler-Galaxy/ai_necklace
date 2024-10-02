@@ -18,6 +18,8 @@ import 'package:friend_private/providers/connectivity_provider.dart';
 import 'package:friend_private/utils/other/temp.dart';
 import 'package:friend_private/widgets/extensions/string.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:friend_private/generated/l10n.dart';
 
 class AIMessage extends StatefulWidget {
   final bool showTypingIndicator;
@@ -197,9 +199,9 @@ class _AIMessageState extends State<AIMessage> {
                           }
                         } else {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Please check your internet connection and try again'),
-                              duration: Duration(seconds: 2),
+                            SnackBar(
+                              content: Text(S.current.PleaseCheckInternetConnectionNote),
+                              duration: const Duration(seconds: 2),
                             ),
                           );
                         }

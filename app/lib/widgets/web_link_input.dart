@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:friend_private/providers/memory_provider.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:friend_private/generated/l10n.dart';
 
 class WebLinkArticleInputWidget extends StatefulWidget {
   @override
@@ -26,14 +28,14 @@ class _WebLinkArticleInputWidgetState extends State<WebLinkArticleInputWidget> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Article Link: WeChat Article or Others',
+            S.current.ArticleLinkWeChatArticleorOthers,
             style: Theme.of(context).textTheme.titleLarge,
           ),
           const SizedBox(height: 16),
           TextField(
             controller: _linkController,
             decoration: InputDecoration(
-              hintText: 'Paste article link here',
+              hintText: S.current.PasteArticleLinkHere,
               border: OutlineInputBorder(),
             ),
           ),
@@ -44,7 +46,7 @@ class _WebLinkArticleInputWidgetState extends State<WebLinkArticleInputWidget> {
               onPressed: _isLoading ? null : _submitLink,
               child: _isLoading
                   ? CircularProgressIndicator()
-                  : Text('Create Memory',
+                  : Text(S.current.CreateMemory,
                       style: TextStyle(color: Colors.white)),
             ),
           ),
