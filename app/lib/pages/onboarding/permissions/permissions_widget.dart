@@ -6,6 +6,8 @@ import 'package:friend_private/widgets/dialog.dart';
 import 'package:gradient_borders/box_borders/gradient_box_border.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:friend_private/generated/l10n.dart';
 
 class PermissionsWidget extends StatefulWidget {
   final VoidCallback goNext;
@@ -205,9 +207,9 @@ class _PermissionsWidgetState extends State<PermissionsWidget> {
                                 },
                               );
                             },
-                            child: const Text(
-                              'Continue',
-                              style: TextStyle(
+                            child: Text(
+                              S.current.Continue,
+                              style: const TextStyle(
                                 decoration: TextDecoration.none,
                               ),
                             ),

@@ -25,10 +25,15 @@ class MessageLookup extends MessageLookupByLibrary {
         "ArticleLinkWeChatArticleorOthers":
             MessageLookupByLibrary.simpleMessage(
                 "Article Link: WeChat Article or Others"),
+        "AskYourAudioFairyAnything": MessageLookupByLibrary.simpleMessage(
+            "Ask your Audio Fairy anything"),
         "Cancel": MessageLookupByLibrary.simpleMessage("Cancel"),
         "Chat": MessageLookupByLibrary.simpleMessage("Chat"),
+        "CloudNotLoadMaps":
+            MessageLookupByLibrary.simpleMessage("Could not load Maps"),
         "ConnectYourKstar":
             MessageLookupByLibrary.simpleMessage("Connect Your Audio Fairy"),
+        "Continue": MessageLookupByLibrary.simpleMessage("Continue"),
         "CreateMemory": MessageLookupByLibrary.simpleMessage("Create Memory"),
         "CreatingMemory":
             MessageLookupByLibrary.simpleMessage("Creating Memory"),
@@ -36,21 +41,45 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage(
                 "Recording with your phone microphone has a few limitations, including but not limited to: speaker profiles, background reliability."),
         "Diary": MessageLookupByLibrary.simpleMessage("Diary"),
+        "EnablePlugins": MessageLookupByLibrary.simpleMessage("Enable Plugins"),
+        "ExternalApps": MessageLookupByLibrary.simpleMessage("External Apps"),
         "ImportArticle": MessageLookupByLibrary.simpleMessage("Import Article"),
+        "KeyPoints": MessageLookupByLibrary.simpleMessage("Key Points"),
         "LimitedCapabilities":
             MessageLookupByLibrary.simpleMessage("Limited Capabilities"),
         "Memories": MessageLookupByLibrary.simpleMessage("Memories"),
+        "MemoryChains": MessageLookupByLibrary.simpleMessage("Memory Chains"),
         "NoDeviceFound":
             MessageLookupByLibrary.simpleMessage("No device found"),
+        "NoDiaryNote": MessageLookupByLibrary.simpleMessage(
+            "No diary entry for this date, wear Audio Fairy to automatically record your diary"),
+        "NoMessagesYet":
+            MessageLookupByLibrary.simpleMessage("No messages yet!"),
         "OkIUnderstand":
             MessageLookupByLibrary.simpleMessage("Ok, I understand"),
+        "Overview": MessageLookupByLibrary.simpleMessage("Overview"),
         "PasteArticleLinkHere":
             MessageLookupByLibrary.simpleMessage("Paste article link here"),
+        "Personalities": MessageLookupByLibrary.simpleMessage("Personalities"),
+        "PleaseCheckInternetConnectionNote":
+            MessageLookupByLibrary.simpleMessage(
+                "Please check your internet connection and try again."),
+        "Plugins": MessageLookupByLibrary.simpleMessage("Plugins"),
+        "Prompts": MessageLookupByLibrary.simpleMessage("Prompts"),
         "SearchingForDevices":
             MessageLookupByLibrary.simpleMessage("Searching for devices..."),
+        "SelectAnotherDay":
+            MessageLookupByLibrary.simpleMessage("Select Another Day"),
+        "Skip": MessageLookupByLibrary.simpleMessage("Skip"),
         "StopRecording": MessageLookupByLibrary.simpleMessage("Stop Recording"),
+        "Summary": MessageLookupByLibrary.simpleMessage("Summary"),
+        "Transcript": MessageLookupByLibrary.simpleMessage("Transcript"),
         "TryWithPhoneMic":
             MessageLookupByLibrary.simpleMessage("Try With Phone Mic"),
+        "UnableFetchPlugins":
+            MessageLookupByLibrary.simpleMessage("Unable to fetch plugins"),
+        "WhyDontConversation": MessageLookupByLibrary.simpleMessage(
+            "Why don\'t you start a conversation?"),
         "hello": MessageLookupByLibrary.simpleMessage("hello")
       };
 }

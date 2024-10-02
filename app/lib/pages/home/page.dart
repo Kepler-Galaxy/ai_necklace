@@ -491,13 +491,13 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver, Ticker
                                 MixpanelManager().pageOpened('Chat Plugins');
                                 routeToPage(context, const PluginsPage(filterChatOnly: true));
                               },
-                              child: const Row(
+                              child: Row(
                                 children: [
-                                  Icon(size: 20, Icons.chat, color: Colors.white),
-                                  SizedBox(width: 10),
+                                  const Icon(size: 20, Icons.chat, color: Colors.white),
+                                  const SizedBox(width: 10),
                                   Text(
-                                    'Enable Plugins',
-                                    style: TextStyle(color: Colors.white, fontWeight: FontWeight.w500, fontSize: 16),
+                                    S.current.EnablePlugins,
+                                    style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w500, fontSize: 16),
                                   ),
                                 ],
                               ),
@@ -640,7 +640,7 @@ void _showWebLinkArticleInput(BuildContext context) {
                 const Icon(size: 20, Icons.chat, color: Colors.white),
                 const SizedBox(width: 10),
                 Text(
-                  provider.plugins.where((p) => p.enabled).isEmpty ? 'Enable Plugins   ' : 'Select a plugin',
+                  provider.plugins.where((p) => p.enabled).isEmpty ? '${S.current.EnablePlugins}   ' : 'Select a plugin',
                   style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w500, fontSize: 16),
                 )
               ],
@@ -691,18 +691,18 @@ void _showWebLinkArticleInput(BuildContext context) {
           );
         }).toList();
     if (provider.plugins.where((p) => p.enabled).isNotEmpty) {
-      items.add(const DropdownMenuItem<String>(
+      items.add(DropdownMenuItem<String>(
         value: 'enable',
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            CircleAvatar(
+            const CircleAvatar(
               backgroundColor: Colors.transparent,
               maxRadius: 12,
               child: Icon(Icons.star, color: Colors.purpleAccent),
             ),
-            SizedBox(width: 8),
-            Text('Enable Plugins   ', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w500, fontSize: 16))
+            const SizedBox(width: 8),
+            Text('${S.current.EnablePlugins}   ', style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w500, fontSize: 16))
           ],
         ),
       ));

@@ -22,6 +22,8 @@ import 'package:friend_private/widgets/expandable_text.dart';
 import 'package:gradient_borders/box_borders/gradient_box_border.dart';
 import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:friend_private/generated/l10n.dart';
 
 import 'maps_util.dart';
 
@@ -73,7 +75,7 @@ class GetSummaryWidgets extends StatelessWidget {
             const SizedBox(height: 40),
             memory.discarded
                 ? const SizedBox.shrink()
-                : Text('Overview', style: Theme.of(context).textTheme.titleLarge!.copyWith(fontSize: 26)),
+                : Text(S.current.Overview, style: Theme.of(context).textTheme.titleLarge!.copyWith(fontSize: 26)),
             memory.discarded
                 ? const SizedBox.shrink()
                 : ((memory.geolocation != null) ? const SizedBox(height: 8) : const SizedBox.shrink()),
@@ -91,7 +93,7 @@ class GetSummaryWidgets extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    'Key Points',
+                    S.current.KeyPoints,
                     style: Theme.of(context).textTheme.titleLarge!.copyWith(fontSize: 26),
                   ),
                   IconButton(
@@ -570,9 +572,9 @@ class GetPluginsWidgets extends StatelessWidget {
                     MixpanelManager().pageOpened('Memory Detail Plugins');
                   },
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                  child: const Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 16, vertical: 0),
-                      child: Text('Enable Plugins', style: TextStyle(color: Colors.white, fontSize: 16))),
+                  child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 0),
+                      child: Text(S.current.EnablePlugins, style: const TextStyle(color: Colors.white, fontSize: 16))),
                 ),
               ),
             ],
@@ -636,9 +638,9 @@ class GetGeolocationWidgets extends StatelessWidget {
                                 borderRadius: BorderRadius.circular(16),
                                 color: Colors.grey.shade800,
                               ),
-                              child: const Center(
+                              child: Center(
                                 child: Text(
-                                  'Could not load Maps. Please check your internet connection.',
+                                  '${S.current.CloudNotLoadMaps}. ${S.current.PleaseCheckInternetConnectionNote}.',
                                   textAlign: TextAlign.center,
                                 ),
                               ),
@@ -1005,7 +1007,7 @@ class GetSheetMainOptions extends StatelessWidget {
                                 () => Navigator.pop(context),
                                 () => Navigator.pop(context),
                                 'Unable to Re-summarize Memory',
-                                'Please check your internet connection and try again.',
+                                S.current.PleaseCheckInternetConnectionNote,
                                 singleButton: true,
                                 okButtonText: 'OK',
                               ),
@@ -1047,7 +1049,7 @@ class GetSheetMainOptions extends StatelessWidget {
                                   () => Navigator.pop(context),
                                   () => Navigator.pop(context),
                                   'Unable to Delete Memory',
-                                  'Please check your internet connection and try again.',
+                                  S.current.PleaseCheckInternetConnectionNote,
                                   singleButton: true,
                                   okButtonText: 'OK'),
                               context: context,
