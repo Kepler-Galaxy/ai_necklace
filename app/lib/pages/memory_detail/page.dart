@@ -18,6 +18,8 @@ import 'package:friend_private/widgets/extensions/string.dart';
 import 'package:friend_private/widgets/photos_grid.dart';
 import 'package:friend_private/widgets/transcript.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:friend_private/generated/l10n.dart';
 
 import 'memory_detail_provider.dart';
 import 'package:tuple/tuple.dart';
@@ -138,7 +140,7 @@ class _MemoryDetailPageState extends State<MemoryDetailPage> with TickerProvider
                               'Options not available',
                               'This memory failed when processing. Options are not available yet, please try again later.',
                               singleButton: true,
-                              okButtonText: 'Ok',
+                              okButtonText: S.current.Ok,
                             ),
                           );
                           return;
@@ -211,10 +213,10 @@ class _MemoryDetailPageState extends State<MemoryDetailPage> with TickerProvider
                                     ? 'Raw Data'
                                     : widget.memory.source == MemorySource.web_link
                                         ? 'Web Content'
-                                        : 'Transcript',
+                                        : S.current.Transcript,
                           );
                         }),
-                    const Tab(text: 'Summary')
+                    Tab(text: S.current.Summary)
                   ],
                   indicator: BoxDecoration(color: Colors.transparent, borderRadius: BorderRadius.circular(16)),
                 ),

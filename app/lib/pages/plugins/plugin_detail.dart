@@ -10,6 +10,8 @@ import 'package:friend_private/utils/other/temp.dart';
 import 'package:friend_private/widgets/dialog.dart';
 import 'package:friend_private/widgets/extensions/string.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:friend_private/generated/l10n.dart';
 
 import '../../backend/schema/plugin.dart';
 
@@ -326,8 +328,8 @@ class _PluginDetailPageState extends State<PluginDetailPage> {
                             color: Colors.grey,
                             borderRadius: BorderRadius.circular(6),
                           ),
-                          child: const Text(
-                            'Chat',
+                          child: Text(
+                            S.current.Chat,
                             style: TextStyle(color: Colors.deepPurple, fontSize: 14, fontWeight: FontWeight.w500),
                           ),
                         )

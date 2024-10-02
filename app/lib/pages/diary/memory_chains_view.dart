@@ -4,6 +4,8 @@ import 'package:friend_private/backend/schema/memory_connection.dart';
 import 'package:friend_private/pages/memory_detail/page.dart';
 import 'package:provider/provider.dart';
 import 'package:friend_private/providers/memory_provider.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:friend_private/generated/l10n.dart';
 
 class MemoryChainsView extends StatelessWidget {
   final List<MemoryConnectionNode> forest;
@@ -16,7 +18,7 @@ class MemoryChainsView extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Memory Chains:',
+          S.current.MemoryChains + ":",
           style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
         ),
         SizedBox(height: 10),

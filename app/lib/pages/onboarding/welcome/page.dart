@@ -5,6 +5,8 @@ import 'package:friend_private/widgets/dialog.dart';
 import 'package:gradient_borders/box_borders/gradient_box_border.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:friend_private/generated/l10n.dart';
 
 class WelcomePage extends StatefulWidget {
   final VoidCallback goNext;
@@ -88,9 +90,9 @@ class _WelcomePageState extends State<WelcomePage> with SingleTickerProviderStat
                   width: double.infinity, // Button takes full width of the padding
                   height: 45, // Fixed height for the button
                   alignment: Alignment.center,
-                  child: const Text(
-                    'Connect My Friend',
-                    style: TextStyle(
+                  child: Text(
+                    S.current.ConnectMyAudioFairy,
+                    style: const TextStyle(
                       fontWeight: FontWeight.w400,
                       fontSize: 18,
                       color: Color.fromARGB(255, 255, 255, 255),

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:friend_private/pages/speech_profile/page.dart';
 import 'package:friend_private/utils/analytics/mixpanel.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:friend_private/generated/l10n.dart';
 
 class SetupQuestionsPage extends StatefulWidget {
   const SetupQuestionsPage({super.key});
@@ -95,7 +97,7 @@ class _SetupQuestionsPageState extends State<SetupQuestionsPage> {
                     borderRadius: BorderRadius.circular(12), side: const BorderSide(color: Colors.grey)),
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                  child: Text('Continue', style: Theme.of(context).textTheme.titleMedium),
+                  child: Text(S.current.Continue, style: Theme.of(context).textTheme.titleMedium),
                 ),
               ),
             ),

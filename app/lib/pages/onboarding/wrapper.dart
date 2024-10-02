@@ -20,6 +20,8 @@ import 'package:friend_private/utils/analytics/mixpanel.dart';
 import 'package:friend_private/utils/other/temp.dart';
 import 'package:friend_private/widgets/device_widget.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:friend_private/generated/l10n.dart';
 
 class OnboardingWrapper extends StatefulWidget {
   const OnboardingWrapper({super.key});
@@ -226,7 +228,7 @@ class _OnboardingWrapperState extends State<OnboardingWrapper> with TickerProvid
                         }
                       },
                       child: Text(
-                        'Skip',
+                        S.current.Skip,
                         style: TextStyle(color: Colors.grey.shade200),
                       ),
                     ),

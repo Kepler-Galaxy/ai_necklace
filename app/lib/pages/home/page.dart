@@ -34,6 +34,8 @@ import 'package:provider/provider.dart';
 import 'package:upgrader/upgrader.dart';
 import 'package:friend_private/pages/diary/page.dart';
 import 'package:friend_private/widgets/web_link_input.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:friend_private/generated/l10n.dart';
 
 class HomePageWrapper extends StatefulWidget {
   const HomePageWrapper({super.key});
@@ -294,7 +296,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver, Ticker
                             tabs: [
                               Tab(
                                 child: Text(
-                                  'Memories',
+                                  S.current.Memories,
                                   style: TextStyle(
                                     color: home.selectedIndex == 0 ? Colors.white : Colors.grey,
                                     fontSize: 16,
@@ -303,7 +305,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver, Ticker
                               ),
                               Tab(
                                 child: Text(
-                                  'Diary',
+                                  S.current.Diary,
                                   style: TextStyle(
                                     color: home.selectedIndex == 1 ? Colors.white : Colors.grey,
                                     fontSize: 16,
@@ -312,7 +314,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver, Ticker
                               ),
                               Tab(
                                 child: Text(
-                                  'Chat',
+                                  S.current.Chat,
                                   style: TextStyle(
                                     color: home.selectedIndex == 2 ? Colors.white : Colors.grey,
                                     fontSize: 16,
@@ -464,7 +466,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver, Ticker
                                   )
                                 : isMemoriesPage
                                     ? Text(
-                                        "No device found",
+                                        S.current.NoDeviceFound,
                                         style: Theme.of(context).textTheme.bodyMedium!.copyWith(color: Colors.white),
                                       )
                                     : const SizedBox.shrink(),
@@ -489,13 +491,13 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver, Ticker
                                 MixpanelManager().pageOpened('Chat Plugins');
                                 routeToPage(context, const PluginsPage(filterChatOnly: true));
                               },
-                              child: const Row(
+                              child: Row(
                                 children: [
-                                  Icon(size: 20, Icons.chat, color: Colors.white),
-                                  SizedBox(width: 10),
+                                  const Icon(size: 20, Icons.chat, color: Colors.white),
+                                  const SizedBox(width: 10),
                                   Text(
-                                    'Enable Plugins',
-                                    style: TextStyle(color: Colors.white, fontWeight: FontWeight.w500, fontSize: 16),
+                                    S.current.EnablePlugins,
+                                    style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w500, fontSize: 16),
                                   ),
                                 ],
                               ),
@@ -552,7 +554,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver, Ticker
                                 mainAxisAlignment: MainAxisAlignment.start,
                                 children: [
                                   Text(
-                                    memoryProvider.isCreatingWeChatMemory ? 'Creating Memory' : 'Import Article',
+                                    memoryProvider.isCreatingWeChatMemory ? S.current.CreatingMemory : S.current.ImportArticle,
                                     style: TextStyle(color: Colors.white, fontSize: 12),
                                   ),
                                   const SizedBox(width: 4),
@@ -638,7 +640,7 @@ void _showWebLinkArticleInput(BuildContext context) {
                 const Icon(size: 20, Icons.chat, color: Colors.white),
                 const SizedBox(width: 10),
                 Text(
-                  provider.plugins.where((p) => p.enabled).isEmpty ? 'Enable Plugins   ' : 'Select a plugin',
+                  provider.plugins.where((p) => p.enabled).isEmpty ? '${S.current.EnablePlugins}   ' : 'Select a plugin',
                   style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w500, fontSize: 16),
                 )
               ],
@@ -689,18 +691,18 @@ void _showWebLinkArticleInput(BuildContext context) {
           );
         }).toList();
     if (provider.plugins.where((p) => p.enabled).isNotEmpty) {
-      items.add(const DropdownMenuItem<String>(
+      items.add(DropdownMenuItem<String>(
         value: 'enable',
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            CircleAvatar(
+            const CircleAvatar(
               backgroundColor: Colors.transparent,
               maxRadius: 12,
               child: Icon(Icons.star, color: Colors.purpleAccent),
             ),
-            SizedBox(width: 8),
-            Text('Enable Plugins   ', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w500, fontSize: 16))
+            const SizedBox(width: 8),
+            Text('${S.current.EnablePlugins}   ', style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w500, fontSize: 16))
           ],
         ),
       ));

@@ -8,6 +8,8 @@ import 'package:friend_private/utils/analytics/mixpanel.dart';
 import 'package:friend_private/widgets/dialog.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:friend_private/generated/l10n.dart';
 
 import 'found_devices.dart';
 
@@ -77,24 +79,24 @@ class _FindDevicesPageState extends State<FindDevicesPage> {
               isFromOnboarding: widget.isFromOnboarding,
             ),
             if (provider.deviceList.isEmpty && provider.enableInstructions) const SizedBox(height: 48),
-            if (provider.deviceList.isEmpty && provider.enableInstructions)
-              ElevatedButton(
-                onPressed: () => launchUrl(Uri.parse('mailto:team@basedhardware.com')),
-                child: Container(
-                  width: double.infinity,
-                  height: 45,
-                  alignment: Alignment.center,
-                  child: const Text(
-                    'Contact Support?',
-                    style: TextStyle(
-                      fontWeight: FontWeight.w400,
-                      fontSize: 16,
-                      color: Colors.white,
-                      decoration: TextDecoration.underline,
-                    ),
-                  ),
-                ),
-              ),
+            // if (provider.deviceList.isEmpty && provider.enableInstructions)
+            //   ElevatedButton(
+            //     onPressed: () => {},
+            //     child: Container(
+            //       width: double.infinity,
+            //       height: 45,
+            //       alignment: Alignment.center,
+            //       child: const Text(
+            //         'Contact Support?',
+            //         style: TextStyle(
+            //           fontWeight: FontWeight.w400,
+            //           fontSize: 16,
+            //           color: Colors.white,
+            //           decoration: TextDecoration.underline,
+            //         ),
+            //       ),
+            //     ),
+            //   ),
             if (widget.includeSkip && provider.deviceList.isEmpty)
               ElevatedButton(
                 onPressed: () {
@@ -109,9 +111,9 @@ class _FindDevicesPageState extends State<FindDevicesPage> {
                   width: double.infinity,
                   height: 45,
                   alignment: Alignment.center,
-                  child: const Text(
-                    'Connect Later',
-                    style: TextStyle(
+                  child:  Text(
+                    S.current.ConnectLater,
+                    style: const TextStyle(
                       fontWeight: FontWeight.w400,
                       fontSize: 16,
                       color: Colors.white,

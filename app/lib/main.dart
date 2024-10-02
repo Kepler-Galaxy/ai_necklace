@@ -45,6 +45,9 @@ import 'package:opus_flutter/opus_flutter.dart' as opus_flutter;
 import 'package:provider/provider.dart';
 import 'package:talker_flutter/talker_flutter.dart';
 import 'package:friend_private/providers/diary_provider.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'generated/l10n.dart';
+
 
 Future<bool> _init() async {
   // Service manager
@@ -215,14 +218,17 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
                 if (Env.instabugApiKey != null) InstabugNavigatorObserver(),
               ],
               debugShowCheckedModeBanner: F.env == Environment.dev,
+              
               title: F.title,
               navigatorKey: MyApp.navigatorKey,
               localizationsDelegates: const [
+                S.delegate,
                 GlobalMaterialLocalizations.delegate,
                 GlobalWidgetsLocalizations.delegate,
                 GlobalCupertinoLocalizations.delegate,
               ],
-              supportedLocales: const [Locale('en')],
+              supportedLocales: S.delegate.supportedLocales,
+              // locale: const Locale('en'),
               theme: ThemeData(
                   useMaterial3: false,
                   colorScheme: const ColorScheme.dark(

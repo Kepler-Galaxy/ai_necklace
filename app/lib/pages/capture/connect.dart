@@ -4,6 +4,8 @@ import 'package:friend_private/pages/home/page.dart';
 import 'package:friend_private/pages/onboarding/find_device/page.dart';
 import 'package:friend_private/utils/other/temp.dart';
 import 'package:friend_private/widgets/device_widget.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:friend_private/generated/l10n.dart';
 
 class ConnectDevicePage extends StatefulWidget {
   const ConnectDevicePage({super.key});
@@ -17,7 +19,7 @@ class _ConnectDevicePageState extends State<ConnectDevicePage> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: const Text('Connect Your Friend'),
+          title: Text(S.current.ConnectYourAudioFairy),
           backgroundColor: Theme.of(context).colorScheme.primary,
           actions: [
             IconButton(

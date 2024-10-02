@@ -13,7 +13,8 @@ import 'package:friend_private/utils/other/temp.dart';
 import 'package:friend_private/widgets/dialog.dart';
 import 'package:intercom_flutter/intercom_flutter.dart';
 import 'package:package_info_plus/package_info_plus.dart';
-
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:friend_private/generated/l10n.dart';
 import 'device_settings.dart';
 
 class SettingsPage extends StatefulWidget {
@@ -149,7 +150,7 @@ class _SettingsPageState extends State<SettingsPage> {
                   setState(() {});
                 }, icon: Icons.code),
                 const SizedBox(height: 32),
-                getItemAddOn2('Sign Out', () async {
+                getItemAddOn2(S.current.SignOut, () async {
                   showDialog(
                     context: context,
                     builder: (ctx) {
@@ -159,7 +160,7 @@ class _SettingsPageState extends State<SettingsPage> {
                         await AuthenticationProvider.logout();
                         Navigator.of(context).pop();
                         await routeToPage(context, const DeciderWidget(), replace: true);
-                      }, "Sign Out?", "Are you sure you want to sign out?");
+                      }, S.current.SignOut, S.current.AreYouSureSignOut);
                     },
                   );
                 }, icon: Icons.logout),

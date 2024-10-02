@@ -15,6 +15,8 @@ import 'package:friend_private/widgets/dialog.dart';
 import 'package:gradient_borders/box_borders/gradient_box_border.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:friend_private/generated/l10n.dart';
 
 class SpeechProfilePage extends StatefulWidget {
   final bool onbording;
@@ -133,7 +135,7 @@ class _SpeechProfilePageState extends State<SpeechProfilePage> with TickerProvid
                   () {},
                   'Invalid recording detected',
                   'There is not enough speech detected. Please speak more and try again.',
-                  okButtonText: 'Ok',
+                  okButtonText: S.current.Ok,
                   singleButton: true,
                 ),
                 barrierDismissible: false,
@@ -151,7 +153,7 @@ class _SpeechProfilePageState extends State<SpeechProfilePage> with TickerProvid
                   // TODO: improve this
                   'Invalid recording detected',
                   'Please make sure you speak for at least 5 seconds and not more than 90.',
-                  okButtonText: 'Ok',
+                  okButtonText: S.current.Ok,
                   singleButton: true,
                 ),
                 barrierDismissible: false,
@@ -191,9 +193,9 @@ class _SpeechProfilePageState extends State<SpeechProfilePage> with TickerProvid
                         onPressed: () {
                           routeToPage(context, const HomePageWrapper(), replace: true);
                         },
-                        child: const Text(
-                          'Skip',
-                          style: TextStyle(color: Colors.white, decoration: TextDecoration.underline),
+                        child:  Text(
+                          S.current.Skip,
+                          style: const TextStyle(color: Colors.white, decoration: TextDecoration.underline),
                         ),
                       ),
               ],
