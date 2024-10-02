@@ -261,7 +261,6 @@ class SummaryTab extends StatelessWidget {
       builder: (context, isDiscaarded, child) {
         return ListView(
           shrinkWrap: true,
-          physics: NeverScrollableScrollPhysics(),
           children: [
             const GetSummaryWidgets(),
             isDiscaarded ? const ReprocessDiscardedWidget() : const GetPluginsWidgets(),
