@@ -57,6 +57,21 @@ class MemoryPostProcessing {
   toJson() => {'status': status.toString().split('.').last, 'model': model.toString().split('.').last};
 }
 
+DateTime parseUtcToLocal(String dateString) {
+    DateTime parsedDate = DateTime.parse(dateString);
+    DateTime utcDateTime = DateTime.utc(
+      parsedDate.year,
+      parsedDate.month,
+      parsedDate.day,
+      parsedDate.hour,
+      parsedDate.minute,
+      parsedDate.second,
+      parsedDate.millisecond,
+      parsedDate.microsecond
+    );
+    return utcDateTime.toLocal();
+  }
+  
 class ServerProcessingMemory {
   final String id;
   final DateTime createdAt;
@@ -71,8 +86,8 @@ class ServerProcessingMemory {
   factory ServerProcessingMemory.fromJson(Map<String, dynamic> json) {
     return ServerProcessingMemory(
       id: json['id'],
-      createdAt: DateTime.parse(json['created_at']).toLocal(),
-      startedAt: json['started_at'] != null ? DateTime.parse(json['started_at']).toLocal() : null,
+      createdAt: parseUtcToLocal(json['created_at']),
+      startedAt: json['started_at'] != null ? parseUtcToLocal(json['started_at']) : null,
     );
   }
 
@@ -247,10 +262,10 @@ class ServerMemory {
   factory ServerMemory.fromJson(Map<String, dynamic> json) {
     return ServerMemory(
       id: json['id'],
-      createdAt: DateTime.parse(json['created_at']).toLocal(),
+      createdAt: parseUtcToLocal(json['created_at']),
       structured: Structured.fromJson(json['structured']),
-      startedAt: json['started_at'] != null ? DateTime.parse(json['started_at']).toLocal() : null,
-      finishedAt: json['finished_at'] != null ? DateTime.parse(json['finished_at']).toLocal() : null,
+      startedAt: json['started_at'] != null ? parseUtcToLocal(json['started_at']) : null,
+      finishedAt: json['finished_at'] != null ? parseUtcToLocal(json['finished_at']) : null,
       transcriptSegments: ((json['transcript_segments'] ?? []) as List<dynamic>)
           .map((segment) => TranscriptSegment.fromJson(segment))
           .toList(),
