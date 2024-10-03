@@ -126,6 +126,7 @@ dependency_overrides:
       ref: dev
 
 dev_dependencies:
+  intl_utils: ^2.8.7
   intl_translation: any
   flutter_launcher_icons: 0.13.1
   flutter_lints: ^4.0.0

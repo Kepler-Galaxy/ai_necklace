@@ -6,7 +6,9 @@ import 'package:friend_private/pages/memories/widgets/processing_capture.dart';
 import 'package:friend_private/providers/memory_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:visibility_detector/visibility_detector.dart';
-
+import 'package:friend_private/widgets/web_link_input.dart';
+import 'package:friend_private/generated/l10n.dart';
+import 'package:friend_private/backend/preferences.dart';
 import 'widgets/empty_memories.dart';
 import 'widgets/memory_list_item.dart';
 
@@ -17,7 +19,8 @@ class MemoriesPage extends StatefulWidget {
   State<MemoriesPage> createState() => _MemoriesPageState();
 }
 
-class _MemoriesPageState extends State<MemoriesPage> with AutomaticKeepAliveClientMixin {
+class _MemoriesPageState extends State<MemoriesPage>
+    with AutomaticKeepAliveClientMixin {
   TextEditingController textController = TextEditingController();
 
   @override
@@ -26,8 +29,11 @@ class _MemoriesPageState extends State<MemoriesPage> with AutomaticKeepAliveClie
   @override
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      if (Provider.of<MemoryProvider>(context, listen: false).memories.isEmpty) {
-        await Provider.of<MemoryProvider>(context, listen: false).getInitialMemories();
+      if (Provider.of<MemoryProvider>(context, listen: false)
+          .memories
+          .isEmpty) {
+        await Provider.of<MemoryProvider>(context, listen: false)
+            .getInitialMemories();
       }
     });
     super.initState();
@@ -46,10 +52,70 @@ class _MemoriesPageState extends State<MemoriesPage> with AutomaticKeepAliveClie
         },
         child: CustomScrollView(
           slivers: [
-            const SliverToBoxAdapter(child: SizedBox(height: 32)),
+            const SliverToBoxAdapter(child: SizedBox(height: 12)),
             const SliverToBoxAdapter(child: SpeechProfileCardWidget()),
             SliverToBoxAdapter(child: getMemoryCaptureWidget()),
-            if (memoryProvider.memoriesWithDates.isEmpty && !memoryProvider.isLoadingMemories)
+            const SliverToBoxAdapter(child: SizedBox(height: 12)),
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    GestureDetector(
+                      onTap: memoryProvider.isCreatingWeChatMemory ? null : () {
+                        _showWebLinkArticleInput(context);
+                      },
+                      child: Row(
+                        children: [
+                          Text(
+                            memoryProvider.isCreatingWeChatMemory ? S.current.CreatingMemory : S.current.ImportArticle,
+                            style: TextStyle(color: Colors.white, fontSize: 16),
+                          ),
+                          const SizedBox(width: 4),
+                          memoryProvider.isCreatingWeChatMemory
+                            ? SizedBox(
+                                width: 12,
+                                height: 12,
+                                child: CircularProgressIndicator(
+                                  valueColor: AlwaysStoppedAnimation<Color>(Colors.green),
+                                  strokeWidth: 2,
+                                ),
+                              )
+                            : const Icon(
+                                Icons.add,
+                                color: Colors.white,
+                              ),
+                        ]
+                      ),
+                    ),
+                    GestureDetector(
+                      onTap: memoryProvider.toggleDiscardMemories,
+                      child: Row(
+                        children: [
+                          Text(
+                            SharedPreferencesUtil().showDiscardedMemories
+                            ? S.current.HideDiscarded
+                              : S.current.ShowDiscarded,
+                            style: TextStyle(color: Colors.white, fontSize: 16),
+                          ),
+                          const SizedBox(width: 4),
+                          Icon(
+                            SharedPreferencesUtil().showDiscardedMemories
+                              ? Icons.filter_list_off_sharp
+                              : Icons.filter_list,
+                            color: Colors.white,
+                            size: 24,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            if (memoryProvider.memoriesWithDates.isEmpty &&
+                !memoryProvider.isLoadingMemories)
               const SliverToBoxAdapter(
                 child: Center(
                   child: Padding(
@@ -58,7 +124,8 @@ class _MemoriesPageState extends State<MemoriesPage> with AutomaticKeepAliveClie
                   ),
                 ),
               )
-            else if (memoryProvider.memoriesWithDates.isEmpty && memoryProvider.isLoadingMemories)
+            else if (memoryProvider.memoriesWithDates.isEmpty &&
+                memoryProvider.isLoadingMemories)
               const SliverToBoxAdapter(
                 child: Center(
                   child: Padding(
@@ -79,7 +146,8 @@ class _MemoriesPageState extends State<MemoriesPage> with AutomaticKeepAliveClie
                           child: Padding(
                             padding: EdgeInsets.only(top: 32.0),
                             child: CircularProgressIndicator(
-                              valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                              valueColor:
+                                  AlwaysStoppedAnimation<Color>(Colors.white),
                             ),
                           ),
                         );
@@ -88,21 +156,28 @@ class _MemoriesPageState extends State<MemoriesPage> with AutomaticKeepAliveClie
                       return VisibilityDetector(
                         key: const Key('memory-loader'),
                         onVisibilityChanged: (visibilityInfo) {
-                          if (visibilityInfo.visibleFraction > 0 && !memoryProvider.isLoadingMemories) {
+                          if (visibilityInfo.visibleFraction > 0 &&
+                              !memoryProvider.isLoadingMemories) {
                             memoryProvider.getMoreMemoriesFromServer();
                           }
                         },
-                        child: const SizedBox(height: 80, width: double.maxFinite),
+                        child:
+                            const SizedBox(height: 80, width: double.maxFinite),
                       );
                     }
 
-                    if (memoryProvider.memoriesWithDates[index].runtimeType == DateTime) {
+                    if (memoryProvider.memoriesWithDates[index].runtimeType ==
+                        DateTime) {
                       return DateListItem(
-                          date: memoryProvider.memoriesWithDates[index] as DateTime, isFirst: index == 0);
+                          date: memoryProvider.memoriesWithDates[index]
+                              as DateTime,
+                          isFirst: index == 0);
                     }
-                    var memory = memoryProvider.memoriesWithDates[index] as ServerMemory;
+                    var memory =
+                        memoryProvider.memoriesWithDates[index] as ServerMemory;
                     return MemoryListItem(
-                      memoryIdx: memoryProvider.memoriesWithDates.indexOf(memory),
+                      memoryIdx:
+                          memoryProvider.memoriesWithDates.indexOf(memory),
                       memory: memory,
                     );
                   },
@@ -119,3 +194,15 @@ class _MemoriesPageState extends State<MemoriesPage> with AutomaticKeepAliveClie
   }
 }
 
+void _showWebLinkArticleInput(BuildContext context) {
+  showModalBottomSheet(
+    context: context,
+    isScrollControlled: true,
+    shape: const RoundedRectangleBorder(
+      borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+    ),
+    builder: (BuildContext context) {
+      return WebLinkArticleInputWidget();
+    },
+  );
+}

@@ -54,6 +54,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "ExternalApps": MessageLookupByLibrary.simpleMessage("External Apps"),
         "FailedSignIn":
             MessageLookupByLibrary.simpleMessage("Failed to sign in"),
+        "HideDiscarded": MessageLookupByLibrary.simpleMessage("Hide Discarded"),
         "HowShouldAudioFairyCallYou": MessageLookupByLibrary.simpleMessage(
             "How should AudioFairy call you?"),
         "ImportArticle": MessageLookupByLibrary.simpleMessage("Import Article"),
@@ -93,6 +94,7 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Select Another Day"),
         "SendVerificationCode":
             MessageLookupByLibrary.simpleMessage("Send Verification Code"),
+        "ShowDiscarded": MessageLookupByLibrary.simpleMessage("Show Discarded"),
         "SignIn": MessageLookupByLibrary.simpleMessage("Sign In / Sign Up"),
         "SignOut": MessageLookupByLibrary.simpleMessage("Sign Out"),
         "Skip": MessageLookupByLibrary.simpleMessage("Skip"),

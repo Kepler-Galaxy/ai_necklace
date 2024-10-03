@@ -502,80 +502,24 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver, Ticker
                     );
                   },
                 ),
-                Row(
-                  children: [
-                    Consumer2<MemoryProvider, HomeProvider>(builder: (context, memoryProvider, home, child) {
-                      if (home.selectedIndex != 0 ||
-                          !memoryProvider.hasNonDiscardedMemories ||
-                          memoryProvider.isLoadingMemories) {
-                        return const SizedBox.shrink();
-                      }
-                      return Row(
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.all(4.0),
-                            child: GestureDetector(
-                              onTap: memoryProvider.isCreatingWeChatMemory ? null : () {
-                                _showWebLinkArticleInput(context);
-                              },
-                              child: Row(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    memoryProvider.isCreatingWeChatMemory ? S.current.CreatingMemory : S.current.ImportArticle,
-                                    style: TextStyle(color: Colors.white, fontSize: 12),
-                                  ),
-                                  const SizedBox(width: 4),
-                                  memoryProvider.isCreatingWeChatMemory
-                                      ? SizedBox(
-                                          width: 12,
-                                          height: 12,
-                                          child: CircularProgressIndicator(
-                                            valueColor: AlwaysStoppedAnimation<Color>(Colors.green),
-                                            strokeWidth: 2,
-                                          ),
-                                        )
-                                      : const Icon(
-                                          Icons.add,
-                                          color: Colors.white,
-                                        ),
-                                ],
-                              ),
-                            ),
-                          ),
-                          IconButton(
-                              onPressed: memoryProvider.toggleDiscardMemories,
-                              icon: Icon(
-                                SharedPreferencesUtil().showDiscardedMemories
-                                    ? Icons.filter_list_off_sharp
-                                    : Icons.filter_list,
-                                color: Colors.white,
-                                size: 24,
-                              )),
-                        ],
-                      );
-                    }),
-                    IconButton(
-                      icon: const Icon(Icons.settings, color: Colors.white, size: 30),
-                      onPressed: () async {
-                        MixpanelManager().pageOpened('Settings');
-                        String language = SharedPreferencesUtil().recordingsLanguage;
-                        bool hasSpeech = SharedPreferencesUtil().hasSpeakerProfile;
-                        String transcriptModel = SharedPreferencesUtil().transcriptionModel;
-                        await routeToPage(context, const SettingsPage());
+                IconButton(
+                  icon: const Icon(Icons.settings, color: Colors.white, size: 30),
+                  onPressed: () async {
+                    MixpanelManager().pageOpened('Settings');
+                    String language = SharedPreferencesUtil().recordingsLanguage;
+                    bool hasSpeech = SharedPreferencesUtil().hasSpeakerProfile;
+                    String transcriptModel = SharedPreferencesUtil().transcriptionModel;
+                    await routeToPage(context, const SettingsPage());
 
-                        if (language != SharedPreferencesUtil().recordingsLanguage ||
-                            hasSpeech != SharedPreferencesUtil().hasSpeakerProfile ||
-                            transcriptModel != SharedPreferencesUtil().transcriptionModel) {
-                          if (context.mounted) {
-                            context.read<CaptureProvider>().onRecordProfileSettingChanged();
-                          }
-                        }
-                      },
-                    ),
-                  ],
-                )
+                    if (language != SharedPreferencesUtil().recordingsLanguage ||
+                        hasSpeech != SharedPreferencesUtil().hasSpeakerProfile ||
+                        transcriptModel != SharedPreferencesUtil().transcriptionModel) {
+                      if (context.mounted) {
+                        context.read<CaptureProvider>().onRecordProfileSettingChanged();
+                      }
+                    }
+                  },
+                ),
               ],
             ),
             elevation: 0,
@@ -585,19 +529,6 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver, Ticker
       }),
     );
   }
-
-void _showWebLinkArticleInput(BuildContext context) {
-  showModalBottomSheet(
-    context: context,
-    isScrollControlled: true,
-    shape: const RoundedRectangleBorder(
-      borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
-    ),
-    builder: (BuildContext context) {
-      return WebLinkArticleInputWidget();
-    },
-  );
-}
 
   _getPluginsDropdownItems(BuildContext context, PluginProvider provider) {
     var items = [

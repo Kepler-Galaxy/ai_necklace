@@ -5,6 +5,8 @@
     "Chat": "Chat",
     "CreatingMemory": "Creating Memory",
     "ImportArticle": "Import Article",
+    "ShowDiscarded": "Show Discarded",
+    "HideDiscarded": "Hide Discarded",
     "StopRecording": "Stop Recording",
     "TryWithPhoneMic": "Try With Phone Mic",
     "NoDeviceFound": "No device found",

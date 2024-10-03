@@ -110,6 +110,26 @@ class S {
     );
   }
 
+  /// `Show Discarded`
+  String get ShowDiscarded {
+    return Intl.message(
+      'Show Discarded',
+      name: 'ShowDiscarded',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Hide Discarded`
+  String get HideDiscarded {
+    return Intl.message(
+      'Hide Discarded',
+      name: 'HideDiscarded',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Stop Recording`
   String get StopRecording {
     return Intl.message(
