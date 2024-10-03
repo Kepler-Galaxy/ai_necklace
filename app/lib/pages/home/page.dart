@@ -263,70 +263,39 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver, Ticker
                       ],
                     ),
                   ),
-                  Consumer<HomeProvider>(builder: (context, home, child) {
-                    if (home.chatFieldFocusNode.hasFocus || home.memoryFieldFocusNode.hasFocus) {
-                      return const SizedBox.shrink();
-                    } else {
-                      return Align(
-                        alignment: Alignment.bottomCenter,
-                        child: Container(
-                          margin: const EdgeInsets.fromLTRB(32, 16, 32, 40),
-                          decoration: const BoxDecoration(
-                            color: Colors.black,
-                            borderRadius: BorderRadius.all(Radius.circular(16)),
-                            border: GradientBoxBorder(
-                              gradient: LinearGradient(colors: [
-                                Color.fromARGB(127, 208, 208, 208),
-                                Color.fromARGB(127, 188, 99, 121),
-                                Color.fromARGB(127, 86, 101, 182),
-                                Color.fromARGB(127, 126, 190, 236)
-                              ]),
-                              width: 2,
-                            ),
-                            shape: BoxShape.rectangle,
+                  Align(
+                    alignment: Alignment.bottomCenter,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Colors.black,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.2),
+                            blurRadius: 8,
+                            offset: const Offset(0, -2),
                           ),
-                          child: TabBar(
-                            padding: const EdgeInsets.only(top: 4, bottom: 4),
+                        ],
+                      ),
+                      child: Consumer<HomeProvider>(
+                        builder: (context, home, child) {
+                          return TabBar(
+                            padding: const EdgeInsets.only(top: 4, bottom: 4), // Reduced padding
                             onTap: (index) {
                               MixpanelManager().bottomNavigationTabClicked(['Memories', 'Diary', 'Chat'][index]);
                               primaryFocus?.unfocus();
                               home.setIndex(index);
                             },
-                            indicatorColor: Colors.transparent,
+                            indicatorColor: Colors.white,
                             tabs: [
-                              Tab(
-                                child: Text(
-                                  S.current.Memories,
-                                  style: TextStyle(
-                                    color: home.selectedIndex == 0 ? Colors.white : Colors.grey,
-                                    fontSize: 16,
-                                  ),
-                                ),
-                              ),
-                              Tab(
-                                child: Text(
-                                  S.current.Diary,
-                                  style: TextStyle(
-                                    color: home.selectedIndex == 1 ? Colors.white : Colors.grey,
-                                    fontSize: 16,
-                                  ),
-                                ),
-                              ),
-                              Tab(
-                                child: Text(
-                                  S.current.Chat,
-                                  style: TextStyle(
-                                    color: home.selectedIndex == 2 ? Colors.white : Colors.grey,
-                                    fontSize: 16,
-                                  ),
-                                ),
-                              ),
+                              _buildTab(Icons.memory, S.current.Memories, home.selectedIndex == 0),
+                              _buildTab(Icons.book, S.current.Diary, home.selectedIndex == 1),
+                              _buildTab(Icons.chat, S.current.Chat, home.selectedIndex == 2),
                             ],
-                          ),
-                        ),
-                      );
-                    }
-                  }),
+                          );
+                        },
+                      ),
+                    ),
+                  ),
                   if (scriptsInProgress)
                     Center(
                       child: Container(
@@ -708,6 +677,29 @@ void _showWebLinkArticleInput(BuildContext context) {
       ));
     }
     return items;
+  }
+
+  Widget _buildTab(IconData icon, String label, bool isSelected) {
+    return Tab(
+      height: 56, // Slightly reduced height
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(
+            icon,
+            color: isSelected ? Colors.white : Colors.grey,
+          ),
+          const SizedBox(height: 4), // Reduced space between icon and text
+          Text(
+            label,
+            style: TextStyle(
+              color: isSelected ? Colors.white : Colors.grey,
+              fontSize: 12, // Smaller font size for the label
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
