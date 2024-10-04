@@ -60,6 +60,26 @@ class S {
     );
   }
 
+  /// `Kepler Star`
+  String get AppName {
+    return Intl.message(
+      'Kepler Star',
+      name: 'AppName',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Your personalized AI assistant that precisely reconstructs your work and life, and helps you get things done.`
+  String get OneWordIntro {
+    return Intl.message(
+      'Your personalized AI assistant that precisely reconstructs your work and life, and helps you get things done.',
+      name: 'OneWordIntro',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Memories`
   String get Memories {
     return Intl.message(
@@ -565,6 +585,16 @@ class S {
     return Intl.message(
       'How should AudioFairy call you?',
       name: 'HowShouldAudioFairyCallYou',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Allow AudioFairy to run in the background to improve stability`
+  String get EnableBackgroundProcess {
+    return Intl.message(
+      'Allow AudioFairy to run in the background to improve stability',
+      name: 'EnableBackgroundProcess',
       desc: '',
       args: [],
     );

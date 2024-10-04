@@ -1,17 +1,9 @@
-import 'dart:io';
-
-import 'package:authing_sdk_v3/client.dart';
-import 'package:authing_sdk_v3/result.dart';
-import 'package:authing_sdk_v3/options/login_options.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:friend_private/utils/analytics/growthbook.dart';
 import 'package:friend_private/providers/auth_provider.dart';
 import 'package:provider/provider.dart';
-import 'package:sign_in_button/sign_in_button.dart';
-import 'package:sign_in_with_apple/sign_in_with_apple.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:friend_private/generated/l10n.dart';
+import 'package:gradient_borders/gradient_borders.dart';
 
 class AuthComponent extends StatefulWidget {
   final VoidCallback onSignIn;
@@ -30,7 +22,7 @@ class _AuthComponentState extends State<AuthComponent> {
         return Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.end,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Center(
                 child: SizedBox(
@@ -63,26 +55,44 @@ class _AuthComponentState extends State<AuthComponent> {
                 keyboardType: TextInputType.number,
               ),
               const SizedBox(height: 16),
-              provider.isCodeSent
-                  ? SignInButton(
-                      Buttons.anonymous,
-                      text: S.current.SignIn,
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 16, vertical: 8),
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8)),
-                      onPressed: () => provider.onVerificationCodeSignIn(
-                          context, widget.onSignIn),
-                    )
-                  : SignInButton(
-                      Buttons.anonymous,
-                      text: S.current.SendVerificationCode,
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 16, vertical: 8),
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8)),
-                      onPressed: () => provider.sendVerificationCode(context),
+              Container(
+                decoration: BoxDecoration(
+                  border: const GradientBoxBorder(
+                    gradient: LinearGradient(colors: [
+                      Color.fromARGB(127, 208, 208, 208),
+                      Color.fromARGB(127, 188, 99, 121),
+                      Color.fromARGB(127, 86, 101, 182),
+                      Color.fromARGB(127, 126, 190, 236)
+                    ]),
+                  ),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: ElevatedButton(
+                  onPressed: provider.isCodeSent
+                      ? () => provider.onVerificationCodeSignIn(context, widget.onSignIn)
+                      : () => provider.sendVerificationCode(context),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.transparent,
+                    shadowColor: Colors.transparent,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
                     ),
+                    padding: EdgeInsets.zero, // Remove default padding
+                    minimumSize: Size.zero, // Allow the button to shrink
+                    tapTargetSize: MaterialTapTargetSize.shrinkWrap, // Minimize the tap target
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8), // Adjust this padding as needed
+                    child: Text(
+                      provider.isCodeSent ? S.current.SignIn : S.current.SendVerificationCode,
+                      style: const TextStyle(
+                        fontSize: 14,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
               const SizedBox(height: 16),
               RichText(
                 textAlign: TextAlign.center,

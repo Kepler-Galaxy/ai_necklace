@@ -1,5 +1,7 @@
 {
     "hello": "hello",
+    "AppName": "Kepler Star",
+    "OneWordIntro": "Your personalized AI assistant that precisely reconstructs your work and life, and helps you get things done.",
     "Memories": "Memories",
     "Diary": "Diary",
     "Chat": "Chat",
@@ -51,6 +53,7 @@
     "FailedSignIn": "Failed to sign in",
     "PleaseEnterPhoneNumberAndCode": "Please enter both phone number and code.",
     "HowShouldAudioFairyCallYou": "How should AudioFairy call you?",
+    "EnableBackgroundProcess": "Allow AudioFairy to run in the background to improve stability",
     "EnableBackgroundLocationAccess": "Enable background location access for Omi's full experience.",
     "EnableNotificationAccess": "Enable notification access for Omi's full experience.",
     "ConnectMyAudioFairy": "Connect My AudioFairy",

@@ -22,6 +22,7 @@ class MessageLookup extends MessageLookupByLibrary {
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
+        "AppName": MessageLookupByLibrary.simpleMessage("开普勒星"),
         "AreYouSureSignOut": MessageLookupByLibrary.simpleMessage("确定是否退出登录？"),
         "ArticleLinkWeChatArticleorOthers":
             MessageLookupByLibrary.simpleMessage("从微信文章或者其他网址获取记忆"),
@@ -41,9 +42,11 @@ class MessageLookup extends MessageLookupByLibrary {
                 "使用手机麦克风录音存在一些限制，包括但不限于音色特性和背景噪音的干扰"),
         "Diary": MessageLookupByLibrary.simpleMessage("札记"),
         "EnableBackgroundLocationAccess":
-            MessageLookupByLibrary.simpleMessage("开启后台位置访问，以充分体验全部功能"),
+            MessageLookupByLibrary.simpleMessage("开启后台位置访问，以保障记忆生成附带地点信息"),
+        "EnableBackgroundProcess":
+            MessageLookupByLibrary.simpleMessage("允许后台进程常驻，以保障记忆生成稳定性"),
         "EnableNotificationAccess":
-            MessageLookupByLibrary.simpleMessage("开启通知权限，以充分体验全部功能"),
+            MessageLookupByLibrary.simpleMessage("开启通知权限，以充分体验更多功能"),
         "EnablePlugins": MessageLookupByLibrary.simpleMessage("启用插件"),
         "ExternalApps": MessageLookupByLibrary.simpleMessage("拓展应用"),
         "FailedSignIn": MessageLookupByLibrary.simpleMessage("登录失败"),
@@ -63,6 +66,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "NoMessagesYet": MessageLookupByLibrary.simpleMessage("暂时没有对话内容"),
         "Ok": MessageLookupByLibrary.simpleMessage("确定"),
         "OkIUnderstand": MessageLookupByLibrary.simpleMessage("已了解"),
+        "OneWordIntro": MessageLookupByLibrary.simpleMessage(
+            "你的个性化AI助手，精确重构你的工作和生活，用硅基大脑帮助你自动完成任务"),
         "Overview": MessageLookupByLibrary.simpleMessage("综述"),
         "PasteArticleLinkHere": MessageLookupByLibrary.simpleMessage("粘贴链接"),
         "Personalities": MessageLookupByLibrary.simpleMessage("个性化"),

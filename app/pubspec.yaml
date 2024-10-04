@@ -152,6 +152,7 @@ flutter:
   uses-material-design: true
   assets:
     - assets/images/blob.png
+    - assets/images/digital_brain3.png  
     - assets/images/stars.png
     - assets/images/herologo.png
     - assets/images/backbutton.svg

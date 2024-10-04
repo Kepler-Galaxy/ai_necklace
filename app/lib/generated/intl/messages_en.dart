@@ -22,6 +22,7 @@ class MessageLookup extends MessageLookupByLibrary {
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
+        "AppName": MessageLookupByLibrary.simpleMessage("Kepler Star"),
         "AreYouSureSignOut": MessageLookupByLibrary.simpleMessage(
             "Are you sure you want to sign out?"),
         "ArticleLinkWeChatArticleorOthers":
@@ -48,6 +49,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "Diary": MessageLookupByLibrary.simpleMessage("Diary"),
         "EnableBackgroundLocationAccess": MessageLookupByLibrary.simpleMessage(
             "Enable background location access for Omi\'s full experience."),
+        "EnableBackgroundProcess": MessageLookupByLibrary.simpleMessage(
+            "Allow AudioFairy to run in the background to improve stability"),
         "EnableNotificationAccess": MessageLookupByLibrary.simpleMessage(
             "Enable notification access for Omi\'s full experience."),
         "EnablePlugins": MessageLookupByLibrary.simpleMessage("Enable Plugins"),
@@ -74,6 +77,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "Ok": MessageLookupByLibrary.simpleMessage("OK"),
         "OkIUnderstand":
             MessageLookupByLibrary.simpleMessage("Ok, I understand"),
+        "OneWordIntro": MessageLookupByLibrary.simpleMessage(
+            "Your personalized AI assistant that precisely reconstructs your work and life, and helps you get things done."),
         "Overview": MessageLookupByLibrary.simpleMessage("Overview"),
         "PasteArticleLinkHere":
             MessageLookupByLibrary.simpleMessage("Paste article link here"),
