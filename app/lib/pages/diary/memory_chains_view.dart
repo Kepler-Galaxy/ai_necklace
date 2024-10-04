@@ -4,8 +4,52 @@ import 'package:friend_private/backend/schema/memory_connection.dart';
 import 'package:friend_private/pages/memory_detail/page.dart';
 import 'package:provider/provider.dart';
 import 'package:friend_private/providers/memory_provider.dart';
+import 'package:friend_private/pages/memory_detail/memory_detail_provider.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:friend_private/generated/l10n.dart';
+import 'package:collection/collection.dart';
+
+class FlashingBoltIcon extends StatefulWidget {
+  const FlashingBoltIcon({Key? key}) : super(key: key);
+
+  @override
+  _FlashingBoltIconState createState() => _FlashingBoltIconState();
+}
+
+class _FlashingBoltIconState extends State<FlashingBoltIcon>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _animation;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      duration: const Duration(milliseconds: 1000),
+      vsync: this,
+    )..repeat(reverse: true);
+    _animation = Tween<double>(begin: 0.3, end: 1.0).animate(_controller);
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: _animation,
+      builder: (context, child) {
+        return Opacity(
+          opacity: _animation.value,
+          child: Icon(Icons.bolt, size: 35, color: Colors.yellow),
+        );
+      },
+    );
+  }
+}
 
 class MemoryChainsView extends StatelessWidget {
   final List<MemoryConnectionNode> forest;
@@ -33,94 +77,108 @@ class MemoryChainsView extends StatelessWidget {
       children: [
         if (connectedMemories.isNotEmpty) ...[
           Padding(
-            padding: const EdgeInsets.symmetric(vertical: 8.0),
+            padding: const EdgeInsets.symmetric(vertical: 16.0),
             child: Text(
               S.current.DiaryMemoryConnectionText,
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
+              style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white),
             ),
           ),
-          ...connectedMemories.map((node) => _buildTree(context, node, 0)),
-          SizedBox(height: 20), // Spacer between sections
-        ]
-        else ...[
+          ...connectedMemories
+              .expand((node) => [
+                    _buildTree(context, node, 0),
+                    SizedBox(height: 24), // Increased vertical spacing
+                  ])
+              .toList(),
+          SizedBox(height: 32), // Larger spacer between sections
+        ] else ...[
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 8.0),
             child: Text(
               S.current.DiaryNoConnectedMemory,
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
+              style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white),
             ),
           ),
         ],
         if (unconnectedMemories.isNotEmpty) ...[
           Padding(
-            padding: const EdgeInsets.symmetric(vertical: 8.0),
+            padding: const EdgeInsets.symmetric(vertical: 16.0),
             child: Text(
               S.current.DiarySeparateMemoryText,
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
+              style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white),
             ),
           ),
-          ...unconnectedMemories.map((node) => _buildTree(context, node, 0)),
+          ...unconnectedMemories
+              .expand((node) => [
+                    _buildTree(context, node, 0),
+                    SizedBox(height: 24), // Increased vertical spacing
+                  ])
+              .toList(),
         ],
       ],
     );
   }
 
-  // TODO(yiqi): Improve the layout.
-  Widget _buildTree(BuildContext context, MemoryConnectionNode node, int level) {
-    if (node.children.isEmpty) {
-      return _buildLeafNode(context, node, level);
-    } else {
-      return _buildBranchNode(context, node, level);
-    }
+  Widget _buildTree(
+      BuildContext context, MemoryConnectionNode node, int level) {
+    return node.children.isEmpty
+        ? _buildLeafNode(context, node, level)
+        : _buildBranchNode(context, node, level);
   }
 
-  Widget _buildLeafNode(BuildContext context, MemoryConnectionNode node, int level) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          children: [
-            if (level > 0)
-              _buildConnectionIndicator(context, node),
-            _buildMemoryNode(context, node.memoryId),
-          ],
-        ),
-      ],
-    );
-  }
-
-  Widget _buildBranchNode(BuildContext context, MemoryConnectionNode node, int level) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          children: [
-            if (level > 0)
-              _buildConnectionIndicator(context, node),
-            _buildMemoryNode(context, node.memoryId),
-          ],
-        ),
-        Padding(
-          padding: EdgeInsets.only(left: 20),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: node.children
-                .map((child) => _buildTree(context, child, level + 1))
-                .toList(),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildConnectionIndicator(BuildContext context, MemoryConnectionNode node) {
+  Widget _buildLeafNode(
+      BuildContext context, MemoryConnectionNode node, int level) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+      padding: EdgeInsets.only(left: level * 40.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              if (level > 0) _buildConnectionIndicator(context, node),
+              Expanded(child: _buildMemoryNode(context, node.memoryId)),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildBranchNode(
+      BuildContext context, MemoryConnectionNode node, int level) {
+    return Padding(
+      padding: EdgeInsets.only(left: level * 40.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              if (level > 0) _buildConnectionIndicator(context, node),
+              Expanded(child: _buildMemoryNode(context, node.memoryId)),
+            ],
+          ),
+          ...node.children
+              .map((child) => _buildTree(context, child, level + 1)),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildConnectionIndicator(
+      BuildContext context, MemoryConnectionNode node) {
+    return Container(
+      width: 35,
       child: Column(
         children: [
-          SizedBox(height: 20),
-          if (node.explanation != null &&
-              node.explanation!.isNotEmpty)
+          if (node.explanation != null && node.explanation!.isNotEmpty)
             GestureDetector(
               onTap: () {
                 showDialog(
@@ -141,11 +199,8 @@ class MemoryChainsView extends StatelessWidget {
                   },
                 );
               },
-              child: Icon(Icons.bolt, size: 16, color: Colors.blue),
+              child: FlashingBoltIcon(),
             )
-          else
-            SizedBox(width: 16), // Placeholder for alignment
-          Icon(Icons.arrow_downward, size: 16),
         ],
       ),
     );
@@ -153,28 +208,49 @@ class MemoryChainsView extends StatelessWidget {
 
   Widget _buildMemoryNode(BuildContext context, String memoryId) {
     return FutureBuilder<ServerMemory?>(
-      future: Provider.of<MemoryProvider>(context, listen: false)
-          .getMemoryById(memoryId),
+      key: ValueKey(memoryId),
+      future: _getOrFetchMemory(context, memoryId),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return CircularProgressIndicator();
-        } else if (snapshot.hasError || !snapshot.hasData) {
-          return Text('Error loading memory');
+        } else if (snapshot.hasError) {
+          debugPrint('Error loading memory $memoryId: ${snapshot.error}');
+          return Text('Error: ${snapshot.error}');
+        } else if (!snapshot.hasData) {
+          debugPrint('No data for memory $memoryId');
+          return Text('Memory not found');
         }
 
         ServerMemory memory = snapshot.data!;
         return GestureDetector(
           onTap: () {
+            // TODO(yiqi): This memoryDetailProvider index mechanism is badly designed.
+            // Need to refactor with memory provider fetching mechanism together.
+            final memoryDetailProvider =
+                Provider.of<MemoryDetailProvider>(context, listen: false);
+            final memoryProvider =
+                Provider.of<MemoryProvider>(context, listen: false);
+            int idx = memoryProvider.memoriesWithDates.indexWhere((e) {
+                            if (e.runtimeType == ServerMemory) {
+                              return e.id == memory.id;
+                            }
+                            return false;
+            });
+            memoryDetailProvider.updateMemory(idx);
+
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) =>
-                    MemoryDetailPage(memory: memory, isPopup: true),
+                builder: (context) => MemoryDetailPage(
+                  key: ValueKey(memory.id),
+                  memory: memory,
+                  isPopup: true,
+                ),
               ),
             );
           },
           child: Container(
-            width: 300,
+            width: 250,
             padding: EdgeInsets.all(8),
             decoration: BoxDecoration(
               color: Colors.black,
@@ -191,7 +267,7 @@ class MemoryChainsView extends StatelessWidget {
                     fontWeight: FontWeight.bold,
                     fontSize: 16,
                   ),
-                  maxLines: 2,
+                  maxLines: 3,
                   overflow: TextOverflow.ellipsis,
                 ),
                 SizedBox(height: 4),
@@ -208,5 +284,21 @@ class MemoryChainsView extends StatelessWidget {
         );
       },
     );
+  }
+
+  Future<ServerMemory?> _getOrFetchMemory(
+      BuildContext context, String memoryId) async {
+    final memoryProvider = Provider.of<MemoryProvider>(context, listen: false);
+
+    // Check if the memory already exists in the provider
+    ServerMemory? existingMemory = memoryProvider.memories
+        .whereType<ServerMemory>() // This filters out DateTime objects
+        .firstWhereOrNull((m) => m.id == memoryId);
+    if (existingMemory != null) return existingMemory;
+
+    // If not found, fetch the memory
+    ServerMemory? fetchedMemory = await memoryProvider.getMemoryById(memoryId);
+    memoryProvider.addMemoryWithDate(fetchedMemory!);
+    return fetchedMemory;
   }
 }

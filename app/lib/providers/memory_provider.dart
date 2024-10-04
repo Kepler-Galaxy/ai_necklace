@@ -54,6 +54,7 @@ class MemoryProvider extends ChangeNotifier {
         memories.add(memory);
       }
     }
+    populateMemoriesWithDates();
     return memories;
   }
 
