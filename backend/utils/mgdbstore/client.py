@@ -28,6 +28,9 @@ class DocumentSnapshot:
         """返回文档的字典表示。"""
         return self._data
 
+    def get(self, key: str, default: Any = None):
+        return self._data.get(key, default)
+
 class DocumentReference:
     def __init__(self, db, collection_name: str, document_id: Optional[Any] = None):
         self.db = db
