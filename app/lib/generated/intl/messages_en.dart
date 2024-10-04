@@ -66,6 +66,8 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Limited Capabilities"),
         "Memories": MessageLookupByLibrary.simpleMessage("Memories"),
         "MemoryChains": MessageLookupByLibrary.simpleMessage("Memory Chains"),
+        "MemoryContents":
+            MessageLookupByLibrary.simpleMessage("Memory Contents"),
         "NoDeviceFound":
             MessageLookupByLibrary.simpleMessage("No device found"),
         "NoDiaryNote": MessageLookupByLibrary.simpleMessage(

@@ -15,19 +15,22 @@ class MemoryChainsView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      // crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           S.current.MemoryChains + ":",
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
         ),
         SizedBox(height: 10),
-        SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children:
-                forest.map((tree) => _buildTree(context, tree, 0)).toList(),
+        ListView.separated(
+          shrinkWrap: true,
+          physics: const ClampingScrollPhysics(),
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          itemCount: forest.length,
+          itemBuilder: (context, index) => _buildTree(context, forest[index], 0),
+          separatorBuilder: (context, index) => Container(
+            height: 1,
+            color: Colors.grey.shade800,
           ),
         ),
       ],

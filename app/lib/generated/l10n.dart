@@ -290,6 +290,16 @@ class S {
     );
   }
 
+  /// `Memory Contents`
+  String get MemoryContents {
+    return Intl.message(
+      'Memory Contents',
+      name: 'MemoryContents',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `No diary entry for this date, wear AudioFairy to automatically record your diary`
   String get NoDiaryNote {
     return Intl.message(

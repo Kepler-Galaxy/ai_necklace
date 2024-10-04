@@ -57,7 +57,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "KeyPoints": MessageLookupByLibrary.simpleMessage("重点"),
         "LimitedCapabilities": MessageLookupByLibrary.simpleMessage("录音限制"),
         "Memories": MessageLookupByLibrary.simpleMessage("追忆"),
-        "MemoryChains": MessageLookupByLibrary.simpleMessage("记忆链"),
+        "MemoryChains": MessageLookupByLibrary.simpleMessage("前缘旧梦"),
+        "MemoryContents": MessageLookupByLibrary.simpleMessage("今日小记"),
         "NoDeviceFound": MessageLookupByLibrary.simpleMessage("未连接任何音灵"),
         "NoDiaryNote":
             MessageLookupByLibrary.simpleMessage("此日期没有日记条目，佩戴音灵，即可自动记录你的日记"),
