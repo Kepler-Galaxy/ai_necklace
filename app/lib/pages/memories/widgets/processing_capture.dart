@@ -41,7 +41,7 @@ class _MemoryCaptureWidgetState extends State<MemoryCaptureWidget> {
           provider.recordingState == RecordingState.record ||
           (provider.memoryCreating && deviceProvider.connectedDevice != null);
 
-      return (showPhoneMic || isConnected)
+      return (showPhoneMic || isConnected || deviceProvider.isConnecting)
           ? GestureDetector(
               onTap: () async {
                 if (provider.segments.isEmpty && provider.photos.isEmpty) return;
@@ -118,8 +118,14 @@ class _MemoryCaptureWidgetState extends State<MemoryCaptureWidget> {
     var captureProvider = context.read<CaptureProvider>();
     var connectivityProvider = context.read<ConnectivityProvider>();
     bool isConnected = false;
-    if (!connectivityProvider.isConnected) {
+    if (deviceProvider.connectedDevice == null) {
+      stateText = "No device paired";
+      isConnected = false;
+    } else if (!connectivityProvider.isConnected) {
       stateText = "No connection";
+    } else if (deviceProvider.isConnecting) {
+      stateText = "Connecting...";
+      isConnected = false;
     } else if (captureProvider.memoryCreating) {
       stateText = "Processing";
       isConnected = deviceProvider.connectedDevice != null;
@@ -171,23 +177,24 @@ class _MemoryCaptureWidgetState extends State<MemoryCaptureWidget> {
                 ),
               ],
             ),
-          if (isConnected && !isUsingPhoneMic)
-            Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const SizedBox(
-                  width: 16,
-                  height: 16,
-                  child: RecordingStatusIndicator(),
-                ),
-                const SizedBox(width: 8),
-                Text(
-                  stateText,
-                  style: TextStyle(color: Colors.grey.shade400, fontSize: 14),
-                  maxLines: 1,
-                ),
-              ],
-            ),
+          // if (isConnected && !isUsingPhoneMic)
+          // if(deviceProvider.isConnecting || connectivityProvider.isConnected)
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const SizedBox(
+                width: 16,
+                height: 16,
+                child: RecordingStatusIndicator(),
+              ),
+              const SizedBox(width: 8),
+              Text(
+                stateText,
+                style: TextStyle(color: Colors.grey.shade400, fontSize: 14),
+                maxLines: 1,
+              ),
+            ],
+          ),
         ],
       ),
     );
