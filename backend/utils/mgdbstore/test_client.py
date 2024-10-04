@@ -20,21 +20,21 @@ def mongo_test_db():
 
 
 # 测试单个文档插入和获取
-# def test_document_reference_set_and_get(mongo_test_db):
-#     doc_ref = db.collection("users").document("test_user_1")
-#     # 插入文档
-#     data = {
-#         "name": "John Doe",
-#         "email": "john@example.com",
-#         "age": 30
-#     }
-#     doc_ref.set(data)
-#
-#     # 获取文档
-#     result = doc_ref.get().to_dict()
-#     assert result['name'] == "John Doe"
-#     assert result['email'] == "john@example.com"
-#     assert result['age'] == 30
+def test_document_reference_set_and_get(mongo_test_db):
+    doc_ref = db.collection("users").document("test_user_1")
+    # 插入文档
+    data = {
+        "name": "John Doe",
+        "email": "john@example.com",
+        "age": 30
+    }
+    doc_ref.set(data)
+
+    # 获取文档
+    result = doc_ref.get().to_dict()
+    assert result['name'] == "John Doe"
+    assert result['email'] == "john@example.com"
+    assert result['age'] == 30
 
 
 # 测试文档删除
