@@ -140,63 +140,54 @@ class _MemoryCaptureWidgetState extends State<MemoryCaptureWidget> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          // mic
-          // TODO: improve phone recording UI
-          deviceProvider.connectedDevice == null && !deviceProvider.isConnecting
-              ? Center(
-                  child: getPhoneMicRecordingButton(
-                    context,
-                    () => _toggleRecording(context, captureProvider),
-                    captureProvider.recordingState,
+          if (deviceProvider.connectedDevice == null && !deviceProvider.isConnecting)
+            getPhoneMicRecordingButton(
+                context,
+                () => _toggleRecording(context, captureProvider),
+                captureProvider.recordingState,
+            )
+          else if (isConnected && !isUsingPhoneMic)
+            Row(
+              children: [
+                const Text(
+                  '🎙️',
+                  style: TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.w600),
+                ),
+                const SizedBox(width: 12),
+                Container(
+                  decoration: BoxDecoration(
+                    color: Colors.grey.shade800,
+                    borderRadius: BorderRadius.circular(16),
                   ),
-                )
-              : const SizedBox.shrink(),
-          isConnected && !isUsingPhoneMic
-              ? Row(
-                  children: [
-                    const Text(
-                      '🎙️',
-                      style: TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.w600),
-                    ),
-                    const SizedBox(width: 12),
-                    Container(
-                      decoration: BoxDecoration(
-                        color: Colors.grey.shade800,
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                      child: Text(
-                        captureProvider.segments.isNotEmpty || captureProvider.photos.isNotEmpty
-                            ? 'In progress...'
-                            : 'Say something...',
-                        style: Theme.of(context).textTheme.bodyMedium!.copyWith(color: Colors.white),
-                        maxLines: 1,
-                      ),
-                    ),
-                  ],
-                )
-              : const SizedBox.shrink(),
-          isConnected && !isUsingPhoneMic
-              ? Expanded(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      const SizedBox(
-                        width: 16,
-                        height: 16,
-                        child: RecordingStatusIndicator(),
-                      ),
-                      const SizedBox(width: 8),
-                      Text(
-                        stateText,
-                        style: TextStyle(color: Colors.grey.shade400, fontSize: 14),
-                        maxLines: 1,
-                        textAlign: TextAlign.end,
-                      ),
-                    ],
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  child: Text(
+                    captureProvider.segments.isNotEmpty || captureProvider.photos.isNotEmpty
+                        ? 'In progress...'
+                        : 'Say something...',
+                    style: Theme.of(context).textTheme.bodyMedium!.copyWith(color: Colors.white),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
-                )
-              : const SizedBox.shrink(),
+                ),
+              ],
+            ),
+          if (isConnected && !isUsingPhoneMic)
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const SizedBox(
+                  width: 16,
+                  height: 16,
+                  child: RecordingStatusIndicator(),
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  stateText,
+                  style: TextStyle(color: Colors.grey.shade400, fontSize: 14),
+                  maxLines: 1,
+                ),
+              ],
+            ),
         ],
       ),
     );

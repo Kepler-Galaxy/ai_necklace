@@ -13,7 +13,7 @@ abstract class Env {
 
   static String? get mixpanelProjectToken => _instance.mixpanelProjectToken;
 
-  static String? get apiBaseUrl => _instance.apiBaseUrl ?? 'https://equal-magnetic-pheasant.ngrok-free.app/';
+  static String? get apiBaseUrl => _instance.apiBaseUrl;
   // static String? get apiBaseUrl => 'https://equal-magnetic-pheasant.ngrok-free.app/';
   // static String? get apiBaseUrl => 'https://delicate-elephant-close.ngrok-free.app/';
 
@@ -28,7 +28,7 @@ abstract class Env {
   static String? get intercomIOSApiKey => _instance.intercomIOSApiKey;
 
   static String? get intercomAndroidApiKey => _instance.intercomAndroidApiKey;
-  
+
   static String? get authingUserPoolId => _instance.authingUserPoolId;
 
   static String? get authingAppId => _instance.authingAppId;
@@ -54,7 +54,7 @@ abstract class EnvFields {
   String? get intercomIOSApiKey;
 
   String? get intercomAndroidApiKey;
-  
+
   String? get authingUserPoolId;
 
   String? get authingAppId;

@@ -91,7 +91,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "StopRecording": MessageLookupByLibrary.simpleMessage("停止录制"),
         "Summary": MessageLookupByLibrary.simpleMessage("概览"),
         "Transcript": MessageLookupByLibrary.simpleMessage("实录"),
-        "TryWithPhoneMic": MessageLookupByLibrary.simpleMessage("使用手机麦克风创建记忆"),
+        "TryWithPhoneMic": MessageLookupByLibrary.simpleMessage("手机收音"),
         "VerificationCode": MessageLookupByLibrary.simpleMessage("验证码"),
         "VerificationCodeSent": MessageLookupByLibrary.simpleMessage("验证码已发送"),
         "WhyDontConversation":
