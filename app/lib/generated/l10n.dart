@@ -300,6 +300,36 @@ class S {
     );
   }
 
+  /// `No connected memory for this date, wear AudioFairy or import articles to create more memories`
+  String get DiaryNoConnectedMemory {
+    return Intl.message(
+      'No connected memory for this date, wear AudioFairy or import articles to create more memories',
+      name: 'DiaryNoConnectedMemory',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Connected Memories`
+  String get DiaryMemoryConnectionText {
+    return Intl.message(
+      'Connected Memories',
+      name: 'DiaryMemoryConnectionText',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Memento`
+  String get DiarySeparateMemoryText {
+    return Intl.message(
+      'Memento',
+      name: 'DiarySeparateMemoryText',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `No diary entry for this date, wear AudioFairy to automatically record your diary`
   String get NoDiaryNote {
     return Intl.message(

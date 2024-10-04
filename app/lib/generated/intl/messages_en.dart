@@ -47,6 +47,12 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage(
                 "Recording with your phone microphone has a few limitations, including but not limited to: speaker profiles, background reliability."),
         "Diary": MessageLookupByLibrary.simpleMessage("Diary"),
+        "DiaryMemoryConnectionText":
+            MessageLookupByLibrary.simpleMessage("Connected Memories"),
+        "DiaryNoConnectedMemory": MessageLookupByLibrary.simpleMessage(
+            "No connected memory for this date, wear AudioFairy or import articles to create more memories"),
+        "DiarySeparateMemoryText":
+            MessageLookupByLibrary.simpleMessage("Memento"),
         "EnableBackgroundLocationAccess": MessageLookupByLibrary.simpleMessage(
             "Enable background location access for Omi\'s full experience."),
         "EnableBackgroundProcess": MessageLookupByLibrary.simpleMessage(

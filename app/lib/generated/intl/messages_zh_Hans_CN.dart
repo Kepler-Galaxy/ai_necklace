@@ -41,6 +41,11 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage(
                 "使用手机麦克风录音存在一些限制，包括但不限于音色特性和背景噪音的干扰"),
         "Diary": MessageLookupByLibrary.simpleMessage("札记"),
+        "DiaryMemoryConnectionText":
+            MessageLookupByLibrary.simpleMessage("已连接的因缘"),
+        "DiaryNoConnectedMemory": MessageLookupByLibrary.simpleMessage(
+            "此日期没有过往因缘，佩戴音灵或者导入文章生成更多记忆碎片，即可在以后关联更多因缘"),
+        "DiarySeparateMemoryText": MessageLookupByLibrary.simpleMessage("记忆碎片"),
         "EnableBackgroundLocationAccess":
             MessageLookupByLibrary.simpleMessage("开启后台位置访问，以保障记忆生成附带地点信息"),
         "EnableBackgroundProcess":
