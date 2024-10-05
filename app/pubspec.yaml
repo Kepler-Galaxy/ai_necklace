@@ -146,7 +146,7 @@ flutter_launcher_icons:
   remove_alpha_ios: true
   web:
     generate: true
-  image_path: 'assets/images/app_launcher_icon.png'
+  image_path: 'assets/images/app_icon.png'
 
 flutter:
   uses-material-design: true
