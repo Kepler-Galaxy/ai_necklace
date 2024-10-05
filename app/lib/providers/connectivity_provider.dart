@@ -6,7 +6,7 @@ import 'package:friend_private/generated/l10n.dart';
 
 class ConnectivityProvider extends ChangeNotifier {
   bool _isConnected = true;
-  bool _previousConnection = true;
+  bool _previousConnection = false;
   final InternetConnection _internetConnection = InternetConnection();
 
   bool get isConnected => _isConnected;

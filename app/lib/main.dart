@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:authing_sdk_v3/authing.dart';
+import 'package:authing_sdk_v3/client.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -149,10 +150,10 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   @override
   void initState() {
+    super.initState();
     NotificationUtil.initializeNotificationsEventListeners();
     NotificationUtil.initializeIsolateReceivePort();
     WidgetsBinding.instance.addObserver(this);
-    super.initState();
   }
 
   void _deinit() {
@@ -292,24 +293,26 @@ class DeciderWidget extends StatefulWidget {
 class _DeciderWidgetState extends State<DeciderWidget> {
   @override
   void initState() {
+    super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       if (context.read<ConnectivityProvider>().isConnected) {
         NotificationService.instance.saveNotificationToken();
       }
-
       if (context.read<AuthenticationProvider>().user != null) {
         context.read<HomeProvider>().setupHasSpeakerProfile();
         await Intercom.instance.loginIdentifiedUser(
-          userId: FirebaseAuth.instance.currentUser!.uid,
+          userId: AuthClient.currentUser?.id,
         );
+
         context.read<MessageProvider>().setMessagesFromCache();
         context.read<PluginProvider>().setPluginsFromCache();
         context.read<MessageProvider>().refreshMessages();
       } else {
+        
         await Intercom.instance.loginUnidentifiedUser();
       }
     });
-    super.initState();
+    
   }
 
   @override
