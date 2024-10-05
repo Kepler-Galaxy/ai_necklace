@@ -97,6 +97,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "SignIn": MessageLookupByLibrary.simpleMessage("登录/注册"),
         "SignOut": MessageLookupByLibrary.simpleMessage("退出登入"),
         "Skip": MessageLookupByLibrary.simpleMessage("跳过"),
+        "SpeechLanguage": MessageLookupByLibrary.simpleMessage("转录语言"),
         "StopRecording": MessageLookupByLibrary.simpleMessage("停止录制"),
         "Summary": MessageLookupByLibrary.simpleMessage("概览"),
         "Transcript": MessageLookupByLibrary.simpleMessage("实录"),

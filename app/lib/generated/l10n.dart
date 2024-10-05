@@ -110,6 +110,16 @@ class S {
     );
   }
 
+  /// `Speech Language`
+  String get SpeechLanguage {
+    return Intl.message(
+      'Speech Language',
+      name: 'SpeechLanguage',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Creating Memory`
   String get CreatingMemory {
     return Intl.message(

@@ -113,6 +113,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "SignIn": MessageLookupByLibrary.simpleMessage("Sign In / Sign Up"),
         "SignOut": MessageLookupByLibrary.simpleMessage("Sign Out"),
         "Skip": MessageLookupByLibrary.simpleMessage("Skip"),
+        "SpeechLanguage":
+            MessageLookupByLibrary.simpleMessage("Speech Language"),
         "StopRecording": MessageLookupByLibrary.simpleMessage("Stop Recording"),
         "Summary": MessageLookupByLibrary.simpleMessage("Summary"),
         "Transcript": MessageLookupByLibrary.simpleMessage("Transcript"),

@@ -2,20 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:friend_private/providers/auth_provider.dart';
 import 'package:friend_private/backend/preferences.dart';
 import 'package:friend_private/main.dart';
-import 'package:friend_private/pages/plugins/page.dart';
-import 'package:friend_private/pages/settings/about.dart';
-import 'package:friend_private/pages/settings/calendar.dart';
-import 'package:friend_private/pages/settings/developer.dart';
 import 'package:friend_private/pages/settings/profile.dart';
 import 'package:friend_private/pages/settings/widgets.dart';
-import 'package:friend_private/utils/analytics/mixpanel.dart';
 import 'package:friend_private/utils/other/temp.dart';
 import 'package:friend_private/widgets/dialog.dart';
-import 'package:intercom_flutter/intercom_flutter.dart';
 import 'package:package_info_plus/package_info_plus.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:friend_private/generated/l10n.dart';
-import 'device_settings.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
@@ -25,7 +17,6 @@ class SettingsPage extends StatefulWidget {
 }
 
 class _SettingsPageState extends State<SettingsPage> {
-  late String _selectedLanguage;
   late bool optInAnalytics;
   late bool optInEmotionalFeedback;
   late bool devModeEnabled;
@@ -34,7 +25,6 @@ class _SettingsPageState extends State<SettingsPage> {
 
   @override
   void initState() {
-    _selectedLanguage = SharedPreferencesUtil().recordingsLanguage;
     optInAnalytics = SharedPreferencesUtil().optInAnalytics;
     optInEmotionalFeedback = SharedPreferencesUtil().optInEmotionalFeedback;
     devModeEnabled = SharedPreferencesUtil().devModeEnabled;
@@ -72,83 +62,11 @@ class _SettingsPageState extends State<SettingsPage> {
             child: Column(
               children: [
                 const SizedBox(height: 32.0),
-                ...getRecordingSettings((String? newValue) {
-                  if (newValue == null) return;
-                  if (newValue == _selectedLanguage) return;
-                  if (newValue != 'en') {
-                    showDialog(
-                      context: context,
-                      barrierDismissible: false,
-                      builder: (c) => getDialog(
-                        context,
-                        () => Navigator.of(context).pop(),
-                        () => {},
-                        'Language Limitations',
-                        'Speech profiles are only available for English language. We are working on adding support for other languages.',
-                        singleButton: true,
-                      ),
-                    );
-                  }
-                  setState(() => _selectedLanguage = newValue);
-                  SharedPreferencesUtil().recordingsLanguage = _selectedLanguage;
-                  MixpanelManager().recordingLanguageChanged(_selectedLanguage);
-                }, _selectedLanguage),
-                getItemAddOn2(
-                  'Need Help? Chat with us',
-                  () async {
-                    await Intercom.instance.displayMessenger();
-                  },
-                  icon: Icons.chat,
-                ),
-                const SizedBox(height: 20),
                 getItemAddOn2(
                   'Profile',
                   () => routeToPage(context, const ProfilePage()),
                   icon: Icons.person,
                 ),
-                const SizedBox(height: 20),
-                getItemAddOn2(
-                  'Device Settings',
-                  () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (context) => DeviceSettings(),
-                      ),
-                    );
-                  },
-                  icon: Icons.bluetooth_connected_sharp,
-                ),
-                const SizedBox(height: 8),
-                getItemAddOn2(
-                  'Guides & Tutorials',
-                  () async {
-                    await Intercom.instance.displayHelpCenter();
-                  },
-                  icon: Icons.help_outline_outlined,
-                ),
-                const SizedBox(height: 20),
-                getItemAddOn2(
-                  'Plugins',
-                  () => routeToPage(context, const PluginsPage()),
-                  icon: Icons.integration_instructions,
-                ),
-                const SizedBox(height: 8),
-                getItemAddOn2(
-                  'Calendar Integration',
-                  () => routeToPage(context, const CalendarPage()),
-                  icon: Icons.calendar_month,
-                ),
-                const SizedBox(height: 20),
-                getItemAddOn2(
-                  'About Omi',
-                  () => routeToPage(context, const AboutOmiPage()),
-                  icon: Icons.workspace_premium_sharp,
-                ),
-                const SizedBox(height: 8),
-                getItemAddOn2('Developer Mode', () async {
-                  await routeToPage(context, const DeveloperSettingsPage());
-                  setState(() {});
-                }, icon: Icons.code),
                 const SizedBox(height: 32),
                 getItemAddOn2(S.current.SignOut, () async {
                   showDialog(

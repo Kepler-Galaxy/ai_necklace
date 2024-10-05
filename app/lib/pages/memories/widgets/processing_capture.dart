@@ -14,7 +14,7 @@ import 'package:friend_private/widgets/dialog.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:friend_private/generated/l10n.dart';
-
+import 'package:friend_private/pages/memories/widgets/language_setting.dart';
 class MemoryCaptureWidget extends StatefulWidget {
   final ServerProcessingMemory? memory;
 
@@ -55,7 +55,7 @@ class _MemoryCaptureWidgetState extends State<MemoryCaptureWidget> {
                   borderRadius: BorderRadius.circular(16.0),
                 ),
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -272,5 +272,31 @@ getPhoneMicRecordingButton(BuildContext context, toggleRecording, RecordingState
 }
 
 Widget getMemoryCaptureWidget({ServerProcessingMemory? memory}) {
-  return MemoryCaptureWidget(memory: memory);
+  return Consumer<CaptureProvider>(
+    builder: (context, provider, child) {
+      return Column(
+        children: [
+          Container(
+            margin: const EdgeInsets.symmetric(horizontal: 16),
+            width: double.maxFinite,
+            decoration: BoxDecoration(
+              color: Colors.grey.shade900,
+              borderRadius: BorderRadius.circular(16.0),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  LanguageSettingWidget(),
+                  MemoryCaptureWidget(memory: memory),
+                ],
+              ),
+            ),
+          ),
+        ],
+      );
+    },
+  );
 }

@@ -11,6 +11,9 @@ import 'package:friend_private/generated/l10n.dart';
 import 'package:friend_private/backend/preferences.dart';
 import 'widgets/empty_memories.dart';
 import 'widgets/memory_list_item.dart';
+import 'package:friend_private/utils/analytics/mixpanel.dart';
+import 'package:friend_private/pages/settings/widgets.dart';
+import 'package:friend_private/widgets/dialog.dart';
 
 class MemoriesPage extends StatefulWidget {
   const MemoriesPage({super.key});
@@ -21,6 +24,7 @@ class MemoriesPage extends StatefulWidget {
 
 class _MemoriesPageState extends State<MemoriesPage>
     with AutomaticKeepAliveClientMixin {
+  late String _selectedLanguage;
   TextEditingController textController = TextEditingController();
 
   @override
@@ -28,6 +32,8 @@ class _MemoriesPageState extends State<MemoriesPage>
 
   @override
   void initState() {
+    _selectedLanguage = SharedPreferencesUtil().recordingsLanguage;
+
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       if (Provider.of<MemoryProvider>(context, listen: false)
           .memories
@@ -53,7 +59,7 @@ class _MemoriesPageState extends State<MemoriesPage>
         child: CustomScrollView(
           slivers: [
             const SliverToBoxAdapter(child: SizedBox(height: 12)),
-            const SliverToBoxAdapter(child: SpeechProfileCardWidget()),
+            // const SliverToBoxAdapter(child: SpeechProfileCardWidget()),
             SliverToBoxAdapter(child: getMemoryCaptureWidget()),
             const SliverToBoxAdapter(child: SizedBox(height: 12)),
             SliverToBoxAdapter(
