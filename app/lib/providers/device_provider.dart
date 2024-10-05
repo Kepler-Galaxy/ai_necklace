@@ -199,12 +199,12 @@ class DeviceProvider extends ChangeNotifier implements IDeviceServiceSubsciption
     captureProvider?.setAudioBytesConnected(false);
     print('after resetState inside initiateConnectionListener');
 
-    InstabugLog.logInfo('Friend Device Disconnected');
+    InstabugLog.logInfo('Foxxy Device Disconnected');
     _disconnectNotificationTimer?.cancel();
     _disconnectNotificationTimer = Timer(const Duration(seconds: 30), () {
       NotificationService.instance.createNotification(
-        title: 'Friend Device Disconnected',
-        body: 'Please reconnect to continue using your Friend.',
+        title: 'Foxxy Device Disconnected',
+        body: 'Please reconnect to continue using your Foxxy.',
       );
     });
     MixpanelManager().deviceDisconnected();

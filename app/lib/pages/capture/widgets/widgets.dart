@@ -38,8 +38,8 @@ getConnectionStateWidgets(
       SharedPreferencesUtil().btDeviceStruct.id == ''
           ? _getNoFriendConnectedYet(context)
           : const ScanningUI(
-              string1: 'Looking for Friend wearable',
-              string2: 'Locating your Friend device. Keep it near your phone for pairing',
+              string1: 'Looking for Foxxy wearable',
+              string2: 'Locating your Foxxy device. Keep it near your phone for pairing',
             ),
     ];
   }
@@ -250,7 +250,7 @@ class SpeechProfileCardWidget extends StatelessWidget {
                                 Icon(Icons.multitrack_audio),
                                 SizedBox(width: 16),
                                 Text(
-                                  'Teach Omi your voice',
+                                  'Teach Foxxy your voice',
                                   style: TextStyle(color: Colors.white, fontSize: 16),
                                 ),
                               ],
