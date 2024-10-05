@@ -16,7 +16,7 @@ class NotifyOnKill {
       await platform.invokeMethod(
         'setNotificationOnKillService',
         {
-          'title': "Friend Device Disconnected",
+          'title': "Foxxy Device Disconnected",
           'description': "Please keep your app opened to continue using your Friend.",
         },
       );

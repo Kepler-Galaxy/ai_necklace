@@ -9,6 +9,7 @@ import 'package:table_calendar/table_calendar.dart';
 import 'package:friend_private/pages/diary/calandar_widget.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:friend_private/generated/l10n.dart';
+import 'package:friend_private/pages/diary/diary_tab_widget.dart';
 
 class DiaryPage extends StatefulWidget {
   const DiaryPage({Key? key}) : super(key: key);
@@ -139,14 +140,9 @@ class _DiaryPageState extends State<DiaryPage> {
                     strokeWidth: 2,
                     color: Colors.white,
                   ))
-                : SingleChildScrollView(
-                    child: Column(
-                      children: [
-                        MemoryChainsView(forest: _memoryChainForest),
-                        _buildDiaryContent(),
-                        SizedBox(height: 16),
-                      ],
-                    ),
+                : DiaryTabView(
+                    forest: _memoryChainForest,
+                    diaryContent: _buildDiaryContent(),
                   ),
           ),
         ],
@@ -184,7 +180,9 @@ class _DiaryPageState extends State<DiaryPage> {
           //     base64Decode(diary.content.footprintJpeg!),
           //   ),
           // SizedBox(height: 16),
-          Text(utf8.decode(diary.content.content.codeUnits)),
+          Text(utf8.decode(diary.content.content.codeUnits),
+            style: TextStyle(fontSize: 16),
+          ),
         ],
       ),
     );

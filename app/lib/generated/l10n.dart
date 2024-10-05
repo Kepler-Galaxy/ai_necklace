@@ -60,6 +60,26 @@ class S {
     );
   }
 
+  /// `Kepler Star`
+  String get AppName {
+    return Intl.message(
+      'Kepler Star',
+      name: 'AppName',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Your personalized AI assistant that precisely reconstructs your work and life, and helps you get things done.`
+  String get OneWordIntro {
+    return Intl.message(
+      'Your personalized AI assistant that precisely reconstructs your work and life, and helps you get things done.',
+      name: 'OneWordIntro',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Memories`
   String get Memories {
     return Intl.message(
@@ -90,6 +110,16 @@ class S {
     );
   }
 
+  /// `Speech Language`
+  String get SpeechLanguage {
+    return Intl.message(
+      'Speech Language',
+      name: 'SpeechLanguage',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Creating Memory`
   String get CreatingMemory {
     return Intl.message(
@@ -105,6 +135,26 @@ class S {
     return Intl.message(
       'Import Article',
       name: 'ImportArticle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Show Discarded`
+  String get ShowDiscarded {
+    return Intl.message(
+      'Show Discarded',
+      name: 'ShowDiscarded',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Hide Discarded`
+  String get HideDiscarded {
+    return Intl.message(
+      'Hide Discarded',
+      name: 'HideDiscarded',
       desc: '',
       args: [],
     );
@@ -250,11 +300,71 @@ class S {
     );
   }
 
+  /// `Memory Contents`
+  String get MemoryContents {
+    return Intl.message(
+      'Memory Contents',
+      name: 'MemoryContents',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No connected memory for this date, wear AudioFairy or import articles to create more memories`
+  String get DiaryNoConnectedMemory {
+    return Intl.message(
+      'No connected memory for this date, wear AudioFairy or import articles to create more memories',
+      name: 'DiaryNoConnectedMemory',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Connected Memories`
+  String get DiaryMemoryConnectionText {
+    return Intl.message(
+      'Connected Memories',
+      name: 'DiaryMemoryConnectionText',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Memento`
+  String get DiarySeparateMemoryText {
+    return Intl.message(
+      'Memento',
+      name: 'DiarySeparateMemoryText',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `No diary entry for this date, wear AudioFairy to automatically record your diary`
   String get NoDiaryNote {
     return Intl.message(
       'No diary entry for this date, wear AudioFairy to automatically record your diary',
       name: 'NoDiaryNote',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Explanation`
+  String get ExplanationText {
+    return Intl.message(
+      'Explanation',
+      name: 'ExplanationText',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Close`
+  String get ExplanationClose {
+    return Intl.message(
+      'Close',
+      name: 'ExplanationClose',
       desc: '',
       args: [],
     );
@@ -545,6 +655,16 @@ class S {
     return Intl.message(
       'How should AudioFairy call you?',
       name: 'HowShouldAudioFairyCallYou',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Allow AudioFairy to run in the background to improve stability`
+  String get EnableBackgroundProcess {
+    return Intl.message(
+      'Allow AudioFairy to run in the background to improve stability',
+      name: 'EnableBackgroundProcess',
       desc: '',
       args: [],
     );

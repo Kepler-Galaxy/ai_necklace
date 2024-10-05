@@ -18,11 +18,9 @@ import 'package:friend_private/providers/speech_profile_provider.dart';
 import 'package:friend_private/services/services.dart';
 import 'package:friend_private/utils/analytics/mixpanel.dart';
 import 'package:friend_private/utils/other/temp.dart';
-import 'package:friend_private/widgets/device_widget.dart';
 import 'package:provider/provider.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:friend_private/generated/l10n.dart';
-
+import 'package:friend_private/widgets/auth_image_widget.dart';
 class OnboardingWrapper extends StatefulWidget {
   const OnboardingWrapper({super.key});
 
@@ -171,12 +169,12 @@ class _OnboardingWrapperState extends State<OnboardingWrapper> with TickerProvid
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
                   children: [
-                    DeviceAnimationWidget(animatedBackground: _controller!.index != -1),
+                    AuthImageWidget(),
                     _controller!.index == 6 || _controller!.index == 7
                         ? const SizedBox()
                         : Center(
                             child: Text(
-                              'Kepler Star',
+                              S.current.AppName,
                               style: TextStyle(
                                   color: Colors.grey.shade200,
                                   fontSize: _controller!.index == _controller!.length - 1 ? 28 : 40,
@@ -191,9 +189,7 @@ class _OnboardingWrapperState extends State<OnboardingWrapper> with TickerProvid
                         : Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 16),
                             child: Text(
-                              _controller!.index == _controller!.length - 1
-                                  ? 'Your personal growth journey with AI that listens to your every word.'
-                                  : 'Your personal growth journey with AI that listens to your every word.',
+                              S.current.OneWordIntro,
                               style: TextStyle(color: Colors.grey.shade300, fontSize: 16),
                               textAlign: TextAlign.center,
                             ),

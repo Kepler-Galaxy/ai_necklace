@@ -41,7 +41,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       ? 'About YOU'
                       : 'About ${SharedPreferencesUtil().givenName.toUpperCase()}',
                   style: const TextStyle(color: Colors.white)),
-              subtitle: const Text('What Omi has learned about you 👀'),
+              subtitle: const Text('What Foxxy has learned about you 👀'),
               trailing: const Icon(Icons.self_improvement, size: 20),
               onTap: () {
                 routeToPage(context, const FactsPage());
@@ -51,7 +51,7 @@ class _ProfilePageState extends State<ProfilePage> {
             ListTile(
               contentPadding: const EdgeInsets.fromLTRB(4, 0, 24, 0),
               title: const Text('Speech Profile', style: TextStyle(color: Colors.white)),
-              subtitle: const Text('Teach Omi your voice'),
+              subtitle: const Text('Teach Foxxy your voice'),
               trailing: const Icon(Icons.multitrack_audio, size: 20),
               onTap: () {
                 routeToPage(context, const SpeechProfilePage());

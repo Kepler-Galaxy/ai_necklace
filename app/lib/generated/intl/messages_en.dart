@@ -22,6 +22,7 @@ class MessageLookup extends MessageLookupByLibrary {
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
+        "AppName": MessageLookupByLibrary.simpleMessage("Kepler Star"),
         "AreYouSureSignOut": MessageLookupByLibrary.simpleMessage(
             "Are you sure you want to sign out?"),
         "ArticleLinkWeChatArticleorOthers":
@@ -46,14 +47,25 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage(
                 "Recording with your phone microphone has a few limitations, including but not limited to: speaker profiles, background reliability."),
         "Diary": MessageLookupByLibrary.simpleMessage("Diary"),
+        "DiaryMemoryConnectionText":
+            MessageLookupByLibrary.simpleMessage("Connected Memories"),
+        "DiaryNoConnectedMemory": MessageLookupByLibrary.simpleMessage(
+            "No connected memory for this date, wear AudioFairy or import articles to create more memories"),
+        "DiarySeparateMemoryText":
+            MessageLookupByLibrary.simpleMessage("Memento"),
         "EnableBackgroundLocationAccess": MessageLookupByLibrary.simpleMessage(
             "Enable background location access for Omi\'s full experience."),
+        "EnableBackgroundProcess": MessageLookupByLibrary.simpleMessage(
+            "Allow AudioFairy to run in the background to improve stability"),
         "EnableNotificationAccess": MessageLookupByLibrary.simpleMessage(
             "Enable notification access for Omi\'s full experience."),
         "EnablePlugins": MessageLookupByLibrary.simpleMessage("Enable Plugins"),
+        "ExplanationClose": MessageLookupByLibrary.simpleMessage("Close"),
+        "ExplanationText": MessageLookupByLibrary.simpleMessage("Explanation"),
         "ExternalApps": MessageLookupByLibrary.simpleMessage("External Apps"),
         "FailedSignIn":
             MessageLookupByLibrary.simpleMessage("Failed to sign in"),
+        "HideDiscarded": MessageLookupByLibrary.simpleMessage("Hide Discarded"),
         "HowShouldAudioFairyCallYou": MessageLookupByLibrary.simpleMessage(
             "How should AudioFairy call you?"),
         "ImportArticle": MessageLookupByLibrary.simpleMessage("Import Article"),
@@ -62,6 +74,8 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Limited Capabilities"),
         "Memories": MessageLookupByLibrary.simpleMessage("Memories"),
         "MemoryChains": MessageLookupByLibrary.simpleMessage("Memory Chains"),
+        "MemoryContents":
+            MessageLookupByLibrary.simpleMessage("Memory Contents"),
         "NoDeviceFound":
             MessageLookupByLibrary.simpleMessage("No device found"),
         "NoDiaryNote": MessageLookupByLibrary.simpleMessage(
@@ -73,6 +87,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "Ok": MessageLookupByLibrary.simpleMessage("OK"),
         "OkIUnderstand":
             MessageLookupByLibrary.simpleMessage("Ok, I understand"),
+        "OneWordIntro": MessageLookupByLibrary.simpleMessage(
+            "Your personalized AI assistant that precisely reconstructs your work and life, and helps you get things done."),
         "Overview": MessageLookupByLibrary.simpleMessage("Overview"),
         "PasteArticleLinkHere":
             MessageLookupByLibrary.simpleMessage("Paste article link here"),
@@ -93,9 +109,12 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Select Another Day"),
         "SendVerificationCode":
             MessageLookupByLibrary.simpleMessage("Send Verification Code"),
+        "ShowDiscarded": MessageLookupByLibrary.simpleMessage("Show Discarded"),
         "SignIn": MessageLookupByLibrary.simpleMessage("Sign In / Sign Up"),
         "SignOut": MessageLookupByLibrary.simpleMessage("Sign Out"),
         "Skip": MessageLookupByLibrary.simpleMessage("Skip"),
+        "SpeechLanguage":
+            MessageLookupByLibrary.simpleMessage("Speech Language"),
         "StopRecording": MessageLookupByLibrary.simpleMessage("Stop Recording"),
         "Summary": MessageLookupByLibrary.simpleMessage("Summary"),
         "Transcript": MessageLookupByLibrary.simpleMessage("Transcript"),

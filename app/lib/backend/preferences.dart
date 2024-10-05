@@ -79,7 +79,7 @@ class SharedPreferencesUtil {
 
   set webhookOnTranscriptReceived(String value) => saveString('transcriptServerUrl', value);
 
-  String get recordingsLanguage => getString('recordingsLanguage') ?? 'en';
+  String get recordingsLanguage => getString('recordingsLanguage') ?? 'zh';
 
   set recordingsLanguage(String value) => saveString('recordingsLanguage', value);
 

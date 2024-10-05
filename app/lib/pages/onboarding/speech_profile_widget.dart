@@ -155,7 +155,7 @@ class _SpeechProfileWidgetState extends State<SpeechProfileWidget> with TickerPr
                     padding: const EdgeInsets.fromLTRB(40, 20, 40, 20),
                     child: !provider.startedRecording
                         ? const Text(
-                            'Now, Omi needs to learn your voice to be able to recognise you.',
+                            'Now, Foxxy needs to learn your voice to be able to recognise you.',
                             textAlign: TextAlign.center,
                             style: TextStyle(
                               color: Colors.white,

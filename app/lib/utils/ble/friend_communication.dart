@@ -128,7 +128,7 @@ class FriendDevice extends DeviceBase {
       return null;
     }
 
-    debugPrint('Subscribed to audioBytes stream from Friend Device');
+    debugPrint('Subscribed to audioBytes stream from Foxxy Device');
     var listener = audioDataStreamCharacteristic.lastValueStream.listen((value) {
       if (value.isNotEmpty) onAudioBytesReceived(value);
     });
@@ -256,7 +256,7 @@ class FriendDevice extends DeviceBase {
       return null;
     }
 
-    debugPrint('Subscribed to StorageBytes stream from Friend Device');
+    debugPrint('Subscribed to StorageBytes stream from Foxxy Device');
     var listener = storageDataStreamCharacteristic.lastValueStream.listen((value) {
       if (value.isNotEmpty) onStorageBytesReceived(value);
     });
@@ -373,7 +373,7 @@ Future<bool> performWriteToStorage(
       return null;
     }
 
-    debugPrint('Subscribed to imageBytes stream from Friend Device');
+    debugPrint('Subscribed to imageBytes stream from Foxxy Device');
     var listener = imageStreamCharacteristic.lastValueStream.listen((value) {
       if (value.isNotEmpty) onImageBytesReceived(value);
     });

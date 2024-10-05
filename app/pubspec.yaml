@@ -126,6 +126,7 @@ dependency_overrides:
       ref: dev
 
 dev_dependencies:
+  intl_utils: ^2.8.7
   intl_translation: any
   flutter_launcher_icons: 0.13.1
   flutter_lints: ^4.0.0
@@ -145,12 +146,13 @@ flutter_launcher_icons:
   remove_alpha_ios: true
   web:
     generate: true
-  image_path: 'assets/images/app_launcher_icon.png'
+  image_path: 'assets/images/app_icon.png'
 
 flutter:
   uses-material-design: true
   assets:
     - assets/images/blob.png
+    - assets/images/digital_brain3.png  
     - assets/images/stars.png
     - assets/images/herologo.png
     - assets/images/backbutton.svg
@@ -185,11 +187,15 @@ flutter:
           style: italic
 
 flutter_native_splash:
-  background_image: "assets/images/splash.png"
+  color: "#000000"
+  image: assets/images/foxxy_splash.png
+  fullscreen: true
+  android_gravity: fill
   android_12:
-    image: assets/images/splash_icon.png
-    color: "#000000" # TODO: improve hero banner on android12
-
+    image: assets/images/foxxy_splash.png
+    color: "#000000"
+    fullscreen: true
+    android_gravity: fill
   android: true
   ios: true
 flutter_intl:

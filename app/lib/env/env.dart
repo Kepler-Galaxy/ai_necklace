@@ -28,7 +28,7 @@ abstract class Env {
   static String? get intercomIOSApiKey => _instance.intercomIOSApiKey;
 
   static String? get intercomAndroidApiKey => _instance.intercomAndroidApiKey;
-  
+
   static String? get authingUserPoolId => _instance.authingUserPoolId;
 
   static String? get authingAppId => _instance.authingAppId;
@@ -54,7 +54,7 @@ abstract class EnvFields {
   String? get intercomIOSApiKey;
 
   String? get intercomAndroidApiKey;
-  
+
   String? get authingUserPoolId;
 
   String? get authingAppId;

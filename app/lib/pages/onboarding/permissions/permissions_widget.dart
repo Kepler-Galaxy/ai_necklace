@@ -39,9 +39,9 @@ class _PermissionsWidgetState extends State<PermissionsWidget> {
                         }
                       }
                     },
-                    title: const Text(
-                      'Allow Omi to run in the background to improve stability',
-                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                    title: Text(
+                      S.current.EnableBackgroundProcess,
+                      style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
                     ),
                     contentPadding: const EdgeInsets.only(left: 8),
                     // controlAffinity: ListTileControlAffinity.leading,
