@@ -45,7 +45,8 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("已连接的因缘"),
         "DiaryNoConnectedMemory": MessageLookupByLibrary.simpleMessage(
             "此日期没有过往因缘，佩戴音灵或者导入文章生成更多记忆碎片，即可在以后关联更多因缘"),
-        "DiarySeparateMemoryText": MessageLookupByLibrary.simpleMessage("记忆碎片"),
+        "DiarySeparateMemoryText":
+            MessageLookupByLibrary.simpleMessage("记忆碎片已添加到梦境"),
         "EnableBackgroundLocationAccess":
             MessageLookupByLibrary.simpleMessage("开启后台位置访问，以保障记忆生成附带地点信息"),
         "EnableBackgroundProcess":
@@ -53,6 +54,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "EnableNotificationAccess":
             MessageLookupByLibrary.simpleMessage("开启通知权限，以充分体验更多功能"),
         "EnablePlugins": MessageLookupByLibrary.simpleMessage("启用插件"),
+        "ExplanationClose": MessageLookupByLibrary.simpleMessage("我已知晓"),
+        "ExplanationText": MessageLookupByLibrary.simpleMessage("前定因缘"),
         "ExternalApps": MessageLookupByLibrary.simpleMessage("拓展应用"),
         "FailedSignIn": MessageLookupByLibrary.simpleMessage("登录失败"),
         "HideDiscarded": MessageLookupByLibrary.simpleMessage("隐藏被丢弃记忆"),

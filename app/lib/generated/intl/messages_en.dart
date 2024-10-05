@@ -60,6 +60,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "EnableNotificationAccess": MessageLookupByLibrary.simpleMessage(
             "Enable notification access for Omi\'s full experience."),
         "EnablePlugins": MessageLookupByLibrary.simpleMessage("Enable Plugins"),
+        "ExplanationClose": MessageLookupByLibrary.simpleMessage("Close"),
+        "ExplanationText": MessageLookupByLibrary.simpleMessage("Explanation"),
         "ExternalApps": MessageLookupByLibrary.simpleMessage("External Apps"),
         "FailedSignIn":
             MessageLookupByLibrary.simpleMessage("Failed to sign in"),

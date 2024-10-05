@@ -21,8 +21,18 @@ class DiaryTabView extends StatelessWidget {
         children: [
           TabBar(
             tabs: [
-              Tab(text: S.current.MemoryChains),
-              Tab(text: S.current.MemoryContents),
+              Tab(
+                child: Text(
+                  S.current.MemoryChains,
+                  style: TextStyle(fontSize: 20),
+                ),
+              ),
+              Tab(
+                child: Text(
+                  S.current.MemoryContents,
+                  style: TextStyle(fontSize: 20),
+                ),
+              ),
             ],
           ),
           Expanded(

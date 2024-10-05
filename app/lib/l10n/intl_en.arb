@@ -28,6 +28,8 @@
     "DiaryMemoryConnectionText": "Connected Memories",
     "DiarySeparateMemoryText": "Memento",
     "NoDiaryNote": "No diary entry for this date, wear AudioFairy to automatically record your diary",
+    "ExplanationText": "Explanation",
+    "ExplanationClose": "Close",
     "EnablePlugins": "Enable Plugins",
     "PleaseCheckInternetConnectionNote": "Please check your internet connection and try again.",
     "CloudNotLoadMaps": "Could not load Maps",

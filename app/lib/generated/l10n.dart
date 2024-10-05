@@ -340,6 +340,26 @@ class S {
     );
   }
 
+  /// `Explanation`
+  String get ExplanationText {
+    return Intl.message(
+      'Explanation',
+      name: 'ExplanationText',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Close`
+  String get ExplanationClose {
+    return Intl.message(
+      'Close',
+      name: 'ExplanationClose',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Enable Plugins`
   String get EnablePlugins {
     return Intl.message(

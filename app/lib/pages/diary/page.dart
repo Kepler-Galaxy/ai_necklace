@@ -180,7 +180,9 @@ class _DiaryPageState extends State<DiaryPage> {
           //     base64Decode(diary.content.footprintJpeg!),
           //   ),
           // SizedBox(height: 16),
-          Text(utf8.decode(diary.content.content.codeUnits)),
+          Text(utf8.decode(diary.content.content.codeUnits),
+            style: TextStyle(fontSize: 16),
+          ),
         ],
       ),
     );

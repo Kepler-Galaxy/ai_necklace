@@ -184,17 +184,64 @@ class MemoryChainsView extends StatelessWidget {
                 showDialog(
                   context: context,
                   builder: (BuildContext context) {
-                    return AlertDialog(
-                      title: Text('Explanation'),
-                      content: Text(node.explanation!),
-                      actions: <Widget>[
-                        TextButton(
-                          child: Text('Close'),
-                          onPressed: () {
-                            Navigator.of(context).pop();
-                          },
+                    return Dialog(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16.0),
+                      ),
+                      elevation: 0,
+                      backgroundColor: Colors.black,
+                      child: Container(
+                        padding: EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: Theme.of(context).colorScheme.surface,
+                          shape: BoxShape.rectangle,
+                          borderRadius: BorderRadius.circular(16),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black26,
+                              blurRadius: 10.0,
+                              offset: const Offset(0.0, 10.0),
+                            ),
+                          ],
                         ),
-                      ],
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: <Widget>[
+                            Text(
+                              S.current.ExplanationText,
+                              style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
+                            ),
+                            SizedBox(height: 16),
+                            Text(
+                              node.explanation!,
+                              style: TextStyle(
+                                fontSize: 16,
+                                color: Theme.of(context).colorScheme.onSurface.withOpacity(0.8),
+                              ),
+                            ),
+                            SizedBox(height: 24),
+                            Align(
+                              alignment: Alignment.bottomRight,
+                              child: TextButton(
+                                child: Text(
+                                  S.current.ExplanationClose,
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
                     );
                   },
                 );
@@ -231,10 +278,10 @@ class MemoryChainsView extends StatelessWidget {
             final memoryProvider =
                 Provider.of<MemoryProvider>(context, listen: false);
             int idx = memoryProvider.memoriesWithDates.indexWhere((e) {
-                            if (e.runtimeType == ServerMemory) {
-                              return e.id == memory.id;
-                            }
-                            return false;
+              if (e.runtimeType == ServerMemory) {
+                return e.id == memory.id;
+              }
+              return false;
             });
             memoryDetailProvider.updateMemory(idx);
 
