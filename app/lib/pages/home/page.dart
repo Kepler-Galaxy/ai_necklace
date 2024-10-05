@@ -177,7 +177,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver, Ticker
       dialogStyle: Platform.isIOS ? UpgradeDialogStyle.cupertino : UpgradeDialogStyle.material,
       child: Consumer<ConnectivityProvider>(builder: (ctx, connectivityProvider, child) {
         bool isConnected = connectivityProvider.isConnected;
-        previousConnection ??= true;
+        previousConnection ??= false;
         if (previousConnection != isConnected) {
           previousConnection = isConnected;
           if (!isConnected) {
