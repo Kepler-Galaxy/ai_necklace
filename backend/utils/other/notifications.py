@@ -22,13 +22,13 @@ async def start_cron_job():
         await asyncio.gather(
             send_daily_notification(),
             send_daily_summary_notification(),
-            send_daily_dairy_notification()
+            send_daily_diary_notification()
         )
 
 
 def should_run_job():
     current_utc = datetime.now(pytz.utc)
-    target_hours = {8, 22}
+    target_hours = {8, 23}
 
     for tz in pytz.all_timezones:
         local_time = current_utc.astimezone(pytz.timezone(tz))
@@ -40,7 +40,7 @@ def should_run_job():
 
 async def send_daily_summary_notification():
     try:
-        daily_summary_target_time = "22:00"
+        daily_summary_target_time = "23:00"
         timezones_in_time = _get_timezones_at_time(daily_summary_target_time)
         user_in_time_zone = await notification_db.get_users_id_in_timezones(timezones_in_time)
         logger.info(f"timezones_in_time: {timezones_in_time}")
@@ -86,43 +86,43 @@ async def _send_bulk_summary_notification(users: list):
         await asyncio.gather(*tasks)
 
 
-async def send_daily_dairy_notification():
+async def send_daily_diary_notification():
     try:
-        daily_summary_target_time = "22:00"
-        timezones_in_time = _get_timezones_at_time(daily_summary_target_time)
+        daily_diary_target_time = "23:00"
+        timezones_in_time = _get_timezones_at_time(daily_diary_target_time)
         user_in_time_zone = await notification_db.get_users_id_in_timezones(timezones_in_time)
         logger.info(f"timezones_in_time: {timezones_in_time}")
         logger.info(f"user_in_time_zone: {user_in_time_zone}")
         if not user_in_time_zone:
             return None
 
-        await _send_bulk_dairy_notification(user_in_time_zone)
+        await _send_bulk_diary_notification(user_in_time_zone)
     except Exception as e:
         logger.error(f"Error sending message: {e}")
         return None
     
 
-async def _send_bulk_dairy_notification(users: list):
-    logger.info(f"Sending dairy notification to {len(users)} users")
+async def _send_bulk_diary_notification(users: list):
+    logger.info(f"Sending diary notification to {len(users)} users")
     for user_data in users:
-        logger.info(f"Sending dairy notification to user {user_data[0]}")
-    tasks = [_generate_dairy_and_send_notification(user_data) for user_data in users]
+        logger.info(f"Sending diary notification to user {user_data[0]}")
+    tasks = [_generate_diary_and_send_notification(user_data) for user_data in users]
     await asyncio.gather(*tasks)
 
 
-async def _generate_dairy_and_send_notification(user_data: tuple):
+async def _generate_diary_and_send_notification(user_data: tuple):
     try:
-        uid = user_data[0]
-        fcm_token = user_data[1]
+        uid, fcm_token = user_data
 
         start_at_utc = datetime.now(pytz.utc) - timedelta(days=1)
         end_at_utc = datetime.now(pytz.utc)
         config = DiaryConfig(
             uid=uid,
-            diary_start_utc=datetime.fromisoformat(start_at_utc),
-            diary_end_utc=datetime.fromisoformat(end_at_utc)
+            diary_start_utc=start_at_utc,
+            diary_end_utc=end_at_utc
         )
         diary = await diary_from_configs(config)
+        logger.info(f"Generated Diary for user {uid}: {diary}")
         diaries_db.save_diary(uid, diary.dict())
 
         diary_notification_title = "Memories consolidated to your digital brain. Check the diary out!"
