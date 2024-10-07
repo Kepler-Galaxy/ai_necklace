@@ -104,6 +104,7 @@ def database_migration():
             # fdb.collection("users").document(user.id).collection("processing_memories").document(processing_memory.id).update(processing_memory_dict)
 
 
+
 if __name__ == "__main__":
     # database_migration()
     user_migration("66d14caa630ce64704da8188")

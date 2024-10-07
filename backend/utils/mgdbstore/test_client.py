@@ -1,10 +1,15 @@
+import time
+
 import pytest
+import pytz
+from datetime import datetime
 import os
 from pymongo import MongoClient
 from dotenv import load_dotenv
 load_dotenv()
 
-from client import MongoDBClient, FieldFilter, db
+from database.memories import filter_memories_by_date
+from utils.mgdbstore.client import MongoDBClient, FieldFilter, db
 
 
 # 设置测试环境的 MongoDB，后续流程正规后可以打开
@@ -35,6 +40,7 @@ def test_document_reference_set_and_get(mongo_test_db):
     assert result['name'] == "John Doe"
     assert result['email'] == "john@example.com"
     assert result['age'] == 30
+    doc_ref.delete()
 
 
 # 测试文档删除
@@ -71,6 +77,8 @@ def test_write_batch(mongo_test_db):
     # 验证插入是否成功
     assert doc_ref_1.get().to_dict()["name"] == "User 3"
     assert doc_ref_2.get().to_dict()["name"] == "User 4"
+    doc_ref_1.delete()
+    doc_ref_2.delete()
 
 #
 # # 测试 where 过滤查询
@@ -88,6 +96,8 @@ def test_collection_reference_where(mongo_test_db):
 
     assert len(result) == 1
     assert "User 6" in result
+    # doc_ref_1.delete()
+    # doc_ref_2.delete()
 #
 #
 # # 测试嵌套 collection 操作
@@ -103,6 +113,7 @@ def test_subcollection_reference(mongo_test_db):
     result = subcollection_ref.get().to_dict()
     assert result["title"] == "First Memory"
     assert result["description"] == "A great memory"
+    subcollection_ref.delete()
 
 def test_chunk_user(mongo_test_db):
     users_ref = db.collection('users')
@@ -136,3 +147,15 @@ def test_chunk_user(mongo_test_db):
             return chunk_users
         return sync_query()
     print(query_chunk(chunk_list))
+
+def test_filter_memories_by_date(mongo_test_db):
+    local_tz = pytz.timezone('Asia/Shanghai')
+    start_date_local = datetime.strptime('2024-10-04T00:00:00+08:00', '%Y-%m-%dT%H:%M:%S%z')
+    end_date_local = datetime.strptime('2024-10-05T23:59:59+08:00', '%Y-%m-%dT%H:%M:%S%z')
+    start_date_utc = start_date_local.astimezone(pytz.utc)
+    end_date_utc = end_date_local.astimezone(pytz.utc)
+    uid = "66d14caa630ce64704da8188"
+    memories = filter_memories_by_date(uid, start_date_local, end_date_local)
+    print("test_filter_memories_by_date", len(memories))
+    for memory in memories:
+        print(memory["created_at"])
