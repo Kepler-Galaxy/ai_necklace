@@ -165,12 +165,8 @@ class AuthenticationProvider extends BaseProvider {
     }
   }
 
-  void openTermsOfService() {
-    _launchUrl('https://basedhardware.com/terms');
-  }
-
   void openPrivacyPolicy() {
-    _launchUrl('https://www.omi.me/pages/privacy');
+    _launchUrl('https://keplergalaxy.com/privacy');
   }
 
   void _launchUrl(String url) async {

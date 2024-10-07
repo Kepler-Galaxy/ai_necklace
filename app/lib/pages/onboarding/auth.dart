@@ -101,13 +101,7 @@ class _AuthComponentState extends State<AuthComponent> {
                   children: [
                     const TextSpan(text: 'By Signing in, you agree to our\n'),
                     TextSpan(
-                      text: 'Terms of service',
-                      style: const TextStyle(decoration: TextDecoration.underline),
-                      recognizer: TapGestureRecognizer()..onTap = provider.openTermsOfService,
-                    ),
-                    const TextSpan(text: ' and '),
-                    TextSpan(
-                      text: 'Privacy Policy',
+                      text: 'Terms of Service and Privacy Policy',
                       style: const TextStyle(decoration: TextDecoration.underline),
                       recognizer: TapGestureRecognizer()..onTap = provider.openPrivacyPolicy,
                     ),
