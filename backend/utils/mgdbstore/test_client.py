@@ -96,8 +96,8 @@ def test_collection_reference_where(mongo_test_db):
 
     assert len(result) == 1
     assert "User 6" in result
-    # doc_ref_1.delete()
-    # doc_ref_2.delete()
+    doc_ref_1.delete()
+    doc_ref_2.delete()
 #
 #
 # # 测试嵌套 collection 操作
@@ -159,3 +159,4 @@ def test_filter_memories_by_date(mongo_test_db):
     print("test_filter_memories_by_date", len(memories))
     for memory in memories:
         print(memory["created_at"])
+    assert len(memories) == 4
