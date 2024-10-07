@@ -1,10 +1,7 @@
 version: '3'
 services:
   backend:
-    # image: backend_test
-    image: lightshark/kepler_galaxy_backend:1.5
-    # for ali-cloud 
-    # image: registry.cn-heyuan.aliyuncs.com/kepler_galaxy/kepler_galaxy:1.0
+    image: krccr.ccs.tencentyun.com/kepler_galaxy/foxxy:1.0.1
     container_name: backend_container
     ports:
       - "8080:8080"
@@ -16,8 +13,6 @@ services:
 
   ngrok:
     image: ngrok/ngrok:latest
-    # for ali-cloud
-    #image: registry.cn-heyuan.aliyuncs.com/kepler_galaxy/ngrok:1.0
     container_name: ngrok_container
     command: [ "http", "--domain=equal-magnetic-pheasant.ngrok-free.app", "backend:8080" ]
     environment:
@@ -26,4 +21,4 @@ services:
     depends_on:
       - backend
     ports:
-      - "4040:4040" # Expose ngrok web interface on port 4040 for monitoring
+      - "4040:4040"

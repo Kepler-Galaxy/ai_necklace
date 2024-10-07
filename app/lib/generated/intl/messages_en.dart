@@ -22,23 +22,23 @@ class MessageLookup extends MessageLookupByLibrary {
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
-        "AppName": MessageLookupByLibrary.simpleMessage("Kepler Star"),
+        "AppName": MessageLookupByLibrary.simpleMessage("Foxxy"),
         "AreYouSureSignOut": MessageLookupByLibrary.simpleMessage(
             "Are you sure you want to sign out?"),
         "ArticleLinkWeChatArticleorOthers":
             MessageLookupByLibrary.simpleMessage(
                 "Article Link: WeChat Article or Others"),
         "AskYourAudioFairyAnything": MessageLookupByLibrary.simpleMessage(
-            "Ask your AudioFairy anything"),
+            "Ask your AudioFoxxy anything"),
         "Cancel": MessageLookupByLibrary.simpleMessage("Cancel"),
         "Chat": MessageLookupByLibrary.simpleMessage("Chat"),
         "CloudNotLoadMaps":
             MessageLookupByLibrary.simpleMessage("Could not load Maps"),
         "ConnectLater": MessageLookupByLibrary.simpleMessage("Connect Later"),
         "ConnectMyAudioFairy":
-            MessageLookupByLibrary.simpleMessage("Connect My AudioFairy"),
+            MessageLookupByLibrary.simpleMessage("Connect My AudioFoxxy"),
         "ConnectYourAudioFairy":
-            MessageLookupByLibrary.simpleMessage("Connect Your AudioFairy"),
+            MessageLookupByLibrary.simpleMessage("Connect Your AudioFoxxy"),
         "Continue": MessageLookupByLibrary.simpleMessage("Continue"),
         "CreateMemory": MessageLookupByLibrary.simpleMessage("Create Memory"),
         "CreatingMemory":
@@ -50,13 +50,13 @@ class MessageLookup extends MessageLookupByLibrary {
         "DiaryMemoryConnectionText":
             MessageLookupByLibrary.simpleMessage("Connected Memories"),
         "DiaryNoConnectedMemory": MessageLookupByLibrary.simpleMessage(
-            "No connected memory for this date, wear AudioFairy or import articles to create more memories"),
+            "No connected memory for this date, wear AudioFoxxy or import articles to create more memories"),
         "DiarySeparateMemoryText":
             MessageLookupByLibrary.simpleMessage("Memento"),
         "EnableBackgroundLocationAccess": MessageLookupByLibrary.simpleMessage(
             "Enable background location access for Omi\'s full experience."),
         "EnableBackgroundProcess": MessageLookupByLibrary.simpleMessage(
-            "Allow AudioFairy to run in the background to improve stability"),
+            "Allow AudioFoxxy to run in the background to improve stability"),
         "EnableNotificationAccess": MessageLookupByLibrary.simpleMessage(
             "Enable notification access for Omi\'s full experience."),
         "EnablePlugins": MessageLookupByLibrary.simpleMessage("Enable Plugins"),
@@ -67,7 +67,7 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Failed to sign in"),
         "HideDiscarded": MessageLookupByLibrary.simpleMessage("Hide Discarded"),
         "HowShouldAudioFairyCallYou": MessageLookupByLibrary.simpleMessage(
-            "How should AudioFairy call you?"),
+            "How should AudioFoxxy call you?"),
         "ImportArticle": MessageLookupByLibrary.simpleMessage("Import Article"),
         "KeyPoints": MessageLookupByLibrary.simpleMessage("Key Points"),
         "LimitedCapabilities":
@@ -79,7 +79,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "NoDeviceFound":
             MessageLookupByLibrary.simpleMessage("No device found"),
         "NoDiaryNote": MessageLookupByLibrary.simpleMessage(
-            "No diary entry for this date, wear AudioFairy to automatically record your diary"),
+            "No diary entry for this date, wear AudioFoxxy to automatically record your diary"),
         "NoMemoriesGeneratedYet":
             MessageLookupByLibrary.simpleMessage("No memories generated yet."),
         "NoMessagesYet":

@@ -40,7 +40,10 @@ class _AuthComponentState extends State<AuthComponent> {
                 controller: provider.phoneController,
                 decoration: InputDecoration(
                   labelText: S.current.PhoneNumber,
-                  prefixIcon: const Icon(Icons.phone),
+                  prefixIcon: Padding(
+                    padding: const EdgeInsets.only(left: 12, right: 8),
+                    child: Icon(Icons.phone, size: 20, color: Theme.of(context).iconTheme.color),
+                  ),
                 ),
                 keyboardType: TextInputType.phone,
               ),
@@ -50,7 +53,10 @@ class _AuthComponentState extends State<AuthComponent> {
                 controller: provider.codeController,
                 decoration:  InputDecoration(
                   labelText: S.current.VerificationCode,
-                  prefixIcon: const Icon(Icons.sms),
+                  prefixIcon: Padding(
+                    padding: const EdgeInsets.only(left: 12, right: 8),
+                    child: Icon(Icons.sms, size: 20, color: Theme.of(context).iconTheme.color),
+                  ),
                 ),
                 keyboardType: TextInputType.number,
               ),
@@ -77,16 +83,16 @@ class _AuthComponentState extends State<AuthComponent> {
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
-                    padding: EdgeInsets.zero, // Remove default padding
-                    minimumSize: Size.zero, // Allow the button to shrink
-                    tapTargetSize: MaterialTapTargetSize.shrinkWrap, // Minimize the tap target
+                    padding: EdgeInsets.zero,
+                    minimumSize: Size.zero,
+                    tapTargetSize: MaterialTapTargetSize.shrinkWrap, 
                   ),
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8), // Adjust this padding as needed
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                     child: Text(
                       provider.isCodeSent ? S.current.SignIn : S.current.SendVerificationCode,
                       style: const TextStyle(
-                        fontSize: 14,
+                        fontSize: 16,
                         color: Colors.white,
                       ),
                     ),
@@ -97,18 +103,12 @@ class _AuthComponentState extends State<AuthComponent> {
               RichText(
                 textAlign: TextAlign.center,
                 text: TextSpan(
-                  style: const TextStyle(color: Colors.white, fontSize: 8),
+                  style: const TextStyle(color: Colors.white, fontSize: 12),
                   children: [
                     const TextSpan(text: 'By Signing in, you agree to our\n'),
                     TextSpan(
-                      text: 'Terms of service',
-                      style: const TextStyle(decoration: TextDecoration.underline),
-                      recognizer: TapGestureRecognizer()..onTap = provider.openTermsOfService,
-                    ),
-                    const TextSpan(text: ' and '),
-                    TextSpan(
-                      text: 'Privacy Policy',
-                      style: const TextStyle(decoration: TextDecoration.underline),
+                      text: 'Terms of Service and Privacy Policy',
+                      style: const TextStyle(fontSize: 12, decoration: TextDecoration.underline),
                       recognizer: TapGestureRecognizer()..onTap = provider.openPrivacyPolicy,
                     ),
                   ],

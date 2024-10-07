@@ -8,6 +8,7 @@ import 'package:friend_private/utils/other/temp.dart';
 import 'package:friend_private/widgets/dialog.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:friend_private/generated/l10n.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
@@ -66,6 +67,17 @@ class _SettingsPageState extends State<SettingsPage> {
                   'Profile',
                   () => routeToPage(context, const ProfilePage()),
                   icon: Icons.person,
+                ),
+                const SizedBox(height: 32),
+                getItemAddOn2(
+                  'Privacy Policy',
+                  () => launchUrl(Uri.parse('https://keplergalaxy.com/privacy')),
+                  icon: Icons.privacy_tip,
+                ),
+                getItemAddOn2(
+                  'About Us',
+                  () => launchUrl(Uri.parse('https://keplergalaxy.com')),
+                  icon: Icons.info,
                 ),
                 const SizedBox(height: 32),
                 getItemAddOn2(S.current.SignOut, () async {
