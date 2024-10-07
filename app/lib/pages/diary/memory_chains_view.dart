@@ -44,7 +44,7 @@ class _FlashingBoltIconState extends State<FlashingBoltIcon>
       builder: (context, child) {
         return Opacity(
           opacity: _animation.value,
-          child: Icon(Icons.bolt, size: 35, color: Colors.yellow),
+          child: Icon(Icons.bolt, size: 30, color: Colors.yellow),
         );
       },
     );
@@ -70,10 +70,8 @@ class MemoryChainsView extends StatelessWidget {
       }
     }
 
-    return ListView(
-      shrinkWrap: true,
-      physics: const ClampingScrollPhysics(),
-      padding: const EdgeInsets.symmetric(horizontal: 16),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         if (connectedMemories.isNotEmpty) ...[
           Padding(

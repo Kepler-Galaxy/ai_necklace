@@ -612,7 +612,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver, Ticker
 
   Widget _buildTab(IconData icon, String label, bool isSelected) {
     return Tab(
-      height: 56, // Slightly reduced height
+      height: 56,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -620,12 +620,12 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver, Ticker
             icon,
             color: isSelected ? Colors.white : Colors.grey,
           ),
-          const SizedBox(height: 4), // Reduced space between icon and text
+          const SizedBox(height: 4),
           Text(
             label,
             style: TextStyle(
               color: isSelected ? Colors.white : Colors.grey,
-              fontSize: 12, // Smaller font size for the label
+              fontSize: 12,
             ),
           ),
         ],
