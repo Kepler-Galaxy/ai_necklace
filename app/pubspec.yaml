@@ -51,7 +51,7 @@ dependencies:
   instabug_http_client: ^2.4.0
   mixpanel_flutter: ^2.2.0
   expandable_text: ^2.3.0
-  flutter_native_splash: ^2.4.0
+  flutter_native_splash: ^2.4.1
   flutter_svg: ^2.0.10+1
   gradient_borders: ^1.0.1
   nordic_dfu: ^6.1.4+hotfix
@@ -187,11 +187,13 @@ flutter:
           style: italic
 
 flutter_native_splash:
+  color: "#000000"
   image: assets/images/foxxy_splash.png
   fullscreen: true
   android_gravity: fill
 
   android_12:
+    color: "#000000"
     image: assets/images/foxxy_splash.png
     fullscreen: true
     android_gravity: fill
