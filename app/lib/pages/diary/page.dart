@@ -1,15 +1,13 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:friend_private/providers/diary_provider.dart';
-import 'package:friend_private/pages/diary/memory_chains_view.dart';
 import 'package:friend_private/backend/http/api/memories.dart';
 import 'package:friend_private/backend/schema/memory_connection.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:friend_private/pages/diary/calandar_widget.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:friend_private/generated/l10n.dart';
 import 'package:friend_private/pages/diary/diary_tab_widget.dart';
+import 'package:friend_private/backend/schema/diary.dart';
 
 class DiaryPage extends StatefulWidget {
   const DiaryPage({Key? key}) : super(key: key);
@@ -142,7 +140,7 @@ class _DiaryPageState extends State<DiaryPage> {
                   ))
                 : DiaryTabView(
                     forest: _memoryChainForest,
-                    diaryContent: _buildDiaryContent(),
+                    currentDateDiary: _currentDateDiary(),
                   ),
           ),
         ],
@@ -150,41 +148,8 @@ class _DiaryPageState extends State<DiaryPage> {
     );
   }
 
-  Widget _buildDiaryContent() {
+  ServerDiary? _currentDateDiary() {
     final diaryProvider = Provider.of<DiaryProvider>(context, listen: false);
-    final diaries = diaryProvider.getDiariesForDay(_currentDiaryDate!);
-    if (diaries.isEmpty) {
-      return Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Text(
-          S.current.NoDiaryNote,  
-          textAlign: TextAlign.center,
-          style: TextStyle(fontSize: 18),
-        ),
-      );
-    }
-
-    final diary = diaries.first;
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // if (diary.content.footprintJpeg == null ||
-          //     diary.content.footprintJpeg!.isEmpty)
-          //   Text(
-          //       'Footprint image not available, try set app location permission to always allow to enable this feature',
-          //       style: TextStyle(color: const Color.fromARGB(255, 189, 0, 157)))
-          // else
-          //   Image.memory(
-          //     base64Decode(diary.content.footprintJpeg!),
-          //   ),
-          // SizedBox(height: 16),
-          Text(utf8.decode(diary.content.content.codeUnits),
-            style: TextStyle(fontSize: 16),
-          ),
-        ],
-      ),
-    );
+    return diaryProvider.getDiariesForDay(_currentDiaryDate!).firstOrNull;
   }
 }

@@ -22,18 +22,18 @@ class MessageLookup extends MessageLookupByLibrary {
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
-        "AppName": MessageLookupByLibrary.simpleMessage("开普勒星"),
+        "AppName": MessageLookupByLibrary.simpleMessage("Foxxy"),
         "AreYouSureSignOut": MessageLookupByLibrary.simpleMessage("确定是否退出登录？"),
         "ArticleLinkWeChatArticleorOthers":
             MessageLookupByLibrary.simpleMessage("从微信文章或者其他网址获取记忆"),
         "AskYourAudioFairyAnything":
-            MessageLookupByLibrary.simpleMessage("和你的音灵对话"),
+            MessageLookupByLibrary.simpleMessage("和你的Foxxy对话"),
         "Cancel": MessageLookupByLibrary.simpleMessage("取消"),
         "Chat": MessageLookupByLibrary.simpleMessage("闲谈"),
         "CloudNotLoadMaps": MessageLookupByLibrary.simpleMessage("不能载入地图"),
         "ConnectLater": MessageLookupByLibrary.simpleMessage("稍后再连接"),
-        "ConnectMyAudioFairy": MessageLookupByLibrary.simpleMessage("连接我的音灵"),
-        "ConnectYourAudioFairy": MessageLookupByLibrary.simpleMessage("连接你的音灵"),
+        "ConnectMyAudioFairy": MessageLookupByLibrary.simpleMessage("连接我的音狐"),
+        "ConnectYourAudioFairy": MessageLookupByLibrary.simpleMessage("连接你的音狐"),
         "Continue": MessageLookupByLibrary.simpleMessage("下一步"),
         "CreateMemory": MessageLookupByLibrary.simpleMessage("创建记忆"),
         "CreatingMemory": MessageLookupByLibrary.simpleMessage("记忆构建中"),
@@ -44,9 +44,9 @@ class MessageLookup extends MessageLookupByLibrary {
         "DiaryMemoryConnectionText":
             MessageLookupByLibrary.simpleMessage("已连接的因缘"),
         "DiaryNoConnectedMemory": MessageLookupByLibrary.simpleMessage(
-            "此日期没有过往因缘，佩戴音灵或者导入文章生成更多记忆碎片，即可在以后关联更多因缘"),
+            "此日期没有过往因缘，佩戴音狐或者导入文章生成更多记忆碎片，即可在以后关联更多因缘"),
         "DiarySeparateMemoryText":
-            MessageLookupByLibrary.simpleMessage("记忆碎片已添加到梦境"),
+            MessageLookupByLibrary.simpleMessage("记忆碎片已添加，可在以后自动关联因缘"),
         "EnableBackgroundLocationAccess":
             MessageLookupByLibrary.simpleMessage("开启后台位置访问，以保障记忆生成附带地点信息"),
         "EnableBackgroundProcess":
@@ -55,21 +55,21 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("开启通知权限，以充分体验更多功能"),
         "EnablePlugins": MessageLookupByLibrary.simpleMessage("启用插件"),
         "ExplanationClose": MessageLookupByLibrary.simpleMessage("我已知晓"),
-        "ExplanationText": MessageLookupByLibrary.simpleMessage("前定因缘"),
+        "ExplanationText": MessageLookupByLibrary.simpleMessage("因缘"),
         "ExternalApps": MessageLookupByLibrary.simpleMessage("拓展应用"),
         "FailedSignIn": MessageLookupByLibrary.simpleMessage("登录失败"),
         "HideDiscarded": MessageLookupByLibrary.simpleMessage("隐藏被丢弃记忆"),
         "HowShouldAudioFairyCallYou":
-            MessageLookupByLibrary.simpleMessage("音灵应该如何称呼您?"),
+            MessageLookupByLibrary.simpleMessage("Foxxy应该如何称呼您?"),
         "ImportArticle": MessageLookupByLibrary.simpleMessage("从文章导入记忆"),
         "KeyPoints": MessageLookupByLibrary.simpleMessage("重点"),
         "LimitedCapabilities": MessageLookupByLibrary.simpleMessage("录音限制"),
         "Memories": MessageLookupByLibrary.simpleMessage("追忆"),
         "MemoryChains": MessageLookupByLibrary.simpleMessage("前缘旧梦"),
         "MemoryContents": MessageLookupByLibrary.simpleMessage("今日小记"),
-        "NoDeviceFound": MessageLookupByLibrary.simpleMessage("未连接任何音灵"),
+        "NoDeviceFound": MessageLookupByLibrary.simpleMessage("未连接任何音狐"),
         "NoDiaryNote":
-            MessageLookupByLibrary.simpleMessage("此日期没有日记条目，佩戴音灵，即可自动记录你的日记"),
+            MessageLookupByLibrary.simpleMessage("此日期没有日记条目，佩戴音狐，即可自动记录你的日记"),
         "NoMemoriesGeneratedYet":
             MessageLookupByLibrary.simpleMessage("暂时没有生成任何记忆"),
         "NoMessagesYet": MessageLookupByLibrary.simpleMessage("暂时没有对话内容"),
@@ -90,7 +90,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "Plugins": MessageLookupByLibrary.simpleMessage("插件"),
         "Prompts": MessageLookupByLibrary.simpleMessage("提示词"),
         "SearchingForDevices":
-            MessageLookupByLibrary.simpleMessage("正在搜索音灵..."),
+            MessageLookupByLibrary.simpleMessage("正在搜索音狐..."),
         "SelectAnotherDay": MessageLookupByLibrary.simpleMessage("日期选择"),
         "SendVerificationCode": MessageLookupByLibrary.simpleMessage("获取验证码"),
         "ShowDiscarded": MessageLookupByLibrary.simpleMessage("显示被丢弃记忆"),

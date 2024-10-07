@@ -60,10 +60,10 @@ class S {
     );
   }
 
-  /// `Kepler Star`
+  /// `Foxxy`
   String get AppName {
     return Intl.message(
-      'Kepler Star',
+      'Foxxy',
       name: 'AppName',
       desc: '',
       args: [],
@@ -220,10 +220,10 @@ class S {
     );
   }
 
-  /// `Connect Your AudioFairy`
+  /// `Connect Your AudioFoxxy`
   String get ConnectYourAudioFairy {
     return Intl.message(
-      'Connect Your AudioFairy',
+      'Connect Your AudioFoxxy',
       name: 'ConnectYourAudioFairy',
       desc: '',
       args: [],
@@ -310,10 +310,10 @@ class S {
     );
   }
 
-  /// `No connected memory for this date, wear AudioFairy or import articles to create more memories`
+  /// `No connected memory for this date, wear AudioFoxxy or import articles to create more memories`
   String get DiaryNoConnectedMemory {
     return Intl.message(
-      'No connected memory for this date, wear AudioFairy or import articles to create more memories',
+      'No connected memory for this date, wear AudioFoxxy or import articles to create more memories',
       name: 'DiaryNoConnectedMemory',
       desc: '',
       args: [],
@@ -340,10 +340,10 @@ class S {
     );
   }
 
-  /// `No diary entry for this date, wear AudioFairy to automatically record your diary`
+  /// `No diary entry for this date, wear AudioFoxxy to automatically record your diary`
   String get NoDiaryNote {
     return Intl.message(
-      'No diary entry for this date, wear AudioFairy to automatically record your diary',
+      'No diary entry for this date, wear AudioFoxxy to automatically record your diary',
       name: 'NoDiaryNote',
       desc: '',
       args: [],
@@ -410,10 +410,10 @@ class S {
     );
   }
 
-  /// `Ask your AudioFairy anything`
+  /// `Ask your AudioFoxxy anything`
   String get AskYourAudioFairyAnything {
     return Intl.message(
-      'Ask your AudioFairy anything',
+      'Ask your AudioFoxxy anything',
       name: 'AskYourAudioFairyAnything',
       desc: '',
       args: [],
@@ -650,20 +650,20 @@ class S {
     );
   }
 
-  /// `How should AudioFairy call you?`
+  /// `How should AudioFoxxy call you?`
   String get HowShouldAudioFairyCallYou {
     return Intl.message(
-      'How should AudioFairy call you?',
+      'How should AudioFoxxy call you?',
       name: 'HowShouldAudioFairyCallYou',
       desc: '',
       args: [],
     );
   }
 
-  /// `Allow AudioFairy to run in the background to improve stability`
+  /// `Allow AudioFoxxy to run in the background to improve stability`
   String get EnableBackgroundProcess {
     return Intl.message(
-      'Allow AudioFairy to run in the background to improve stability',
+      'Allow AudioFoxxy to run in the background to improve stability',
       name: 'EnableBackgroundProcess',
       desc: '',
       args: [],
@@ -690,10 +690,10 @@ class S {
     );
   }
 
-  /// `Connect My AudioFairy`
+  /// `Connect My AudioFoxxy`
   String get ConnectMyAudioFairy {
     return Intl.message(
-      'Connect My AudioFairy',
+      'Connect My AudioFoxxy',
       name: 'ConnectMyAudioFairy',
       desc: '',
       args: [],
