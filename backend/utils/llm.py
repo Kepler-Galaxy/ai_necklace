@@ -79,7 +79,7 @@ def get_transcript_structure(transcript: str, started_at: datetime, language_cod
     prompt = ChatPromptTemplate.from_messages([(
         'system',
         '''Your task is to provide structure and clarity to the recording transcription of a conversation.
-        The conversation language is {language_code}. Use Chinese for your response.
+        The conversation language is {language_code}. Use the same language for your response.
         
         For the title, use the main topic of the conversation.
         For the overview, condense the conversation into a summary with the main topics discussed, make sure to capture the key points and important details from the conversation.
@@ -536,7 +536,7 @@ async def obtain_recent_summary(conversation_history: str, articles_read: str, r
 
     **Guidelines:**
     - Use second person (you, your, yours) when referring to the user and their experiences.
-    - Write in Chinese.
+    - Guess the language involded in recent experiences, and write summary in the same language.
     - Limit the summary to 1500 words, prioritizing the most impactful information.
 
     **Conversation History:**
@@ -606,7 +606,8 @@ def summarize_article(web_content_response: WebContentResponse) -> Structured:
             
         Article title: ```{title}```
         Article content: ```{article_content}```
-
+        
+        Please use the same language of the main content in the article for your response.
         You should leave the events and action items as empty lists.
         {format_instructions}'''.replace('    ', '').strip()
     )])
@@ -642,6 +643,8 @@ def explain_relationship(memory: Memory, related_memory: Memory) -> ExplainRelat
         'system',
         '''You are an expert to identify relationships between different memories. You will use logic reasoning, critical thinking, and common sense 
         to determine if two memories are related. explain why they are or aren't related in a few sentences.
+
+        Please use the same language of the main content in the Memory 1 for your explanation.
 
         Memory 1: {memory1_str}
         Memory 2: {memory2_str}
