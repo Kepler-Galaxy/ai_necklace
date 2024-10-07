@@ -78,123 +78,6 @@ class _ProfilePageState extends State<ProfilePage> {
             ),
             const SizedBox(height: 24),
             Divider(color: Colors.grey.shade300, height: 1),
-            const SizedBox(height: 32),
-            const Align(
-              alignment: Alignment.centerLeft,
-              child: Text(
-                'PREFERENCES',
-                style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600),
-                textAlign: TextAlign.start,
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(0, 0, 24, 0),
-              child: InkWell(
-                onTap: () {
-                  setState(() {
-                    SharedPreferencesUtil().optInAnalytics = !SharedPreferencesUtil().optInAnalytics;
-                    SharedPreferencesUtil().optInAnalytics
-                        ? MixpanelManager().optInTracking()
-                        : MixpanelManager().optOutTracking();
-                  });
-                },
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 12.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Expanded(
-                        child: GestureDetector(
-                          onTap: () {
-                            routeToPage(context, const PrivacyInfoPage());
-                            MixpanelManager().pageOpened('Share Analytics Data Details');
-                          },
-                          child: const Text(
-                            'Help improve Friend by sharing anonymized analytics data',
-                            style: TextStyle(
-                              color: Colors.grey,
-                              fontSize: 16,
-                              decoration: TextDecoration.underline,
-                            ),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(
-                        width: 16,
-                      ),
-                      Container(
-                        decoration: BoxDecoration(
-                          color: SharedPreferencesUtil().optInAnalytics
-                              ? const Color.fromARGB(255, 150, 150, 150)
-                              : Colors.transparent, // Fill color when checked
-                          border: Border.all(
-                            color: const Color.fromARGB(255, 150, 150, 150),
-                            width: 2,
-                          ),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        width: 22,
-                        height: 22,
-                        child: SharedPreferencesUtil().optInAnalytics // Show the icon only when checked
-                            ? const Icon(
-                                Icons.check,
-                                color: Colors.white, // Tick color
-                                size: 18,
-                              )
-                            : null, // No icon when unchecked
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(0, 0, 24, 0),
-              child: InkWell(
-                onTap: () async {
-                  MixpanelManager().pageOpened('Profile Authorize Saving Recordings');
-                  await routeToPage(context, const RecordingsStoragePermission());
-                  setState(() {});
-                },
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 12.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      const Text(
-                        'Authorize saving recordings',
-                        style: TextStyle(color: Color.fromARGB(255, 150, 150, 150), fontSize: 16),
-                      ),
-                      const SizedBox(width: 8),
-                      Container(
-                        decoration: BoxDecoration(
-                          color: SharedPreferencesUtil().permissionStoreRecordingsEnabled
-                              ? const Color.fromARGB(255, 150, 150, 150)
-                              : Colors.transparent, // Fill color when checked
-                          border: Border.all(
-                            color: const Color.fromARGB(255, 150, 150, 150),
-                            width: 2,
-                          ),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        width: 22,
-                        height: 22,
-                        child:
-                            SharedPreferencesUtil().permissionStoreRecordingsEnabled // Show the icon only when checked
-                                ? const Icon(
-                                    Icons.check,
-                                    color: Colors.white, // Tick color
-                                    size: 18,
-                                  )
-                                : null, // No icon when unchecked
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-            const SizedBox(height: 24),
-            Divider(color: Colors.grey.shade300, height: 1),
             const SizedBox(height: 24),
             ListTile(
               contentPadding: const EdgeInsets.fromLTRB(4, 0, 24, 0),
@@ -206,18 +89,17 @@ class _ProfilePageState extends State<ProfilePage> {
               onTap: () {
                 MixpanelManager().pageOpened('Profile Delete Account Dialog');
                 showDialog(
-                    context: context,
-                    builder: (ctx) {
-                      return getDialog(
-                        context,
-                        () => Navigator.of(context).pop(),
-                        () => launchUrl(Uri.parse('mailto:team@basedhardware.com?subject=Delete%20My%20Account')),
-                        'Deleting Account?',
-                        'Please send us an email at team@basedhardware.com',
-                        okButtonText: 'Open Email',
-                        singleButton: false,
-                      );
-                    });
+                  context: context,
+                  builder: (BuildContext context) {
+                    return AlertDialog(
+                      content: Text(
+                        'Please send an SMS at 13510279525 with account ID to delete your account',
+                        style: TextStyle(color: Colors.white),
+                      ),
+                      backgroundColor: Theme.of(context).colorScheme.primary,
+                    );
+                  },
+                );
               },
             ),
             ListTile(
