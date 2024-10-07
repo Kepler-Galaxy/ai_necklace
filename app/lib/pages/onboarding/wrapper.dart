@@ -282,8 +282,8 @@ class _OnboardingWrapperState extends State<OnboardingWrapper> with TickerProvid
 double maxHeightWithTextScale(BuildContext context) {
   double textScaleFactor = MediaQuery.of(context).textScaleFactor;
   if (textScaleFactor > 1.0) {
-    return 405;
+    return 455;
   } else {
-    return 305;
+    return 355;
   }
 }
