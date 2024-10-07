@@ -109,7 +109,14 @@ class CollectionReference:
     def stream(self):
         query = {}
         for filter in self._filters:
-            query.update(filter.to_query())
+            for field, filter_item in filter.to_query().items():
+                if type(filter_item) == dict:
+                    if field not in query:
+                        query[field] = {}
+                    for k, v in filter_item.items():
+                        query[field][k] = v
+                else:
+                    query[field] = filter_item
 
         cursor = self.collection.find(query)
 
