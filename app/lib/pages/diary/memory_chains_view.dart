@@ -75,49 +75,48 @@ class MemoryChainsView extends StatelessWidget {
       children: [
         if (connectedMemories.isNotEmpty) ...[
           Padding(
-            padding: const EdgeInsets.symmetric(vertical: 16.0),
+            padding: const EdgeInsets.symmetric(vertical: 24.0, horizontal: 32.0),
             child: Text(
               S.current.DiaryMemoryConnectionText,
               style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w500,
                   color: Colors.white),
             ),
           ),
           ...connectedMemories
               .expand((node) => [
                     _buildTree(context, node, 0),
-                    SizedBox(height: 24), // Increased vertical spacing
+                    SizedBox(height: 16),
                   ])
               .toList(),
-          SizedBox(height: 32), // Larger spacer between sections
+          SizedBox(height: 24),
         ] else ...[
           Padding(
-            padding: const EdgeInsets.symmetric(vertical: 8.0),
+            padding: const EdgeInsets.symmetric(vertical: 24.0, horizontal: 32.0),
             child: Text(
               S.current.DiaryNoConnectedMemory,
               style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
                   color: Colors.white),
             ),
           ),
         ],
         if (unconnectedMemories.isNotEmpty) ...[
           Padding(
-            padding: const EdgeInsets.symmetric(vertical: 16.0),
+            padding: const EdgeInsets.symmetric(vertical: 24.0, horizontal: 32.0),
             child: Text(
               S.current.DiarySeparateMemoryText,
               style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w500,
                   color: Colors.white),
             ),
           ),
           ...unconnectedMemories
               .expand((node) => [
                     _buildTree(context, node, 0),
-                    SizedBox(height: 24), // Increased vertical spacing
+                    SizedBox(height: 16),
                   ])
               .toList(),
         ],
@@ -135,7 +134,7 @@ class MemoryChainsView extends StatelessWidget {
   Widget _buildLeafNode(
       BuildContext context, MemoryConnectionNode node, int level) {
     return Padding(
-      padding: EdgeInsets.only(left: level * 40.0),
+      padding: EdgeInsets.only(left: 32.0 + level * 40.0, right: 32.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -153,7 +152,7 @@ class MemoryChainsView extends StatelessWidget {
   Widget _buildBranchNode(
       BuildContext context, MemoryConnectionNode node, int level) {
     return Padding(
-      padding: EdgeInsets.only(left: level * 40.0),
+      padding: EdgeInsets.only(left: 32.0 + level * 40.0, right: 32.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

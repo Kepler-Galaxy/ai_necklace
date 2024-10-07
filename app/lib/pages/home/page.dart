@@ -445,63 +445,64 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver, Ticker
                     );
                   }
                 }),
-                Consumer2<PluginProvider, HomeProvider>(
-                  builder: (context, provider, home, child) {
-                    if (home.selectedIndex != 2) {
-                      return const SizedBox(
-                        width: 16,
-                      );
-                    }
-                    return Padding(
-                      padding: const EdgeInsets.only(left: 0),
-                      child: provider.plugins.where((p) => p.enabled).isEmpty
-                          ? GestureDetector(
-                              onTap: () {
-                                MixpanelManager().pageOpened('Chat Plugins');
-                                routeToPage(context, const PluginsPage(filterChatOnly: true));
-                              },
-                              child: Row(
-                                children: [
-                                  const Icon(size: 20, Icons.chat, color: Colors.white),
-                                  const SizedBox(width: 10),
-                                  Text(
-                                    S.current.EnablePlugins,
-                                    style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w500, fontSize: 16),
-                                  ),
-                                ],
-                              ),
-                            )
-                          : Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 16),
-                              child: DropdownButton<String>(
-                                menuMaxHeight: 350,
-                                value: provider.selectedChatPluginId,
-                                onChanged: (s) async {
-                                  if ((s == 'no_selected' && provider.plugins.where((p) => p.enabled).isEmpty) ||
-                                      s == 'enable') {
-                                    routeToPage(context, const PluginsPage(filterChatOnly: true));
-                                    MixpanelManager().pageOpened('Chat Plugins');
-                                    return;
-                                  }
-                                  if (s == null || s == provider.selectedChatPluginId) return;
-                                  provider.setSelectedChatPluginId(s);
-                                  var plugin = provider.getSelectedPlugin();
-                                  chatPageKey.currentState?.sendInitialPluginMessage(plugin);
-                                },
-                                icon: Container(),
-                                alignment: Alignment.center,
-                                dropdownColor: Colors.black,
-                                style: const TextStyle(color: Colors.white, fontSize: 16),
-                                underline: Container(height: 0, color: Colors.transparent),
-                                isExpanded: false,
-                                itemHeight: 48,
-                                padding: EdgeInsets.zero,
-                                items: _getPluginsDropdownItems(context, provider),
-                              ),
-                            ),
-                    );
-                  },
-                ),
+                // Consumer2<PluginProvider, HomeProvider>(
+                //   builder: (context, provider, home, child) {
+                //     if (home.selectedIndex != 2) {
+                //       return const SizedBox(
+                //         width: 16,
+                //       );
+                //     }
+                //     return Padding(
+                //       padding: const EdgeInsets.only(left: 0),
+                //       child: provider.plugins.where((p) => p.enabled).isEmpty
+                //           ? GestureDetector(
+                //               onTap: () {
+                //                 MixpanelManager().pageOpened('Chat Plugins');
+                //                 routeToPage(context, const PluginsPage(filterChatOnly: true));
+                //               },
+                //               child: Row(
+                //                 children: [
+                //                   const Icon(size: 20, Icons.chat, color: Colors.white),
+                //                   const SizedBox(width: 10),
+                //                   Text(
+                //                     S.current.EnablePlugins,
+                //                     style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w500, fontSize: 16),
+                //                   ),
+                //                 ],
+                //               ),
+                //             )
+                //           : Container(
+                //               padding: const EdgeInsets.symmetric(horizontal: 16),
+                //               child: DropdownButton<String>(
+                //                 menuMaxHeight: 350,
+                //                 value: provider.selectedChatPluginId,
+                //                 onChanged: (s) async {
+                //                   if ((s == 'no_selected' && provider.plugins.where((p) => p.enabled).isEmpty) ||
+                //                       s == 'enable') {
+                //                     routeToPage(context, const PluginsPage(filterChatOnly: true));
+                //                     MixpanelManager().pageOpened('Chat Plugins');
+                //                     return;
+                //                   }
+                //                   if (s == null || s == provider.selectedChatPluginId) return;
+                //                   provider.setSelectedChatPluginId(s);
+                //                   var plugin = provider.getSelectedPlugin();
+                //                   chatPageKey.currentState?.sendInitialPluginMessage(plugin);
+                //                 },
+                //                 icon: Container(),
+                //                 alignment: Alignment.center,
+                //                 dropdownColor: Colors.black,
+                //                 style: const TextStyle(color: Colors.white, fontSize: 16),
+                //                 underline: Container(height: 0, color: Colors.transparent),
+                //                 isExpanded: false,
+                //                 itemHeight: 48,
+                //                 padding: EdgeInsets.zero,
+                //                 items: _getPluginsDropdownItems(context, provider),
+                //               ),
+                //             ),
+                //     );
+                //   },
+                // ),
+                const SizedBox(width: 16),
                 IconButton(
                   icon: const Icon(Icons.settings, color: Colors.white, size: 30),
                   onPressed: () async {
