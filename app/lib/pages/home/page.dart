@@ -279,7 +279,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver, Ticker
                       child: Consumer<HomeProvider>(
                         builder: (context, home, child) {
                           return TabBar(
-                            padding: const EdgeInsets.only(top: 4, bottom: 4), // Reduced padding
+                            padding: const EdgeInsets.only(top: 4, bottom: 16),
                             onTap: (index) {
                               MixpanelManager().bottomNavigationTabClicked(['Memories', 'Diary', 'Chat'][index]);
                               primaryFocus?.unfocus();
