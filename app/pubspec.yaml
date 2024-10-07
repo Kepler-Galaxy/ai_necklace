@@ -187,16 +187,17 @@ flutter:
           style: italic
 
 flutter_native_splash:
-  color: "#000000"
   image: assets/images/foxxy_splash.png
   fullscreen: true
   android_gravity: fill
+
   android_12:
     image: assets/images/foxxy_splash.png
-    color: "#000000"
     fullscreen: true
     android_gravity: fill
+
   android: true
   ios: true
+
 flutter_intl:
   enabled: true
