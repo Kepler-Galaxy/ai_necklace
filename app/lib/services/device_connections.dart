@@ -20,7 +20,7 @@ class DeviceConnectionFactory {
       return null;
     }
     switch (device.type!) {
-      case DeviceType.friend:
+      case DeviceType.AudioFoxxy:
         return FriendDeviceConnection(device, bleDevice);
       case DeviceType.openglass:
         return FriendDeviceConnection(device, bleDevice);
@@ -45,11 +45,13 @@ abstract class DeviceConnection {
 
   DeviceConnectionState get connectionState => _connectionState;
 
-  Function(String deviceId, DeviceConnectionState state)? _connectionStateChangedCallback;
+  Function(String deviceId, DeviceConnectionState state)?
+      _connectionStateChangedCallback;
 
   DateTime? get pongAt => _pongAt;
 
-  late StreamSubscription<BluetoothConnectionState> _connectionStateSubscription;
+  late StreamSubscription<BluetoothConnectionState>
+      _connectionStateSubscription;
 
   DeviceConnection(
     this.device,
@@ -57,21 +59,28 @@ abstract class DeviceConnection {
   );
 
   Future<void> connect({
-    Function(String deviceId, DeviceConnectionState state)? onConnectionStateChanged,
+    Function(String deviceId, DeviceConnectionState state)?
+        onConnectionStateChanged,
   }) async {
     if (_connectionState == DeviceConnectionState.connected) {
-      throw Exception("Connection already established, please disconnect before start new connection");
+      throw Exception(
+          "Connection already established, please disconnect before start new connection");
     }
 
     // Connect
     _connectionStateChangedCallback = onConnectionStateChanged;
-    _connectionStateSubscription = bleDevice.connectionState.listen((BluetoothConnectionState state) async {
+    _connectionStateSubscription = bleDevice.connectionState
+        .listen((BluetoothConnectionState state) async {
       _onBleConnectionStateChanged(state);
     });
 
-    await FlutterBluePlus.adapterState.where((val) => val == BluetoothAdapterState.on).first;
+    await FlutterBluePlus.adapterState
+        .where((val) => val == BluetoothAdapterState.on)
+        .first;
     await bleDevice.connect();
-    await bleDevice.connectionState.where((val) => val == BluetoothConnectionState.connected).first;
+    await bleDevice.connectionState
+        .where((val) => val == BluetoothConnectionState.connected)
+        .first;
 
     // Mtu
     if (Platform.isAndroid && bleDevice.mtuNow < 512) {
@@ -86,13 +95,15 @@ abstract class DeviceConnection {
   }
 
   void _onBleConnectionStateChanged(BluetoothConnectionState state) async {
-    if (state == BluetoothConnectionState.disconnected && _connectionState == DeviceConnectionState.connected) {
+    if (state == BluetoothConnectionState.disconnected &&
+        _connectionState == DeviceConnectionState.connected) {
       _connectionState = DeviceConnectionState.disconnected;
       await disconnect();
       return;
     }
 
-    if (state == BluetoothConnectionState.connected && _connectionState == DeviceConnectionState.disconnected) {
+    if (state == BluetoothConnectionState.connected &&
+        _connectionState == DeviceConnectionState.disconnected) {
       _connectionState = DeviceConnectionState.connected;
       if (_connectionStateChangedCallback != null) {
         _connectionStateChangedCallback!(device.id, _connectionState);
@@ -129,12 +140,15 @@ abstract class DeviceConnection {
   void write() {}
 
   Future<BluetoothService?> getService(String uuid) async {
-    return _services.firstWhereOrNull((service) => service.uuid.str128.toLowerCase() == uuid);
+    return _services.firstWhereOrNull(
+        (service) => service.uuid.str128.toLowerCase() == uuid);
   }
 
-  BluetoothCharacteristic? getCharacteristic(BluetoothService service, String uuid) {
+  BluetoothCharacteristic? getCharacteristic(
+      BluetoothService service, String uuid) {
     return service.characteristics.firstWhereOrNull(
-      (characteristic) => characteristic.uuid.str128.toLowerCase() == uuid.toLowerCase(),
+      (characteristic) =>
+          characteristic.uuid.str128.toLowerCase() == uuid.toLowerCase(),
     );
   }
 
@@ -155,7 +169,8 @@ abstract class DeviceConnection {
     void Function(int)? onBatteryLevelChange,
   }) async {
     if (await isConnected()) {
-      return await performGetBleBatteryLevelListener(onBatteryLevelChange: onBatteryLevelChange);
+      return await performGetBleBatteryLevelListener(
+          onBatteryLevelChange: onBatteryLevelChange);
     }
     _showDeviceDisconnectedNotification();
     return null;
@@ -169,7 +184,8 @@ abstract class DeviceConnection {
     required void Function(List<int>) onAudioBytesReceived,
   }) async {
     if (await isConnected()) {
-      return await performGetBleAudioBytesListener(onAudioBytesReceived: onAudioBytesReceived);
+      return await performGetBleAudioBytesListener(
+          onAudioBytesReceived: onAudioBytesReceived);
     }
     _showDeviceDisconnectedNotification();
     return null;
@@ -214,7 +230,8 @@ abstract class DeviceConnection {
     required void Function(List<int>) onStorageBytesReceived,
   }) async {
     if (await isConnected()) {
-      return await performGetBleStorageBytesListener(onStorageBytesReceived: onStorageBytesReceived);
+      return await performGetBleStorageBytesListener(
+          onStorageBytesReceived: onStorageBytesReceived);
     }
     _showDeviceDisconnectedNotification();
     return null;

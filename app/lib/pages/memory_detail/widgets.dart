@@ -810,11 +810,11 @@ class _GetShareOptionsState extends State<GetShareOptions> {
                 return;
               }
               String content = '''
-              Here\'s my memory created with Omi. ${widget.memory.structured.getEmoji()}
+              Here\'s my memory created with Foxxy. ${widget.memory.structured.getEmoji()}
               
               https://h.omi.me/memories/${widget.memory.id}
               
-              Get started using Omi today.
+              Get started using Foxxy today.
               '''
                   .replaceAll('  ', '')
                   .trim();
@@ -837,13 +837,13 @@ class _GetShareOptionsState extends State<GetShareOptions> {
                   changeLoadingShareTranscript(true);
                   // TODO: check web url open graph.
                   String content = '''
-              Here\'s my memory created with Omi.
+              Here\'s my memory created with Foxxy.
               
               ${widget.memory.structured.title}
               
               ${widget.memory.getTranscript(generate: true)}
               
-              Get started using Omi today (https://www.omi.me).
+              Get started using Foxxy today (https://www.keplergalaxy.com).
               '''
                       .replaceAll('  ', '')
                       .trim();
@@ -861,11 +861,11 @@ class _GetShareOptionsState extends State<GetShareOptions> {
                         if (loadingShareSummary) return;
                         changeLoadingShareSummary(true);
                         String content = '''
-              Here\'s my memory created with Omi.
+              Here\'s my memory created with Foxxy.
               
               ${widget.memory.structured.toString()}
               
-              Get started using Omi today (https://www.omi.me).
+              Get started using Omi today (https://www.keplergalaxy.com).
               '''
                             .replaceAll('  ', '')
                             .trim();

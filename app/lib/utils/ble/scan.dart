@@ -4,7 +4,8 @@ import 'package:friend_private/backend/schema/bt_device.dart';
 import 'package:friend_private/utils/ble/connect.dart';
 import 'package:friend_private/utils/ble/find.dart';
 
-Future<BTDeviceStruct?> scanAndConnectDevice({bool autoConnect = true, bool timeout = false}) async {
+Future<BTDeviceStruct?> scanAndConnectDevice(
+    {bool autoConnect = true, bool timeout = false}) async {
   print('scanAndConnectDevice');
   var deviceId = SharedPreferencesUtil().btDeviceStruct.id;
   print('scanAndConnectDevice ${deviceId}');
@@ -15,7 +16,7 @@ Future<BTDeviceStruct?> scanAndConnectDevice({bool autoConnect = true, bool time
         id: device.remoteId.str,
         name: device.platformName,
         rssi: await device.readRssi(),
-        type: deviceType ?? DeviceType.friend,
+        type: deviceType ?? DeviceType.AudioFoxxy,
       );
     }
   }
