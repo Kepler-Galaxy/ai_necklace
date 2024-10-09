@@ -4,6 +4,7 @@ import 'package:friend_private/providers/auth_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:friend_private/generated/l10n.dart';
 import 'package:gradient_borders/gradient_borders.dart';
+import 'package:flutter/services.dart';
 
 class AuthComponent extends StatefulWidget {
   final VoidCallback onSignIn;
@@ -38,6 +39,11 @@ class _AuthComponentState extends State<AuthComponent> {
               const SizedBox(height: 16),
               TextField(
                 controller: provider.phoneController,
+                keyboardType: TextInputType.number,
+                inputFormatters: [
+                  FilteringTextInputFormatter.digitsOnly,      // 只允许输入数字
+                  LengthLimitingTextInputFormatter(11),        // 限制为 11 位
+                ],
                 decoration: InputDecoration(
                   labelText: S.current.PhoneNumber,
                   prefixIcon: Padding(
@@ -45,7 +51,6 @@ class _AuthComponentState extends State<AuthComponent> {
                     child: Icon(Icons.phone, size: 20, color: Theme.of(context).iconTheme.color),
                   ),
                 ),
-                keyboardType: TextInputType.phone,
               ),
               const SizedBox(height: 16),
               // Add verification code input
