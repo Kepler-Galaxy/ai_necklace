@@ -52,80 +52,16 @@ class _FlashingBoltIconState extends State<FlashingBoltIcon>
 }
 
 class MemoryChainsView extends StatelessWidget {
-  final List<MemoryConnectionNode> forest;
+  final MemoryConnectionNode node;
 
-  const MemoryChainsView({Key? key, required this.forest}) : super(key: key);
+  const MemoryChainsView({Key? key, required this.node}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    List<MemoryConnectionNode> connectedMemories = [];
-    List<MemoryConnectionNode> unconnectedMemories = [];
-
-    // Separate the memories into two groups
-    for (var node in forest) {
-      if (node.children.isNotEmpty) {
-        connectedMemories.add(node);
-      } else {
-        unconnectedMemories.add(node);
-      }
-    }
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        if (connectedMemories.isNotEmpty) ...[
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 24.0, horizontal: 32.0),
-            child: Text(
-              S.current.DiaryMemoryConnectionText,
-              style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w500,
-                  color: Colors.white),
-            ),
-          ),
-          ...connectedMemories
-              .expand((node) => [
-                    _buildTree(context, node, 0),
-                    SizedBox(height: 16),
-                  ])
-              .toList(),
-          SizedBox(height: 24),
-        ] else ...[
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 24.0, horizontal: 32.0),
-            child: Text(
-              S.current.DiaryNoConnectedMemory,
-              style: TextStyle(
-                  fontSize: 16,
-                  color: Colors.white),
-            ),
-          ),
-        ],
-        if (unconnectedMemories.isNotEmpty) ...[
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 24.0, horizontal: 32.0),
-            child: Text(
-              S.current.DiarySeparateMemoryText,
-              style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w500,
-                  color: Colors.white),
-            ),
-          ),
-          ...unconnectedMemories
-              .expand((node) => [
-                    _buildTree(context, node, 0),
-                    SizedBox(height: 16),
-                  ])
-              .toList(),
-        ],
-      ],
-    );
+    return _buildTree(context, node, 0);
   }
 
-  Widget _buildTree(
-      BuildContext context, MemoryConnectionNode node, int level) {
+  Widget _buildTree(BuildContext context, MemoryConnectionNode node, int level) {
     return node.children.isEmpty
         ? _buildLeafNode(context, node, level)
         : _buildBranchNode(context, node, level);
@@ -134,7 +70,7 @@ class MemoryChainsView extends StatelessWidget {
   Widget _buildLeafNode(
       BuildContext context, MemoryConnectionNode node, int level) {
     return Padding(
-      padding: EdgeInsets.only(left: 32.0 + level * 40.0, right: 32.0),
+      padding: EdgeInsets.only(left: 32.0 + level * 20.0, right: 32.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -152,7 +88,7 @@ class MemoryChainsView extends StatelessWidget {
   Widget _buildBranchNode(
       BuildContext context, MemoryConnectionNode node, int level) {
     return Padding(
-      padding: EdgeInsets.only(left: 32.0 + level * 40.0, right: 32.0),
+      padding: EdgeInsets.only(left: 32.0 + level * 20.0, right: 32.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -256,12 +192,12 @@ class MemoryChainsView extends StatelessWidget {
       future: _getOrFetchMemory(context, memoryId),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return CircularProgressIndicator();
+          return CircularProgressIndicator(
+            valueColor: AlwaysStoppedAnimation<Color>(Colors.green),
+          );
         } else if (snapshot.hasError) {
-          debugPrint('Error loading memory $memoryId: ${snapshot.error}');
           return Text('Error: ${snapshot.error}');
         } else if (!snapshot.hasData) {
-          debugPrint('No data for memory $memoryId');
           return Text('Memory not found');
         }
 
@@ -274,12 +210,7 @@ class MemoryChainsView extends StatelessWidget {
                 Provider.of<MemoryDetailProvider>(context, listen: false);
             final memoryProvider =
                 Provider.of<MemoryProvider>(context, listen: false);
-            int idx = memoryProvider.memoriesWithDates.indexWhere((e) {
-              if (e.runtimeType == ServerMemory) {
-                return e.id == memory.id;
-              }
-              return false;
-            });
+            int idx = memoryProvider.memoriesWithDates.indexOf(memory);
             memoryDetailProvider.updateMemory(idx);
 
             Navigator.push(

@@ -55,12 +55,73 @@ class DiaryTabView extends StatelessWidget {
   }
 
   Widget _buildMemoryChainsTab() {
+    List<MemoryConnectionNode> connectedMemories = [];
+    List<MemoryConnectionNode> unconnectedMemories = [];
+
+    // Separate the memories into two groups
+    for (var node in forest) {
+      if (node.children.isNotEmpty) {
+        connectedMemories.add(node);
+      } else {
+        unconnectedMemories.add(node);
+      }
+    }
+
     return CustomScrollView(
       physics: const BouncingScrollPhysics(),
       slivers: [
-        SliverToBoxAdapter(
-          child: MemoryChainsView(forest: forest),
-        ),
+        if (connectedMemories.isNotEmpty) ...[
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 24.0, horizontal: 32.0),
+              child: Text(
+                S.current.DiaryMemoryConnectionText,
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w500,
+                  color: Colors.white,
+                ),
+              ),
+            ),
+          ),
+          SliverList(
+            delegate: SliverChildBuilderDelegate(
+              (context, index) => MemoryChainsView(node: connectedMemories[index]),
+              childCount: connectedMemories.length,
+            ),
+          ),
+          SliverToBoxAdapter(child: SizedBox(height: 24)),
+        ] else
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 24.0, horizontal: 32.0),
+              child: Text(
+                S.current.DiaryNoConnectedMemory,
+                style: TextStyle(fontSize: 16, color: Colors.white),
+              ),
+            ),
+          ),
+        if (unconnectedMemories.isNotEmpty) ...[
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 24.0, horizontal: 32.0),
+              child: Text(
+                S.current.DiarySeparateMemoryText,
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w500,
+                  color: Colors.white,
+                ),
+              ),
+            ),
+          ),
+          SliverList(
+            delegate: SliverChildBuilderDelegate(
+              (context, index) => MemoryChainsView(node: unconnectedMemories[index]),
+              childCount: unconnectedMemories.length,
+            ),
+          ),
+        ],
       ],
     );
   }
