@@ -794,37 +794,37 @@ class _GetShareOptionsState extends State<GetShareOptions> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Card(
-          shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(8))),
-          child: ListTile(
-            title: const Text('Send web url'),
-            leading: loadingShareMemoryViaURL ? _getLoadingIndicator() : const Icon(Icons.link),
-            onTap: () async {
-              if (loadingShareMemoryViaURL) return;
-              changeLoadingShareMemoryViaURL(true);
-              bool shared = await setMemoryVisibility(widget.memory.id);
-              if (!shared) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Memory URL could not be shared.')),
-                );
-                return;
-              }
-              String content = '''
-              Here\'s my memory created with Foxxy. ${widget.memory.structured.getEmoji()}
+        // Card(
+        //   shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(8))),
+        //   child: ListTile(
+        //     title: const Text('Send web url'),
+        //     leading: loadingShareMemoryViaURL ? _getLoadingIndicator() : const Icon(Icons.link),
+        //     onTap: () async {
+        //       if (loadingShareMemoryViaURL) return;
+        //       changeLoadingShareMemoryViaURL(true);
+        //       bool shared = await setMemoryVisibility(widget.memory.id);
+        //       if (!shared) {
+        //         ScaffoldMessenger.of(context).showSnackBar(
+        //           const SnackBar(content: Text('Memory URL could not be shared.')),
+        //         );
+        //         return;
+        //       }
+        //       String content = '''
+        //       Here\'s my memory created with Foxxy. ${widget.memory.structured.getEmoji()}
               
-              https://h.omi.me/memories/${widget.memory.id}
+        //       https://h.omi.me/memories/${widget.memory.id}
               
-              Get started using Foxxy today.
-              '''
-                  .replaceAll('  ', '')
-                  .trim();
-              print(content);
-              await Share.share(content);
-              changeLoadingShareMemoryViaURL(false);
-            },
-          ),
-        ),
-        const SizedBox(height: 4),
+        //       Get started using Foxxy today.
+        //       '''
+        //           .replaceAll('  ', '')
+        //           .trim();
+        //       print(content);
+        //       await Share.share(content);
+        //       changeLoadingShareMemoryViaURL(false);
+        //     },
+        //   ),
+        // ),
+        // const SizedBox(height: 4),
         Card(
           shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(8))),
           child: Column(
