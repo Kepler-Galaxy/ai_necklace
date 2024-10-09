@@ -8,6 +8,7 @@ import 'package:friend_private/pages/diary/calandar_widget.dart';
 import 'package:friend_private/generated/l10n.dart';
 import 'package:friend_private/pages/diary/diary_tab_widget.dart';
 import 'package:friend_private/backend/schema/diary.dart';
+import 'package:friend_private/utils/analytics/mixpanel.dart';
 
 class DiaryPage extends StatefulWidget {
   const DiaryPage({Key? key}) : super(key: key);
@@ -128,6 +129,7 @@ class _DiaryPageState extends State<DiaryPage> {
                 });
                 _updateSelectedDayMemoryIds();
                 _loadMemoryChainData();
+                MixpanelManager().viewDiaryForDay(selectedDay, _currentDateDiary());
               }
             },
           ),

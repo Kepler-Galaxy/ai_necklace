@@ -890,6 +890,7 @@ class _GetShareOptionsState extends State<GetShareOptions> {
               '''
                       .replaceAll('  ', '')
                       .trim();
+                  MixpanelManager().memoryShareButtonClick(widget.memory);
                   // TODO: Deeplink that let people download the app.
                   await Share.share(content);
                   changeLoadingShareTranscript(false);
@@ -912,6 +913,7 @@ class _GetShareOptionsState extends State<GetShareOptions> {
               '''
                             .replaceAll('  ', '')
                             .trim();
+                        MixpanelManager().memoryShareButtonClick(widget.memory);
                         await Share.share(content);
                         changeLoadingShareSummary(false);
                       },

@@ -4,6 +4,8 @@ import 'package:friend_private/backend/schema/memory.dart';
 import 'package:friend_private/env/env.dart';
 import 'package:mixpanel_flutter/mixpanel_flutter.dart';
 import 'package:friend_private/utils/other/string_utils.dart';
+import 'package:friend_private/backend/schema/memory_connection.dart';
+import 'package:friend_private/backend/schema/diary.dart';
 
 class MixpanelManager {
   static final MixpanelManager _instance = MixpanelManager._internal();
@@ -186,6 +188,8 @@ class MixpanelManager {
     properties['memory_hours_since_creation'] = hoursAgo;
     properties['memory_id'] = memory.id;
     properties['memory_discarded'] = memory.discarded;
+    properties['has_transcript_segments'] = memory.transcriptSegments.isNotEmpty;
+    properties['has_web_link'] = memory.externalLink != null;
     return properties;
   }
 
@@ -207,6 +211,12 @@ class MixpanelManager {
 
   void chatMessageSent(String message) => track('Chat Message Sent',
       properties: {'message_length': message.length, 'message_word_count': wordsCount(message)});
+
+  void memoryConnectionNodeViewed(MemoryConnectionNode node) =>
+      track('Memory Connection Node Viewed', properties: node.toAnalyticsJson());
+
+  void viewDiaryForDay(DateTime day, ServerDiary? diary) =>
+      track('View Diary For Day', properties: {'day': day.toString(), ...diary?.toAnalyticsJson() ?? {}});
 
   void speechProfileCapturePageClicked() => track('Speech Profile Capture Page Clicked');
 

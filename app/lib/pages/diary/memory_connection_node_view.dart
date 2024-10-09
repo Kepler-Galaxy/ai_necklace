@@ -8,6 +8,7 @@ import 'package:friend_private/pages/memory_detail/memory_detail_provider.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:friend_private/generated/l10n.dart';
 import 'package:collection/collection.dart';
+import 'package:friend_private/utils/analytics/mixpanel.dart';
 
 class FlashingBoltIcon extends StatefulWidget {
   const FlashingBoltIcon({Key? key}) : super(key: key);
@@ -80,7 +81,6 @@ class MemoryConnectionNodeView extends StatelessWidget {
           Row(
             children: [
               if (level > 0) _buildConnectionIndicator(context, node),
-              //_buildMemoryNode(context, node.memoryId),
               Expanded(child: _buildMemoryNode(context, node.memoryId)),
             ],
           ),
@@ -101,7 +101,6 @@ class MemoryConnectionNodeView extends StatelessWidget {
             children: [
               if (level > 0) _buildConnectionIndicator(context, node),
               Expanded(child: _buildMemoryNode(context, node.memoryId)),
-              //_buildMemoryNode(context, node.memoryId),
             ],
           ),
           ...node.children
@@ -120,6 +119,7 @@ class MemoryConnectionNodeView extends StatelessWidget {
           if (node.explanation != null && node.explanation!.isNotEmpty)
             GestureDetector(
               onTap: () {
+                MixpanelManager().memoryConnectionNodeViewed(node);
                 showDialog(
                   context: context,
                   builder: (BuildContext context) {
