@@ -45,6 +45,18 @@ class ServerDiary {
       'content': content.toJson(),
     };
   }
+
+  Map<String, dynamic> toAnalyticsJson() {
+    return {
+      'id': id,
+      'created_at': createdAt.toIso8601String(),
+      'updated_at': updatedAt.toIso8601String(),
+      'user_deleted': userDeleted,
+      'config': config.toJson(),
+      'user_config': userConfig?.toJson(),
+      'description': description.toJson(),
+    };
+  }
 }
 
 class DiaryConfig {

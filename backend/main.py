@@ -23,21 +23,18 @@ def serialize(record):
 def patching(record):
     record["extra"]["serialized"] = serialize(record)
 
-
-# load env
-load_dotenv()
+if(os.environ.get('ENV') == 'dev' or os.environ.get('ENV') == None):
+    logger.info('loding dev environments from .dev.env')
+    load_dotenv('./.dev.env')
+else:
+    logger.info('loding prod environments from .env')
+    load_dotenv()
 
 from modal import Image, App, asgi_app, Secret, Cron
 
 from routers import workflow, chat, firmware, plugins, memories, transcribe, notifications, speech_profile, \
     agents, facts, users, processing_memories, trends, sdcard, diary
 from utils.other.notifications import start_cron_job
-if(os.environ.get('ENV') == 'dev' or os.environ.get('ENV') == None):
-    logger.info('loding dev environments from .env.dev')
-    load_dotenv('./.env.dev')
-else:
-    logger.info('loding prod environments from .env')
-    load_dotenv()
 
 # TODO(yiqi): How to set the environment variable GOOGLE_APPLICATION_CREDENTIALS to the path of generated file google-credentials.json, where is it?
 if os.environ.get('SERVICE_ACCOUNT_JSON'):

@@ -340,13 +340,13 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver, Ticker
                 Consumer2<DeviceProvider, HomeProvider>(builder: (context, deviceProvider, home, child) {
                   bool isMemoriesPage = home.selectedIndex == 0;
 
-                  var deviceText = "";
-                  if (deviceProvider.connectedDevice != null) {
-                    var deviceName = deviceProvider.connectedDevice?.name ?? SharedPreferencesUtil().deviceName;
-                    // var deviceShortId = deviceProvider.connectedDevice?.getShortId() ??
-                    //     SharedPreferencesUtil().btDeviceStruct.getShortId();
-                    deviceText = deviceName;
-                  }
+                  var deviceText = "Audio Foxxy";
+                  // if (deviceProvider.connectedDevice != null) {
+                  //   var deviceName = deviceProvider.connectedDevice?.name ?? SharedPreferencesUtil().deviceName;
+                  //   // var deviceShortId = deviceProvider.connectedDevice?.getShortId() ??
+                  //   //     SharedPreferencesUtil().btDeviceStruct.getShortId();
+                  //   deviceText = deviceName;
+                  // }
                   if (deviceProvider.connectedDevice != null && deviceProvider.batteryLevel != -1) {
                     return GestureDetector(
                       onTap: deviceProvider.connectedDevice == null

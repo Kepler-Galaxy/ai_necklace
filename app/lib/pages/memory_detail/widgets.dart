@@ -837,37 +837,37 @@ class _GetShareOptionsState extends State<GetShareOptions> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Card(
-          shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(8))),
-          child: ListTile(
-            title: const Text('Send web url'),
-            leading: loadingShareMemoryViaURL ? _getLoadingIndicator() : const Icon(Icons.link),
-            onTap: () async {
-              if (loadingShareMemoryViaURL) return;
-              changeLoadingShareMemoryViaURL(true);
-              bool shared = await setMemoryVisibility(widget.memory.id);
-              if (!shared) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Memory URL could not be shared.')),
-                );
-                return;
-              }
-              String content = '''
-              Here\'s my memory created with Omi. ${widget.memory.structured.getEmoji()}
+        // Card(
+        //   shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(8))),
+        //   child: ListTile(
+        //     title: const Text('Send web url'),
+        //     leading: loadingShareMemoryViaURL ? _getLoadingIndicator() : const Icon(Icons.link),
+        //     onTap: () async {
+        //       if (loadingShareMemoryViaURL) return;
+        //       changeLoadingShareMemoryViaURL(true);
+        //       bool shared = await setMemoryVisibility(widget.memory.id);
+        //       if (!shared) {
+        //         ScaffoldMessenger.of(context).showSnackBar(
+        //           const SnackBar(content: Text('Memory URL could not be shared.')),
+        //         );
+        //         return;
+        //       }
+        //       String content = '''
+        //       Here\'s my memory created with Foxxy. ${widget.memory.structured.getEmoji()}
               
-              https://h.omi.me/memories/${widget.memory.id}
+        //       https://h.omi.me/memories/${widget.memory.id}
               
-              Get started using Omi today.
-              '''
-                  .replaceAll('  ', '')
-                  .trim();
-              print(content);
-              await Share.share(content);
-              changeLoadingShareMemoryViaURL(false);
-            },
-          ),
-        ),
-        const SizedBox(height: 4),
+        //       Get started using Foxxy today.
+        //       '''
+        //           .replaceAll('  ', '')
+        //           .trim();
+        //       print(content);
+        //       await Share.share(content);
+        //       changeLoadingShareMemoryViaURL(false);
+        //     },
+        //   ),
+        // ),
+        // const SizedBox(height: 4),
         Card(
           shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(8))),
           child: Column(
@@ -880,16 +880,17 @@ class _GetShareOptionsState extends State<GetShareOptions> {
                   changeLoadingShareTranscript(true);
                   // TODO: check web url open graph.
                   String content = '''
-              Here\'s my memory created with Omi.
+              Here\'s my memory created with Foxxy.
               
               ${widget.memory.structured.title}
               
               ${widget.memory.getTranscript(generate: true)}
               
-              Get started using Omi today (https://www.omi.me).
+              Get started using Foxxy today (https://www.keplergalaxy.com).
               '''
                       .replaceAll('  ', '')
                       .trim();
+                  MixpanelManager().memoryShareButtonClick(widget.memory);
                   // TODO: Deeplink that let people download the app.
                   await Share.share(content);
                   changeLoadingShareTranscript(false);
@@ -904,14 +905,15 @@ class _GetShareOptionsState extends State<GetShareOptions> {
                         if (loadingShareSummary) return;
                         changeLoadingShareSummary(true);
                         String content = '''
-              Here\'s my memory created with Omi.
+              Here\'s my memory created with Foxxy.
               
               ${widget.memory.structured.toString()}
               
-              Get started using Omi today (https://www.omi.me).
+              Get started using Omi today (https://www.keplergalaxy.com).
               '''
                             .replaceAll('  ', '')
                             .trim();
+                        MixpanelManager().memoryShareButtonClick(widget.memory);
                         await Share.share(content);
                         changeLoadingShareSummary(false);
                       },

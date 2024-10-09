@@ -9,7 +9,7 @@ import 'package:friend_private/main.dart';
 import 'package:friend_private/pages/home/page.dart';
 
 class NotifyOnKill {
-  static const platform = MethodChannel('com.friend.ios/notifyOnKill');
+  static const platform = MethodChannel('com.keplergalaxy.necklace/notifyOnKill');
 
   static Future<void> register() async {
     try {

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mixpanel_flutter/mixpanel_flutter.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:friend_private/utils/other/temp.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';

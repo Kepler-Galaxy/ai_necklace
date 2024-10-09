@@ -54,4 +54,12 @@ class MemoryConnectionNode {
       'memory': memory?.toJson(),
     };
   }
+
+  Map<String, dynamic> toAnalyticsJson() {
+    return {
+      'memory_id': memoryId,
+      'explanation': explanation,
+      'children': children.map((child) => child.toAnalyticsJson()).toList(),
+    };
+  }
 }

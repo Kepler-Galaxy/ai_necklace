@@ -4,7 +4,7 @@ flavors:
       name: "Foxxy"
       icon: "assets/images/app_icon.png"
     android:
-      applicationId: "com.friend.ios"
+      applicationId: "com.keplergalaxy.necklace"
       icon: "assets/images/app_icon.png"
       firebase:
         config: "app/android/app/src/prod/google-services.json"

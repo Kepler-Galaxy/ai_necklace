@@ -23,7 +23,7 @@ Future<List<BTDeviceStruct>> bleFindDevices() async {
           DeviceType? deviceType;
           if (deviceResult.advertisementData.serviceUuids
               .contains(Guid(friendServiceUuid))) {
-            deviceType = DeviceType.friend;
+            deviceType = DeviceType.AudioFoxxy;
           } else if (deviceResult.advertisementData.serviceUuids
               .contains(Guid(frameServiceUuid))) {
             deviceType = DeviceType.frame;
