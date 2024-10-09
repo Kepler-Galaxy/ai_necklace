@@ -44,24 +44,26 @@ class _FlashingBoltIconState extends State<FlashingBoltIcon>
       builder: (context, child) {
         return Opacity(
           opacity: _animation.value,
-          child: Icon(Icons.bolt, size: 30, color: Colors.yellow),
+          child: Icon(Icons.bolt, size: 32, color: Colors.yellow),
         );
       },
     );
   }
 }
 
-class MemoryChainsView extends StatelessWidget {
+class MemoryConnectionNodeView extends StatelessWidget {
   final MemoryConnectionNode node;
 
-  const MemoryChainsView({Key? key, required this.node}) : super(key: key);
+  const MemoryConnectionNodeView({Key? key, required this.node})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return _buildTree(context, node, 0);
   }
 
-  Widget _buildTree(BuildContext context, MemoryConnectionNode node, int level) {
+  Widget _buildTree(
+      BuildContext context, MemoryConnectionNode node, int level) {
     return node.children.isEmpty
         ? _buildLeafNode(context, node, level)
         : _buildBranchNode(context, node, level);
@@ -70,13 +72,15 @@ class MemoryChainsView extends StatelessWidget {
   Widget _buildLeafNode(
       BuildContext context, MemoryConnectionNode node, int level) {
     return Padding(
-      padding: EdgeInsets.only(left: 32.0 + level * 20.0, right: 32.0),
+      padding:
+          EdgeInsets.only(left: 16 + level * 16.0, right: level == 0 ? 16 : 0),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.end,
         children: [
           Row(
             children: [
               if (level > 0) _buildConnectionIndicator(context, node),
+              //_buildMemoryNode(context, node.memoryId),
               Expanded(child: _buildMemoryNode(context, node.memoryId)),
             ],
           ),
@@ -88,14 +92,16 @@ class MemoryChainsView extends StatelessWidget {
   Widget _buildBranchNode(
       BuildContext context, MemoryConnectionNode node, int level) {
     return Padding(
-      padding: EdgeInsets.only(left: 32.0 + level * 20.0, right: 32.0),
+      padding:
+          EdgeInsets.only(left: 16 + level * 16.0, right: level == 0 ? 16 : 0),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.end,
         children: [
           Row(
             children: [
               if (level > 0) _buildConnectionIndicator(context, node),
               Expanded(child: _buildMemoryNode(context, node.memoryId)),
+              //_buildMemoryNode(context, node.memoryId),
             ],
           ),
           ...node.children
@@ -153,7 +159,10 @@ class MemoryChainsView extends StatelessWidget {
                               node.explanation!,
                               style: TextStyle(
                                 fontSize: 16,
-                                color: Theme.of(context).colorScheme.onSurface.withOpacity(0.8),
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .onSurface
+                                    .withOpacity(0.8),
                               ),
                             ),
                             SizedBox(height: 24),
@@ -192,6 +201,16 @@ class MemoryChainsView extends StatelessWidget {
       future: _getOrFetchMemory(context, memoryId),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
+          // return SliverToBoxAdapter(
+          //       child: Center(
+          //         child: Padding(
+          //           padding: EdgeInsets.all(16.0),
+          //           child: CircularProgressIndicator(
+          //             valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+          //           ),
+          //         ),
+          //       ),
+          // );
           return CircularProgressIndicator(
             valueColor: AlwaysStoppedAnimation<Color>(Colors.green),
           );
@@ -228,8 +247,8 @@ class MemoryChainsView extends StatelessWidget {
             width: 250,
             padding: EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: Colors.black,
-              borderRadius: BorderRadius.circular(8),
+              color: Colors.grey.shade900,
+              borderRadius: BorderRadius.circular(16.0),
               border: Border.all(color: Colors.white.withOpacity(0.2)),
             ),
             child: Column(
@@ -237,11 +256,7 @@ class MemoryChainsView extends StatelessWidget {
               children: [
                 Text(
                   memory.structured.title,
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
-                  ),
+                  style: Theme.of(context).textTheme.titleMedium,
                   maxLines: 3,
                   overflow: TextOverflow.ellipsis,
                 ),
