@@ -123,6 +123,7 @@ class DiaryContent(BaseModel):
     
 class Diary(BaseModel):
     id: str
+    uid: str
     created_at: datetime
     updated_at: datetime
     user_deleted: bool = False
@@ -138,6 +139,7 @@ async def diary_from_configs(config: DiaryConfig, user_config: DiaryUserConfig =
     content = await DiaryContent.generate_content(raw_materials)
     return Diary(
         id=document_id_from_seed("".join(description.memory_ids)),
+        uid=config.uid,
         created_at=datetime.utcnow() if not use_end_utc_for_debug else config.diary_end_utc,
         updated_at=datetime.utcnow(),
         user_deleted=False,
@@ -147,17 +149,18 @@ async def diary_from_configs(config: DiaryConfig, user_config: DiaryUserConfig =
         content=content,
     )
 
-async def diary_regeneration_from_description(description: DiaryDescription) -> Diary:
-    raw_materials = await raw_materials_from_description(description)
-    content = await DiaryContent.generate_content(raw_materials)
-    return Diary(
-        id=description.id,
-        created_at=description.created_at,
-        updated_at=datetime.utcnow(),
-        user_deleted=False,
+# TODO(yiqi): fix the bug when this funciton needs to be called.
+# async def diary_regeneration_from_description(description: DiaryDescription) -> Diary:
+#     raw_materials = await raw_materials_from_description(description)
+#     content = await DiaryContent.generate_content(raw_materials)
+#     return Diary(
+#         id=description.id,
+#         created_at=description.created_at,
+#         updated_at=datetime.utcnow(),
+#         user_deleted=False,
 
-        config=description.config,
-        user_config=description.user_config,
-        description=description,
-        content=content,
-    )
+#         config=description.config,
+#         user_config=description.user_config,
+#         description=description,
+#         content=content,
+#     )

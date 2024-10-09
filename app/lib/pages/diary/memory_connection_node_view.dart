@@ -8,6 +8,7 @@ import 'package:friend_private/pages/memory_detail/memory_detail_provider.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:friend_private/generated/l10n.dart';
 import 'package:collection/collection.dart';
+import 'package:friend_private/utils/analytics/mixpanel.dart';
 
 class FlashingBoltIcon extends StatefulWidget {
   const FlashingBoltIcon({Key? key}) : super(key: key);
@@ -44,84 +45,22 @@ class _FlashingBoltIconState extends State<FlashingBoltIcon>
       builder: (context, child) {
         return Opacity(
           opacity: _animation.value,
-          child: Icon(Icons.bolt, size: 30, color: Colors.yellow),
+          child: Icon(Icons.bolt, size: 32, color: Colors.yellow),
         );
       },
     );
   }
 }
 
-class MemoryChainsView extends StatelessWidget {
-  final List<MemoryConnectionNode> forest;
+class MemoryConnectionNodeView extends StatelessWidget {
+  final MemoryConnectionNode node;
 
-  const MemoryChainsView({Key? key, required this.forest}) : super(key: key);
+  const MemoryConnectionNodeView({Key? key, required this.node})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    List<MemoryConnectionNode> connectedMemories = [];
-    List<MemoryConnectionNode> unconnectedMemories = [];
-
-    // Separate the memories into two groups
-    for (var node in forest) {
-      if (node.children.isNotEmpty) {
-        connectedMemories.add(node);
-      } else {
-        unconnectedMemories.add(node);
-      }
-    }
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        if (connectedMemories.isNotEmpty) ...[
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 24.0, horizontal: 32.0),
-            child: Text(
-              S.current.DiaryMemoryConnectionText,
-              style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w500,
-                  color: Colors.white),
-            ),
-          ),
-          ...connectedMemories
-              .expand((node) => [
-                    _buildTree(context, node, 0),
-                    SizedBox(height: 16),
-                  ])
-              .toList(),
-          SizedBox(height: 24),
-        ] else ...[
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 24.0, horizontal: 32.0),
-            child: Text(
-              S.current.DiaryNoConnectedMemory,
-              style: TextStyle(
-                  fontSize: 16,
-                  color: Colors.white),
-            ),
-          ),
-        ],
-        if (unconnectedMemories.isNotEmpty) ...[
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 24.0, horizontal: 32.0),
-            child: Text(
-              S.current.DiarySeparateMemoryText,
-              style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w500,
-                  color: Colors.white),
-            ),
-          ),
-          ...unconnectedMemories
-              .expand((node) => [
-                    _buildTree(context, node, 0),
-                    SizedBox(height: 16),
-                  ])
-              .toList(),
-        ],
-      ],
-    );
+    return _buildTree(context, node, 0);
   }
 
   Widget _buildTree(
@@ -134,9 +73,10 @@ class MemoryChainsView extends StatelessWidget {
   Widget _buildLeafNode(
       BuildContext context, MemoryConnectionNode node, int level) {
     return Padding(
-      padding: EdgeInsets.only(left: 32.0 + level * 40.0, right: 32.0),
+      padding:
+          EdgeInsets.only(left: 16 + level * 16.0, right: level == 0 ? 16 : 0),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.end,
         children: [
           Row(
             children: [
@@ -152,9 +92,10 @@ class MemoryChainsView extends StatelessWidget {
   Widget _buildBranchNode(
       BuildContext context, MemoryConnectionNode node, int level) {
     return Padding(
-      padding: EdgeInsets.only(left: 32.0 + level * 40.0, right: 32.0),
+      padding:
+          EdgeInsets.only(left: 16 + level * 16.0, right: level == 0 ? 16 : 0),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.end,
         children: [
           Row(
             children: [
@@ -178,6 +119,7 @@ class MemoryChainsView extends StatelessWidget {
           if (node.explanation != null && node.explanation!.isNotEmpty)
             GestureDetector(
               onTap: () {
+                MixpanelManager().memoryConnectionNodeViewed(node);
                 showDialog(
                   context: context,
                   builder: (BuildContext context) {
@@ -217,7 +159,10 @@ class MemoryChainsView extends StatelessWidget {
                               node.explanation!,
                               style: TextStyle(
                                 fontSize: 16,
-                                color: Theme.of(context).colorScheme.onSurface.withOpacity(0.8),
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .onSurface
+                                    .withOpacity(0.8),
                               ),
                             ),
                             SizedBox(height: 24),
@@ -256,12 +201,22 @@ class MemoryChainsView extends StatelessWidget {
       future: _getOrFetchMemory(context, memoryId),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return CircularProgressIndicator();
+          // return SliverToBoxAdapter(
+          //       child: Center(
+          //         child: Padding(
+          //           padding: EdgeInsets.all(16.0),
+          //           child: CircularProgressIndicator(
+          //             valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+          //           ),
+          //         ),
+          //       ),
+          // );
+          return CircularProgressIndicator(
+            valueColor: AlwaysStoppedAnimation<Color>(Colors.green),
+          );
         } else if (snapshot.hasError) {
-          debugPrint('Error loading memory $memoryId: ${snapshot.error}');
           return Text('Error: ${snapshot.error}');
         } else if (!snapshot.hasData) {
-          debugPrint('No data for memory $memoryId');
           return Text('Memory not found');
         }
 
@@ -274,12 +229,7 @@ class MemoryChainsView extends StatelessWidget {
                 Provider.of<MemoryDetailProvider>(context, listen: false);
             final memoryProvider =
                 Provider.of<MemoryProvider>(context, listen: false);
-            int idx = memoryProvider.memoriesWithDates.indexWhere((e) {
-              if (e.runtimeType == ServerMemory) {
-                return e.id == memory.id;
-              }
-              return false;
-            });
+            int idx = memoryProvider.memoriesWithDates.indexOf(memory);
             memoryDetailProvider.updateMemory(idx);
 
             Navigator.push(
@@ -297,8 +247,8 @@ class MemoryChainsView extends StatelessWidget {
             width: 250,
             padding: EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: Colors.black,
-              borderRadius: BorderRadius.circular(8),
+              color: Colors.grey.shade900,
+              borderRadius: BorderRadius.circular(16.0),
               border: Border.all(color: Colors.white.withOpacity(0.2)),
             ),
             child: Column(
@@ -306,11 +256,7 @@ class MemoryChainsView extends StatelessWidget {
               children: [
                 Text(
                   memory.structured.title,
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
-                  ),
+                  style: Theme.of(context).textTheme.titleMedium,
                   maxLines: 3,
                   overflow: TextOverflow.ellipsis,
                 ),

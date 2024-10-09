@@ -281,6 +281,7 @@ class MemoryProvider extends ChangeNotifier {
     try {
       final memory = await createMemoryFromWeChatArticle(articleLink);
       addMemory(memory);
+      MixpanelManager().memoryCreated(memory);
       notifyListeners();
     } catch (e) {
       throw Exception('Failed to create memory: $e');

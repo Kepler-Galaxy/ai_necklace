@@ -32,7 +32,8 @@ class _ConnectedDeviceState extends State<ConnectedDevice> {
 
   @override
   Widget build(BuildContext context) {
-    var deviceName = widget.device?.name ?? SharedPreferencesUtil().deviceName;
+    // var deviceName = widget.device?.name ?? SharedPreferencesUtil().deviceName;
+    var deviceName = "Audio Foxxy";
     var deviceConnected = widget.device != null;
 
     return FutureBuilder<DeviceInfo>(
@@ -156,19 +157,6 @@ class _ConnectedDeviceState extends State<ConnectedDevice> {
                   child: Text(
                     widget.device == null ? "Unpair" : "Disconnect",
                     style: const TextStyle(color: Colors.white, fontSize: 16),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 8),
-              TextButton(
-                onPressed: () async {
-                  await Intercom.instance.displayArticle('9907475-how-to-charge-the-device');
-                },
-                child: const Text(
-                  'Issues charging?',
-                  style: TextStyle(
-                    color: Colors.white,
-                    decoration: TextDecoration.underline,
                   ),
                 ),
               ),

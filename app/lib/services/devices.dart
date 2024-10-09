@@ -12,7 +12,8 @@ abstract class IDeviceService {
   void stop();
   Future<void> discover({String? desirableDeviceId, int timeout = 5});
 
-  Future<DeviceConnection?> ensureConnection(String deviceId, {bool force = false});
+  Future<DeviceConnection?> ensureConnection(String deviceId,
+      {bool force = false});
 
   void subscribe(IDeviceServiceSubsciption subscription, Object context);
   void unsubscribe(Object context);
@@ -33,7 +34,8 @@ enum DeviceConnectionState {
 abstract class IDeviceServiceSubsciption {
   void onDevices(List<BTDeviceStruct> devices);
   void onStatusChanged(DeviceServiceStatus status);
-  void onDeviceConnectionStateChanged(String deviceId, DeviceConnectionState state);
+  void onDeviceConnectionStateChanged(
+      String deviceId, DeviceConnectionState state);
 }
 
 class DeviceService implements IDeviceService {
@@ -81,7 +83,9 @@ class DeviceService implements IDeviceService {
 
     // Only look for devices that implement Friend or Frame main service
     _status = DeviceServiceStatus.scanning;
-    await FlutterBluePlus.adapterState.where((val) => val == BluetoothAdapterState.on).first;
+    await FlutterBluePlus.adapterState
+        .where((val) => val == BluetoothAdapterState.on)
+        .first;
     await FlutterBluePlus.startScan(
       timeout: Duration(seconds: timeout),
       withServices: [Guid(friendServiceUuid), Guid(frameServiceUuid)],
@@ -89,21 +93,26 @@ class DeviceService implements IDeviceService {
     _status = DeviceServiceStatus.ready;
   }
 
-  Future<void> _onBleDiscovered(List<ScanResult> results, String? desirableDeviceId) async {
-    _bleDevices = results.where((r) => r.device.platformName.isNotEmpty).toList();
+  Future<void> _onBleDiscovered(
+      List<ScanResult> results, String? desirableDeviceId) async {
+    _bleDevices =
+        results.where((r) => r.device.platformName.isNotEmpty).toList();
     _bleDevices.sort((a, b) => b.rssi.compareTo(a.rssi));
 
     // Set devices
     _devices = _bleDevices.map<BTDeviceStruct>((deviceResult) {
       DeviceType? deviceType;
-      if (deviceResult.advertisementData.serviceUuids.contains(Guid(friendServiceUuid))) {
-        deviceType = DeviceType.friend;
-      } else if (deviceResult.advertisementData.serviceUuids.contains(Guid(frameServiceUuid))) {
+      if (deviceResult.advertisementData.serviceUuids
+          .contains(Guid(friendServiceUuid))) {
+        deviceType = DeviceType.AudioFoxxy;
+      } else if (deviceResult.advertisementData.serviceUuids
+          .contains(Guid(frameServiceUuid))) {
         deviceType = DeviceType.frame;
       }
       if (deviceType != null) {
         deviceTypeMap[deviceResult.device.remoteId.toString()] = deviceType;
-      } else if (deviceTypeMap.containsKey(deviceResult.device.remoteId.toString())) {
+      } else if (deviceTypeMap
+          .containsKey(deviceResult.device.remoteId.toString())) {
         deviceType = deviceTypeMap[deviceResult.device.remoteId.toString()];
       }
       return BTDeviceStruct(
@@ -128,7 +137,8 @@ class DeviceService implements IDeviceService {
     }
     _connection = null;
 
-    var bleDevice = _bleDevices.firstWhereOrNull((f) => f.device.remoteId.str == id);
+    var bleDevice =
+        _bleDevices.firstWhereOrNull((f) => f.device.remoteId.str == id);
     var device = _devices.firstWhereOrNull((f) => f.id == id);
     if (bleDevice == null || device == null) {
       debugPrint("bleDevice or device is null");
@@ -142,7 +152,8 @@ class DeviceService implements IDeviceService {
 
     // Then create new connection
     _connection = DeviceConnectionFactory.create(device, bleDevice.device);
-    await _connection?.connect(onConnectionStateChanged: onDeviceConnectionStateChanged);
+    await _connection?.connect(
+        onConnectionStateChanged: onDeviceConnectionStateChanged);
     return;
   }
 
@@ -187,7 +198,8 @@ class DeviceService implements IDeviceService {
     }
   }
 
-  void onDeviceConnectionStateChanged(String deviceId, DeviceConnectionState state) {
+  void onDeviceConnectionStateChanged(
+      String deviceId, DeviceConnectionState state) {
     debugPrint("device connection state changed...${deviceId}...${state}");
     for (var s in _subscriptions.values) {
       s.onDeviceConnectionStateChanged(deviceId, state);
@@ -203,23 +215,28 @@ class DeviceService implements IDeviceService {
   // Warn: Should use a better solution to prevent race conditions
   bool mutex = false;
   @override
-  Future<DeviceConnection?> ensureConnection(String deviceId, {bool force = false}) async {
+  Future<DeviceConnection?> ensureConnection(String deviceId,
+      {bool force = false}) async {
     while (mutex) {
       await Future.delayed(const Duration(milliseconds: 50));
     }
     mutex = true;
 
-    debugPrint("ensureConnection ${_connection?.device.id} ${_connection?.status} ${force}");
+    debugPrint(
+        "ensureConnection ${_connection?.device.id} ${_connection?.status} ${force}");
     try {
       // Not force
       if (!force && _connection != null) {
-        if (_connection?.device.id != deviceId || _connection?.status != DeviceConnectionState.connected) {
+        if (_connection?.device.id != deviceId ||
+            _connection?.status != DeviceConnectionState.connected) {
           return null;
         }
 
         // connected
         var pongAt = _connection?.pongAt;
-        var shouldPing = (pongAt == null || pongAt.isBefore(DateTime.now().subtract(const Duration(seconds: 5))));
+        var shouldPing = (pongAt == null ||
+            pongAt
+                .isBefore(DateTime.now().subtract(const Duration(seconds: 5))));
         if (shouldPing) {
           var ok = await _connection?.ping() ?? false;
           if (!ok) {
@@ -232,9 +249,12 @@ class DeviceService implements IDeviceService {
       }
 
       // Force
-      if (deviceId == _connection?.device.id && _connection?.status == DeviceConnectionState.connected) {
+      if (deviceId == _connection?.device.id &&
+          _connection?.status == DeviceConnectionState.connected) {
         var pongAt = _connection?.pongAt;
-        var shouldPing = (pongAt == null || pongAt.isBefore(DateTime.now().subtract(const Duration(seconds: 5))));
+        var shouldPing = (pongAt == null ||
+            pongAt
+                .isBefore(DateTime.now().subtract(const Duration(seconds: 5))));
         if (shouldPing) {
           var ok = await _connection?.ping() ?? false;
           if (!ok) {

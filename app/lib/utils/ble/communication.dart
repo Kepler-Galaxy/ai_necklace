@@ -14,7 +14,8 @@ Future<DeviceBase?> getDevice(String deviceId) async {
     return deviceMap[deviceId];
   } else {
     if (!deviceTypeMap.containsKey(deviceId)) {
-      final deviceType = await getTypeOfBluetoothDevice(BluetoothDevice.fromId(deviceId));
+      final deviceType =
+          await getTypeOfBluetoothDevice(BluetoothDevice.fromId(deviceId));
       if (deviceType != null) {
         deviceTypeMap[deviceId] = deviceType;
       } else {
@@ -23,7 +24,7 @@ Future<DeviceBase?> getDevice(String deviceId) async {
     }
     //where the codecs get initialized?
     final deviceType = deviceTypeMap[deviceId];
-    if (deviceType == DeviceType.friend) {
+    if (deviceType == DeviceType.AudioFoxxy) {
       deviceMap[deviceId] = FriendDevice(deviceId);
     } else if (deviceType == DeviceType.openglass) {
       deviceMap[deviceId] = FriendDevice(deviceId);
@@ -41,53 +42,61 @@ Future<StreamSubscription<List<int>>?> getBleBatteryLevelListener(
   String deviceId, {
   void Function(int)? onBatteryLevelChange,
 }) async =>
-    (await getDevice(deviceId))?.getBleBatteryLevelListener(onBatteryLevelChange: onBatteryLevelChange) ??
+    (await getDevice(deviceId))?.getBleBatteryLevelListener(
+        onBatteryLevelChange: onBatteryLevelChange) ??
     Future.value(null);
 
 Future<StreamSubscription?> getBleAudioBytesListener(
   String deviceId, {
   required void Function(List<int>) onAudioBytesReceived,
 }) async =>
-    (await getDevice(deviceId))?.getBleAudioBytesListener(onAudioBytesReceived: onAudioBytesReceived) ??
+    (await getDevice(deviceId))?.getBleAudioBytesListener(
+        onAudioBytesReceived: onAudioBytesReceived) ??
     Future.value(null);
 
-
 Future<BleAudioCodec> getAudioCodec(String deviceId) async =>
-    (await getDevice(deviceId))?.getAudioCodec() ?? Future.value(BleAudioCodec.pcm8);
-
-
+    (await getDevice(deviceId))?.getAudioCodec() ??
+    Future.value(BleAudioCodec.pcm8);
 
 Future<StreamSubscription?> getBleStorageBytesListener(
   String deviceId, {
   required void Function(List<int>) onStorageBytesReceived,
 }) async =>
     (await getDevice(deviceId))?.getBleStorageBytesListener(
-            onStorageBytesReceived: onStorageBytesReceived) ??
-        Future.value(null);   
+        onStorageBytesReceived: onStorageBytesReceived) ??
+    Future.value(null);
 
-Future<bool> writeToStorage(String deviceId,int numFile,int command) async => 
-    (await getDevice(deviceId))?.writeToStorage(numFile,command) ?? Future.value(false);
+Future<bool> writeToStorage(String deviceId, int numFile, int command) async =>
+    (await getDevice(deviceId))?.writeToStorage(numFile, command) ??
+    Future.value(false);
 
 Future<List<int>> getStorageList(String deviceId) async =>
-    (await getDevice(deviceId))?.getStorageList() ?? Future.value(null); 
+    (await getDevice(deviceId))?.getStorageList() ?? Future.value(null);
 
 Future cameraStartPhotoController(String deviceId) async =>
-    (await getDevice(deviceId))?.cameraStartPhotoController() ?? Future.value(null);
+    (await getDevice(deviceId))?.cameraStartPhotoController() ??
+    Future.value(null);
 
 Future cameraStopPhotoController(String deviceId) async =>
-    (await getDevice(deviceId))?.cameraStopPhotoController() ?? Future.value(null);
+    (await getDevice(deviceId))?.cameraStopPhotoController() ??
+    Future.value(null);
 
 Future<bool> hasPhotoStreamingCharacteristic(String deviceId) async =>
-    (await getDevice(deviceId))?.hasPhotoStreamingCharacteristic() ?? Future.value(false);
+    (await getDevice(deviceId))?.hasPhotoStreamingCharacteristic() ??
+    Future.value(false);
 
 Future<StreamSubscription?> getImageListener(
   String deviceId, {
   required void Function(Uint8List base64JpgData) onImageReceived,
 }) async =>
-    (await getDevice(deviceId))?.getImageListener(onImageReceived: onImageReceived) ?? Future.value(null);
+    (await getDevice(deviceId))
+        ?.getImageListener(onImageReceived: onImageReceived) ??
+    Future.value(null);
 
 Future<StreamSubscription<List<int>>?> getAccelListener(
   String deviceId, {
   void Function(int)? onAccelChange,
 }) async =>
-    (await getDevice(deviceId))?.getAccelListener(onAccelChange: onAccelChange) ?? Future.value(null);
+    (await getDevice(deviceId))
+        ?.getAccelListener(onAccelChange: onAccelChange) ??
+    Future.value(null);

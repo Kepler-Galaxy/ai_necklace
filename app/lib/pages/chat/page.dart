@@ -185,7 +185,7 @@ class ChatPageState extends State<ChatPage> with AutomaticKeepAliveClientMixin {
                               ),
                               SizedBox(height: 16),
                               Text(
-                                "Deleting your messages from Omi's memory...",
+                                "Deleting your messages from Foxxy's memory...",
                                 style: TextStyle(color: Colors.white),
                               ),
                             ],
