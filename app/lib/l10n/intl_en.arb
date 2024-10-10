@@ -61,8 +61,8 @@
     "PleaseEnterPhoneNumberAndCode": "Please enter both phone number and code.",
     "HowShouldAudioFairyCallYou": "How should AudioFoxxy call you?",
     "EnableBackgroundProcess": "Allow AudioFoxxy to run in the background to improve stability",
-    "EnableBackgroundLocationAccess": "Enable background location access for Omi's full experience.",
-    "EnableNotificationAccess": "Enable notification access for Omi's full experience.",
+    "EnableBackgroundLocationAccess": "Enable background location access for Foxxy's full experience.",
+    "EnableNotificationAccess": "Enable notification access for Foxxy's full experience.",
     "ConnectMyAudioFairy": "Connect My AudioFoxxy",
     "ConnectLater": "Connect Later",
     "NoMemoriesGeneratedYet": "No memories generated yet."

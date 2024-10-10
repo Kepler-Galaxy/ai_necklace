@@ -21,18 +21,18 @@ class _ConnectDevicePageState extends State<ConnectDevicePage> {
         appBar: AppBar(
           title: Text(S.current.ConnectYourAudioFairy),
           backgroundColor: Theme.of(context).colorScheme.primary,
-          actions: [
-            IconButton(
-              onPressed: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) => const DeviceSettings(),
-                  ),
-                );
-              },
-              icon: const Icon(Icons.settings),
-            )
-          ],
+          // actions: [
+          //   IconButton(
+          //     onPressed: () {
+          //       Navigator.of(context).push(
+          //         MaterialPageRoute(
+          //           builder: (context) => const DeviceSettings(),
+          //         ),
+          //       );
+          //     },
+          //     icon: const Icon(Icons.settings),
+          //   )
+          // ],
         ),
         backgroundColor: Theme.of(context).colorScheme.primary,
         body: ListView(

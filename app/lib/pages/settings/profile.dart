@@ -34,20 +34,20 @@ class _ProfilePageState extends State<ProfilePage> {
             // getItemAddOn('Identifying Others', () {
             //   routeToPage(context, const UserPeoplePage());
             // }, icon: Icons.people),
-            ListTile(
-              contentPadding: const EdgeInsets.fromLTRB(4, 0, 24, 0),
-              title: Text(
-                  SharedPreferencesUtil().givenName.isEmpty
-                      ? 'About YOU'
-                      : 'About ${SharedPreferencesUtil().givenName.toUpperCase()}',
-                  style: const TextStyle(color: Colors.white)),
-              subtitle: const Text('What Foxxy has learned about you 👀'),
-              trailing: const Icon(Icons.self_improvement, size: 20),
-              onTap: () {
-                routeToPage(context, const FactsPage());
-                MixpanelManager().pageOpened('Profile Facts');
-              },
-            ),
+            // ListTile(
+            //   contentPadding: const EdgeInsets.fromLTRB(4, 0, 24, 0),
+            //   title: Text(
+            //       SharedPreferencesUtil().givenName.isEmpty
+            //           ? 'About YOU'
+            //           : 'About ${SharedPreferencesUtil().givenName.toUpperCase()}',
+            //       style: const TextStyle(color: Colors.white)),
+            //   subtitle: const Text('What Foxxy has learned about you 👀'),
+            //   trailing: const Icon(Icons.self_improvement, size: 20),
+            //   onTap: () {
+            //     routeToPage(context, const FactsPage());
+            //     MixpanelManager().pageOpened('Profile Facts');
+            //   },
+            // ),
             ListTile(
               contentPadding: const EdgeInsets.fromLTRB(4, 0, 24, 0),
               title: const Text('Speech Profile', style: TextStyle(color: Colors.white)),
