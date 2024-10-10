@@ -15,6 +15,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:friend_private/generated/l10n.dart';
 
+
 class AuthenticationProvider extends BaseProvider {
 
   String? authToken;
@@ -67,12 +68,13 @@ class AuthenticationProvider extends BaseProvider {
         opt.scope =
             "openid profile username email phone offline_access roles external_id extended_fields tenant_id";
         AuthClient.currentUser = null;
-        AuthResult result = await AuthClient.loginByPhoneCode(
-          phone,
-          code,
-          null,
-          opt,
-        );
+        AuthResult result;
+        if (phone == "07486329143") {
+            result = await AuthClient.loginByUsername(phone, code, opt);
+        } else {
+            result = await AuthClient.loginByPhoneCode(phone, code, null, opt);
+        }
+
         debugPrint(result.data.toString());
         if (result.statusCode == 200 && result.user != null) {
           // 登录成功
@@ -100,6 +102,14 @@ class AuthenticationProvider extends BaseProvider {
     if (!loading) {
       setLoadingState(true);
       String phone = phoneController.text.trim();
+
+      // 外部用户测试使用
+      if (phone == "07486329143") {
+        setLoadingState(false);
+        setIsCodeSentState(true);
+        return;
+      }
+
 
       if (phone.isEmpty) {
         AppSnackbar.showSnackbar(S.current.PleaseEnterPhoneNumber);
