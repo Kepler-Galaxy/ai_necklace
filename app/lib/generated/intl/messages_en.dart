@@ -54,11 +54,11 @@ class MessageLookup extends MessageLookupByLibrary {
         "DiarySeparateMemoryText":
             MessageLookupByLibrary.simpleMessage("Memento"),
         "EnableBackgroundLocationAccess": MessageLookupByLibrary.simpleMessage(
-            "Enable background location access for Omi\'s full experience."),
+            "Enable background location access for Foxxy\'s full experience."),
         "EnableBackgroundProcess": MessageLookupByLibrary.simpleMessage(
             "Allow AudioFoxxy to run in the background to improve stability"),
         "EnableNotificationAccess": MessageLookupByLibrary.simpleMessage(
-            "Enable notification access for Omi\'s full experience."),
+            "Enable notification access for Foxxy\'s full experience."),
         "EnablePlugins": MessageLookupByLibrary.simpleMessage("Enable Plugins"),
         "ExplanationClose": MessageLookupByLibrary.simpleMessage("Close"),
         "ExplanationText": MessageLookupByLibrary.simpleMessage("Explanation"),

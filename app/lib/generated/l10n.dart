@@ -670,20 +670,20 @@ class S {
     );
   }
 
-  /// `Enable background location access for Omi's full experience.`
+  /// `Enable background location access for Foxxy's full experience.`
   String get EnableBackgroundLocationAccess {
     return Intl.message(
-      'Enable background location access for Omi\'s full experience.',
+      'Enable background location access for Foxxy\'s full experience.',
       name: 'EnableBackgroundLocationAccess',
       desc: '',
       args: [],
     );
   }
 
-  /// `Enable notification access for Omi's full experience.`
+  /// `Enable notification access for Foxxy's full experience.`
   String get EnableNotificationAccess {
     return Intl.message(
-      'Enable notification access for Omi\'s full experience.',
+      'Enable notification access for Foxxy\'s full experience.',
       name: 'EnableNotificationAccess',
       desc: '',
       args: [],

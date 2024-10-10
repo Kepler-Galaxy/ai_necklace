@@ -96,7 +96,8 @@ class _FoundDevicesState extends State<FoundDevices> {
             if (!provider.isConnected) ..._devicesList(provider),
             if (provider.isConnected)
               Text(
-                '${provider.deviceName} (${BTDeviceStruct.shortId(provider.deviceId)})',
+                //'${provider.deviceName} (${BTDeviceStruct.shortId(provider.deviceId)})',
+                'Audio Foxxy (${BTDeviceStruct.shortId(provider.deviceId)})',
                 textAlign: TextAlign.center,
                 style: const TextStyle(
                   fontWeight: FontWeight.w500,
@@ -165,7 +166,8 @@ class _FoundDevicesState extends State<FoundDevices> {
                           Align(
                             alignment: Alignment.center,
                             child: Text(
-                              '${device.name} (${device.getShortId()})',
+                              //'${device.name} (${device.getShortId()})',
+                              'Audio Foxxy (${device.getShortId()})',
                               textAlign: TextAlign.center,
                               style: const TextStyle(
                                 fontWeight: FontWeight.w500,

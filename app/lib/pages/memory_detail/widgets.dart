@@ -909,7 +909,7 @@ class _GetShareOptionsState extends State<GetShareOptions> {
               
               ${widget.memory.structured.toString()}
               
-              Get started using Omi today (https://www.keplergalaxy.com).
+              Get started using Foxxy today (https://www.keplergalaxy.com).
               '''
                             .replaceAll('  ', '')
                             .trim();
