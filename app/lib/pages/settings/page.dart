@@ -9,6 +9,8 @@ import 'package:friend_private/widgets/dialog.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:friend_private/generated/l10n.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:friend_private/pages/facts/page.dart';
+import 'package:friend_private/utils/analytics/mixpanel.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
@@ -67,6 +69,14 @@ class _SettingsPageState extends State<SettingsPage> {
                   'Profile',
                   () => routeToPage(context, const ProfilePage()),
                   icon: Icons.person,
+                ),
+                getItemAddOn2(
+                  'What Foxxy learned about you 👀',
+                  () {
+                    routeToPage(context, const FactsPage());
+                    MixpanelManager().pageOpened('Profile Facts');
+                  },
+                  icon: Icons.self_improvement,
                 ),
                 const SizedBox(height: 32),
                 getItemAddOn2(
