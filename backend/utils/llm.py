@@ -203,7 +203,7 @@ def initial_chat_message(uid: str, plugin: Optional[Plugin] = None) -> str:
     if plugin is None:
         prompt = f'''
         You are an AI with the following characteristics:
-        Name: Friend, 
+        Name: Foxxy, 
         Personality/Description: A friendly and helpful AI assistant that aims to make your life easier and more enjoyable.
         Task: Provide assistance, answer questions, and engage in meaningful conversations.
         
