@@ -58,9 +58,11 @@ class _AIMessageState extends State<AIMessage> {
         widget.message.memories.length > 3 ? widget.message.memories.sublist(0, 3) : widget.message.memories;
     final message = widget.message.text;
     final messageText = message.isEmpty
-        ? '...'
-        // : message.text.replaceAll(r'\n', '\n').replaceAll('**', '').replaceAll('\\"', '\"'),
-        : message.decodeSting;
+       ? '...'
+      // : message.text.replaceAll(r'\n', '\n').replaceAll('**', '').replaceAll('\\"', '\"'),
+       : message.decodeSting;
+    final createdAtDate = widget.message.createdAt;
+
     return Row(
       mainAxisSize: MainAxisSize.max,
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -106,7 +108,7 @@ class _AIMessageState extends State<AIMessage> {
               const SizedBox(height: 6),
               widget.message.type == MessageType.daySummary
                   ? Text(
-                      '📅  Day Summary ~ ${dateTimeFormat('MMM, dd', DateTime.now())}',
+                      '📅  Day Summary ~ ${dateTimeFormat('MMM, dd', createdAtDate)}',
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.w500,
@@ -114,8 +116,16 @@ class _AIMessageState extends State<AIMessage> {
                         decoration: TextDecoration.underline,
                       ),
                     )
-                  : const SizedBox(),
-              widget.message.type == MessageType.daySummary ? const SizedBox(height: 16) : const SizedBox(),
+                  : Text(
+                      createdAtDate.toString(),
+                      style: TextStyle(
+                        fontSize: 10,
+                        fontWeight: FontWeight.w500,
+                        color: Colors.grey.shade300,
+                        decoration: TextDecoration.underline,
+                      ),
+                    ),
+              widget.message.type == MessageType.daySummary ? const SizedBox(height: 16) : const SizedBox(height: 10),
               SelectionArea(
                 child: widget.showTypingIndicator
                     ? const Row(
