@@ -100,7 +100,8 @@ class _SettingsPageState extends State<SettingsPage> {
                   child: Align(
                     alignment: Alignment.center,
                     child: Text(
-                      'Version: $version+$buildVersion',
+                      //'Version: $version+$buildVersion',
+                      'Version: $version',
                       style: const TextStyle(color: Color.fromARGB(255, 150, 150, 150), fontSize: 16),
                     ),
                   ),
