@@ -35,7 +35,8 @@ class _OnboardingWrapperState extends State<OnboardingWrapper> with TickerProvid
   @override
   void initState() {
     //TODO: Change from tab controller to default controller and use provider (part of instabug cleanup) @mdmohsin7
-    _controller = TabController(length: hasSpeechProfile ? 5 : 7, vsync: this);
+    // _controller = TabController(length: hasSpeechProfile ? 5 : 7, vsync: this);
+    _controller = TabController(length: 5, vsync: this);
     _controller!.addListener(() => setState(() {}));
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       if (isSignedInAuthing()) {
@@ -132,29 +133,29 @@ class _OnboardingWrapperState extends State<OnboardingWrapper> with TickerProvid
       ),
     ];
 
-    if (!hasSpeechProfile) {
-      pages.addAll([
-        SpeechProfileWidget(
-          goNext: () {
-            if (context.read<SpeechProfileProvider>().memory == null) {
-              routeToPage(context, const HomePageWrapper(), replace: true);
-            } else {
-              _goNext();
-            }
-            MixpanelManager().onboardingStepCompleted('Speech Profile');
-          },
-          onSkip: () {
-            routeToPage(context, const HomePageWrapper(), replace: true);
-          },
-        ),
-        MemoryCreatedWidget(
-          goNext: () {
-            // _goNext();
-            MixpanelManager().onboardingStepCompleted('Memory Created');
-          },
-        ),
-      ]);
-    }
+    // if (!hasSpeechProfile) {
+    //   pages.addAll([
+    //     SpeechProfileWidget(
+    //       goNext: () {
+    //         if (context.read<SpeechProfileProvider>().memory == null) {
+    //           routeToPage(context, const HomePageWrapper(), replace: true);
+    //         } else {
+    //           _goNext();
+    //         }
+    //         MixpanelManager().onboardingStepCompleted('Speech Profile');
+    //       },
+    //       onSkip: () {
+    //         routeToPage(context, const HomePageWrapper(), replace: true);
+    //       },
+    //     ),
+    //     MemoryCreatedWidget(
+    //       goNext: () {
+    //         // _goNext();
+    //         MixpanelManager().onboardingStepCompleted('Memory Created');
+    //       },
+    //     ),
+    //   ]);
+    // }
 
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
