@@ -242,7 +242,7 @@ class ChatPageState extends State<ChatPage> with AutomaticKeepAliveClientMixin {
                   child: Container(
                     width: double.maxFinite,
                     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 2),
-                    margin: EdgeInsets.only(left: 32, right: 32, bottom: home.isChatFieldFocused ? 40 : 120),
+                    margin: EdgeInsets.only(left: 32, right: 32, bottom: home.isChatFieldFocused ? 120 : 120),
                     decoration: const BoxDecoration(
                       color: Colors.black,
                       borderRadius: BorderRadius.all(Radius.circular(16)),
