@@ -6,11 +6,14 @@ import 'package:flutter/material.dart';
 import 'package:friend_private/backend/auth.dart';
 import 'package:friend_private/backend/preferences.dart';
 import 'package:friend_private/providers/base_provider.dart';
+import 'package:friend_private/providers/message_provider.dart';
+import 'package:friend_private/providers/memory_provider.dart';
 import 'package:friend_private/services/notification_service.dart';
 import 'package:friend_private/utils/alerts/app_snackbar.dart';
 import 'package:friend_private/utils/analytics/gleap.dart';
 import 'package:friend_private/utils/analytics/mixpanel.dart';
 import 'package:instabug_flutter/instabug_flutter.dart';
+import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:friend_private/generated/l10n.dart';
@@ -138,10 +141,13 @@ class AuthenticationProvider extends BaseProvider {
     }
   }
 
-  static Future<void> logout() async {
+  Future<void> logout(BuildContext ctx) async {
     await AuthClient.logout();
     AuthClient.currentUser = null;
     await SharedPreferencesUtil().clear();
+    await MessageProvider().cleanMessages();
+    await ctx.read<MessageProvider>().cleanMessages();
+    await ctx.read<MemoryProvider>().cleanMemories();
   }
 
   Future<String?> _getIdToken() async {

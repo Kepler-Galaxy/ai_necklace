@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:friend_private/providers/auth_provider.dart';
+import 'package:friend_private/providers/message_provider.dart';
 import 'package:friend_private/backend/preferences.dart';
 import 'package:friend_private/main.dart';
 import 'package:friend_private/pages/settings/profile.dart';
@@ -8,6 +9,7 @@ import 'package:friend_private/utils/other/temp.dart';
 import 'package:friend_private/widgets/dialog.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:friend_private/generated/l10n.dart';
+import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:friend_private/pages/facts/page.dart';
 import 'package:friend_private/utils/analytics/mixpanel.dart';
@@ -97,7 +99,7 @@ class _SettingsPageState extends State<SettingsPage> {
                       return getDialog(context, () {
                         Navigator.of(context).pop();
                       }, () async {
-                        await AuthenticationProvider.logout();
+                        await context.read<AuthenticationProvider>().logout(context);
                         Navigator.of(context).pop();
                         await routeToPage(context, const DeciderWidget(), replace: true);
                       }, S.current.SignOut, S.current.AreYouSureSignOut);
