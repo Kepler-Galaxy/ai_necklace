@@ -2,6 +2,8 @@ from firebase_admin import auth
 
 from database.redis_db import cache_user_name, get_cached_user_name
 from loguru import logger
+from utils.mgdbstore.client import db
+
 
 def get_user_from_uid(uid: str):
     try:
@@ -11,6 +13,12 @@ def get_user_from_uid(uid: str):
         user = None
     if not user:
         return None
+
+    # update user collection
+    db.collection("users").document(user.uid).set({
+        "_id": user.uid,
+        "time_zone": "Asia/Shanghai",
+    }, merge=True)
 
     return {
         'uid': user.uid,
