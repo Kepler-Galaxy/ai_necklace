@@ -25,28 +25,27 @@ def truncate_content(conversation_history: str, articles_read: str, related_memo
     
     # Remove words from related_memories first
     if words_to_remove > 0 and related_memories:
-        related_words = related_memories.split()
-        if words_count(related_words) <= words_to_remove:
-            words_to_remove -= words_count(related_words)
+        related_words = words_count(related_memories)
+        if related_words <= words_to_remove:
+            words_to_remove -= related_words
             related_memories = ""
         else:
-            related_memories = " ".join(related_words[:-words_to_remove])
+            related_memories = " ".join(related_memories.split()[:-words_to_remove])
             words_to_remove = 0
     
     # Then remove from articles_read if necessary
     if words_to_remove > 0 and articles_read:
-        article_words = articles_read.split()
-        if words_count(article_words) <= words_to_remove:
-            words_to_remove -= words_count(article_words)
+        article_words = words_count(articles_read)
+        if article_words <= words_to_remove:
+            words_to_remove -= article_words
             articles_read = ""
         else:
-            articles_read = " ".join(article_words[:-words_to_remove])
+            articles_read = " ".join(articles_read.split()[:-words_to_remove])
             words_to_remove = 0
     
     # Finally, remove from conversation_history if still necessary
     if words_to_remove > 0:
-        conv_words = conversation_history.split()
-        conversation_history = " ".join(conv_words[:-words_to_remove])
+        conversation_history = " ".join(conversation_history.split()[:-words_to_remove])
     
     return conversation_history, articles_read, related_memories
 
