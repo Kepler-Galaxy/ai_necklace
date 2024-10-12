@@ -1,7 +1,7 @@
 version: '3'
 services:
   backend:
-    image: krccr.ccs.tencentyun.com/kepler_galaxy/foxxy:1.0.2
+    image: krccr.ccs.tencentyun.com/kepler_galaxy/foxxy:1.0.4
     container_name: backend_container
     ports:
       - "8080:8080"
