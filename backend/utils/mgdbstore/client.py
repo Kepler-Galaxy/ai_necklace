@@ -42,7 +42,6 @@ class DocumentReference:
     def collection(self, subcollection_name: str):
         # Simulate subcollections by using a naming convention
         # full_collection_name = f"{self.collection_name}.{self.document_id}.{subcollection_name}"
-        print(subcollection_name)
         if self.collection_name == "users":
             return CollectionReference(self.db, subcollection_name, FieldFilter(ID_Field_DICT.get(self.collection_name), "==", self.document_id))
         else:
