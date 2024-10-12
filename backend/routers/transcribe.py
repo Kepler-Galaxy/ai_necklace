@@ -473,7 +473,7 @@ async def _websocket_util(
         nonlocal memory_watching
         nonlocal websocket_active
         while memory_watching and websocket_active:
-            logger.info(f"new memory watch, uid: {uid}, session: {session_id}")
+            #logger.info(f"new memory watch, uid: {uid}, session: {session_id}")
             await asyncio.sleep(5)
             await _try_flush_new_memory_with_lock()
 
@@ -495,12 +495,12 @@ async def _websocket_util(
 
         # Validate last segment
         if not segment_end:
-            logger.warning("Not last segment or last segment invalid")
+            #logger.warning("Not last segment or last segment invalid")
             return
 
         # First chunk, create processing memory
         should_create_processing_memory = not processing_memory and len(memory_transcript_segements) > 0
-        logger.info(f"Should create processing {should_create_processing_memory}")
+        #logger.info(f"Should create processing {should_create_processing_memory}")
         if should_create_processing_memory:
             await _create_processing_memory()
 
@@ -522,8 +522,8 @@ async def _websocket_util(
                     break
 
         should_create_memory = should_create_memory_time and should_create_memory_time_words
-        logger.info(
-            f"Should create memory {should_create_memory} - {timer_start} {segment_end} {min_seconds_limit} {now} - {time_validate}, session {session_id}")
+        #logger.info(
+        #    f"Should create memory {should_create_memory} - {timer_start} {segment_end} {min_seconds_limit} {now} - {time_validate}, session {session_id}")
         if should_create_memory:
             memory = await _create_memory()
             if not memory:
