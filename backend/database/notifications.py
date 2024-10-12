@@ -18,7 +18,7 @@ def get_token_only(uid: str):
     return None
 
 def remove_token(token: str):
-    token = db.collection('users'). where(filter=FieldFilter('fcm_token', '==', token)).get()
+    token = db.collection('users').where(filter=FieldFilter('fcm_token', '==', token)).get()
     for doc in token:
         doc.reference.update({'fcm_token': DELETE_FIELD, 'time_zone': DELETE_FIELD})
 

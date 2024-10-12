@@ -3,6 +3,8 @@ from firebase_admin import auth
 from database.redis_db import cache_user_name, get_cached_user_name
 from loguru import logger
 
+
+
 def get_user_from_uid(uid: str):
     try:
         user = auth.get_user(uid) if uid else None
@@ -11,6 +13,7 @@ def get_user_from_uid(uid: str):
         user = None
     if not user:
         return None
+
 
     return {
         'uid': user.uid,

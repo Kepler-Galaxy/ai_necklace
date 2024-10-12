@@ -31,6 +31,7 @@ class DocumentSnapshot:
     def get(self, key: str, default: Any = None):
         return self._data.get(key, default)
 
+
 class DocumentReference:
     def __init__(self, db, collection_name: str, document_id: Optional[Any] = None):
         self.db = db
@@ -67,6 +68,10 @@ class DocumentReference:
     def update(self, data: Dict[str, Any]):
         self.collection_ref.update_one({'_id': self.document_id}, {'$set': data})
 
+    @property
+    def reference(self):
+        return self
+
 
 class CollectionReference:
 
@@ -85,6 +90,7 @@ class CollectionReference:
     def where(self, filter):
         self._filters.append(filter)
         return self
+
 
     def order_by(self, field: str, direction: str = "ASCENDING"):
         """按指定字段排序，默认升序"""
@@ -105,6 +111,34 @@ class CollectionReference:
         """跳过指定数量的文档"""
         self._offset = offset
         return self
+
+    # get 接口返回类似stream，返回DocumentReference的迭代器
+    def get(self):
+        query = {}
+        for filter in self._filters:
+            for field, filter_item in filter.to_query().items():
+                if type(filter_item) == dict:
+                    if field not in query:
+                        query[field] = {}
+                    for k, v in filter_item.items():
+                        query[field][k] = v
+                else:
+                    query[field] = filter_item
+
+        cursor = self.collection.find(query)
+
+        if self._sort:
+            cursor = cursor.sort([self._sort])
+
+        if self._limit is not None:
+            cursor = cursor.limit(self._limit)
+
+        if self._offset is not None:
+            cursor = cursor.skip(self._offset)
+
+        for doc in cursor:
+            yield DocumentReference(self.db, self.collection_name, doc['_id'])
+
 
     def stream(self):
         query = {}

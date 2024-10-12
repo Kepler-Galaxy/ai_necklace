@@ -1,5 +1,6 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:friend_private/backend/http/api/memories.dart';
 import 'package:friend_private/backend/preferences.dart';
 import 'package:friend_private/backend/schema/memory.dart';
@@ -43,6 +44,12 @@ class MemoryProvider extends ChangeNotifier {
       print("Error fetching memory: $e");
     }
     return null;
+  }
+
+  Future cleanMemories() async {
+    memories = [];
+    filteredMemories = [];
+    memoriesWithDates = [];
   }
 
   // TODO(yiqi): use batch request

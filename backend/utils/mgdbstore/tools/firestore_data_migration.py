@@ -67,6 +67,7 @@ def user_migration(uid):
         client.db.collection("processing_memories").document(processing_memory.id).update(processing_memory_dict)
         # fdb.collection("users").document(user.id).collection("processing_memories").document(processing_memory.id).update(processing_memory_dict)
 
+
 def database_migration():
     for user in fdb.collection("users").stream(timeout=3600):
         print(user.id, user.to_dict())

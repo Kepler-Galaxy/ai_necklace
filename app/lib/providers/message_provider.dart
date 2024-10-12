@@ -40,6 +40,13 @@ class MessageProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  Future cleanMessages() async {
+    setLoadingMessages(true);
+    messages = [];
+    setLoadingMessages(false);
+    notifyListeners();
+  }
+
   Future refreshMessages() async {
     setLoadingMessages(true);
     if (SharedPreferencesUtil().cachedMessages.isNotEmpty) {

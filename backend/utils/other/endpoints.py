@@ -8,8 +8,12 @@ from firebase_admin import auth
 from firebase_admin.auth import InvalidIdTokenError
 from utils.authing.auth_client import AuthenticationClient
 from loguru import logger
+from utils.mgdbstore.client import db
 
 
+# todo: Change to tpns or mps
+def get_fcm_token():
+    return "fLpP2UnAFECDu5Nmj6RxEd:APA91bEhvoHgtkooKvvvE094_5CE0-PVsYRz6seIw0TdpVu8p5LpLgxVHGih7qVfkSHXC5r9moG1K5C2iFqEgsmmEtFpw1uys9E3W5RaVxvKuvAH5pGxP6cmA8IlztAz_kKQ-U0Ahymj"
 def get_current_user_uid(authorization: str = Header(None), provider: str = Header(None)):
     if os.getenv('ADMIN_KEY') in authorization:
         return authorization.split(os.getenv('ADMIN_KEY'))[1]
@@ -35,6 +39,8 @@ def get_current_user_uid(authorization: str = Header(None), provider: str = Head
                 raise HTTPException(status_code=401, detail="Invalid authorization token")
             uid = data.get('data', {}).get('userId', "")
             logger.info(f'get_current_user_uid: {uid}')
+            # update user collection
+            db.collection("users").document(uid).set({"_id": uid, "time_zone": "Asia/Shanghai", "fcm_token": get_fcm_token()})
             return uid
         else:
             decoded_token = auth.verify_id_token(token)

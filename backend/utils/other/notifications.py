@@ -3,6 +3,7 @@ import concurrent.futures
 from datetime import datetime, timedelta
 from datetime import time
 from loguru import logger
+import traceback
 
 import pytz
 
@@ -51,6 +52,7 @@ async def send_daily_summary_notification():
         await _send_bulk_summary_notification(user_in_time_zone)
     except Exception as e:
         logger.error(f'Error sending message: {e}')
+        logger.error(traceback.format_exc())
         return None
 
 
@@ -131,6 +133,8 @@ async def _generate_diary_and_send_notification(user_data: tuple):
 
     except Exception as e:
         logger.error(f'Error sending message: {e}')
+        logger.error(traceback.format_exc())
+
         return
     
 
