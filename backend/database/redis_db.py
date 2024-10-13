@@ -5,14 +5,36 @@ from loguru import logger
 
 import redis
 
-r = redis.Redis(
-    host=os.getenv('REDIS_DB_HOST'),
-    port=int(os.getenv('REDIS_DB_PORT')) if os.getenv('REDIS_DB_PORT') is not None else 6379,
-    username='default',
-    password=os.getenv('REDIS_DB_PASSWORD'),
-    health_check_interval=30,
-    ssl=True
-)
+
+def create_redis_connection():
+    redis_config = {
+        'host': os.getenv('REDIS_DB_HOST'),
+        'port': int(os.getenv('REDIS_DB_PORT')) if os.getenv('REDIS_DB_PORT') is not None else 6379,
+        'username': 'default',
+        'password': os.getenv('REDIS_DB_PASSWORD'),
+        'health_check_interval': 30,
+    }
+
+    # First, try with SSL enabled
+    try:
+        r = redis.Redis(**redis_config, ssl=True)
+        r.ping()  # Test the connection
+        logger.info("Connected to Redis with SSL")
+        return r
+    except redis.ConnectionError as e:
+        logger.warning(f"Failed to connect to Redis with SSL: {e}")
+
+    # If SSL connection fails, try without SSL
+    try:
+        r = redis.Redis(**redis_config, ssl=False)
+        r.ping()  # Test the connection
+        logger.info("Connected to Redis without SSL")
+        return r
+    except redis.ConnectionError as e:
+        logger.error(f"Failed to connect to Redis without SSL: {e}")
+        raise
+
+r = create_redis_connection()
 
 
 def try_catch_decorator(func):

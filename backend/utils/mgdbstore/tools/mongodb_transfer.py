@@ -5,7 +5,7 @@ source_client = MongoClient("mongodb+srv://<user>:<password>@dev-star.ohirf.mong
 target_client = MongoClient("mongodb+srv://<user>:<password>@seoul.4widi.mongodb.net/?retryWrites=true&w=majority&appName=Seoul")
 
 source_db = source_client["dev-star"]
-target_db = target_client["seoul"]
+target_db = target_client["prod-foxxy"]
 
 
 def migrate_data():
@@ -24,6 +24,7 @@ def migrate_data():
         # 批量插入到目标数据库
         batch_size = 1000  # 每次批量插入的大小
         buffer = []
+
         for doc in cursor:
             # 清理 '_id' 字段，防止冲突
             buffer.append(doc)

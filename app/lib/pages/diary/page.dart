@@ -81,7 +81,7 @@ class _DiaryPageState extends State<DiaryPage> {
     setState(() {
       _isLoading = true;
     });
-    final response = await getMemoryConnectionsGraph(_selectedDayMemoryIds, 3);
+    final response = await getMemoryConnectionsGraph(_selectedDayMemoryIds, 2);
     final forest = (response['forest'] as List)
         .map((tree) => MemoryConnectionNode.fromJson(tree))
         .toList();
