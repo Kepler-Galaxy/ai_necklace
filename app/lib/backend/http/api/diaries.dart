@@ -14,7 +14,13 @@ class DiariesApi {
 
     if (response != null && response.statusCode == 200) {
       final List<dynamic> jsonList = json.decode(response.body);
-      return jsonList.map((json) => ServerDiary.fromJson(json)).toList();
+      return jsonList.map((json) { 
+        try {
+          return ServerDiary.fromJson(json);
+        } catch (e) {
+          return null;
+        }
+      }).where((diary) => diary != null).cast<ServerDiary>().toList();
     } else {
       throw Exception('Failed to load all diaries');
     }
