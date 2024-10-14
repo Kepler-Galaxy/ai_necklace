@@ -1,7 +1,7 @@
-import 'package:friend_private/backend/http/api/facts.dart';
-import 'package:friend_private/backend/preferences.dart';
-import 'package:friend_private/backend/schema/fact.dart';
-import 'package:friend_private/providers/base_provider.dart';
+import 'package:foxxy_package/backend/http/api/facts.dart';
+import 'package:foxxy_package/backend/preferences.dart';
+import 'package:foxxy_package/backend/schema/fact.dart';
+import 'package:foxxy_package/providers/base_provider.dart';
 import 'package:tuple/tuple.dart';
 import 'package:uuid/uuid.dart';
 
@@ -13,7 +13,9 @@ class FactsProvider extends BaseProvider {
 
   void setCategory(FactCategory? category) {
     selectedCategory = category;
-    filteredFacts = category == null ? facts : facts.where((fact) => fact.category == category).toList();
+    filteredFacts = category == null
+        ? facts
+        : facts.where((fact) => fact.category == category).toList();
     filteredFacts.sort((a, b) => b.createdAt.compareTo(a.createdAt));
     notifyListeners();
   }

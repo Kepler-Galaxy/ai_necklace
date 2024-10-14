@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:friend_private/backend/schema/memory.dart';
-import 'package:friend_private/pages/memories/widgets/memory_list_item.dart';
-import 'package:friend_private/pages/memory_detail/memory_detail_provider.dart';
-import 'package:friend_private/pages/memory_detail/page.dart';
-import 'package:friend_private/providers/memory_provider.dart';
-import 'package:friend_private/providers/speech_profile_provider.dart';
-import 'package:friend_private/utils/analytics/mixpanel.dart';
-import 'package:friend_private/utils/other/temp.dart';
+import 'package:foxxy_package/backend/schema/memory.dart';
+import 'package:foxxy_package/pages/memories/widgets/memory_list_item.dart';
+import 'package:foxxy_package/pages/memory_detail/memory_detail_provider.dart';
+import 'package:foxxy_package/pages/memory_detail/page.dart';
+import 'package:foxxy_package/providers/memory_provider.dart';
+import 'package:foxxy_package/providers/speech_profile_provider.dart';
+import 'package:foxxy_package/utils/analytics/mixpanel.dart';
+import 'package:foxxy_package/utils/other/temp.dart';
 import 'package:gradient_borders/box_borders/gradient_box_border.dart';
 import 'package:provider/provider.dart';
 
@@ -30,7 +30,8 @@ class _MemoryCreatedWidgetState extends State<MemoryCreatedWidget> {
   @override
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      await updateMemoryDetailProvider(context, context.read<SpeechProfileProvider>().memory!);
+      await updateMemoryDetailProvider(
+          context, context.read<SpeechProfileProvider>().memory!);
     });
     super.initState();
   }
@@ -39,7 +40,8 @@ class _MemoryCreatedWidgetState extends State<MemoryCreatedWidget> {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 8),
-      child: Consumer<SpeechProfileProvider>(builder: (context, provider, child) {
+      child:
+          Consumer<SpeechProfileProvider>(builder: (context, provider, child) {
         return Column(
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
@@ -74,11 +76,15 @@ class _MemoryCreatedWidgetState extends State<MemoryCreatedWidget> {
                 borderRadius: BorderRadius.circular(12),
               ),
               child: MaterialButton(
-                padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
                 onPressed: () {
                   // updateMemoryDetailProvider(context, provider.memory!);
                   MixpanelManager().memoryListItemClicked(provider.memory!, 0);
-                  routeToPage(context, MemoryDetailPage(memory: provider.memory!, isFromOnboarding: true));
+                  routeToPage(
+                      context,
+                      MemoryDetailPage(
+                          memory: provider.memory!, isFromOnboarding: true));
                 },
                 child: const Text(
                   'Check it out',

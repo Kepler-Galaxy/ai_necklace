@@ -1,10 +1,10 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:friend_private/backend/http/shared.dart';
-import 'package:friend_private/backend/schema/geolocation.dart';
-import 'package:friend_private/backend/schema/memory.dart';
-import 'package:friend_private/env/env.dart';
+import 'package:foxxy_package/backend/http/shared.dart';
+import 'package:foxxy_package/backend/schema/geolocation.dart';
+import 'package:foxxy_package/backend/schema/memory.dart';
+import 'package:foxxy_package/env/env.dart';
 import 'package:instabug_flutter/instabug_flutter.dart';
 
 Future<UpdateProcessingMemoryResponse?> updateProcessingMemoryServer({

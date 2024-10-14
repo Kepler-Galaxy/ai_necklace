@@ -3,9 +3,9 @@ import 'dart:async';
 import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
-import 'package:friend_private/backend/schema/bt_device.dart';
-import 'package:friend_private/services/device_connections.dart';
-import 'package:friend_private/utils/ble/gatt_utils.dart';
+import 'package:foxxy_package/backend/schema/bt_device.dart';
+import 'package:foxxy_package/services/device_connections.dart';
+import 'package:foxxy_package/utils/ble/gatt_utils.dart';
 
 abstract class IDeviceService {
   void start();

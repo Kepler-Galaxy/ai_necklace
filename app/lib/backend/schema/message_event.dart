@@ -1,5 +1,5 @@
-import 'package:friend_private/backend/schema/memory.dart';
-import 'package:friend_private/backend/schema/message.dart';
+import 'package:foxxy_package/backend/schema/memory.dart';
+import 'package:foxxy_package/backend/schema/message.dart';
 
 enum MessageEventType {
   newMemoryCreating('new_memory_creating'),
@@ -16,7 +16,8 @@ enum MessageEventType {
   const MessageEventType(this.value);
 
   static MessageEventType valuesFromString(String value) {
-    return MessageEventType.values.firstWhere((e) => e.value == value, orElse: () => MessageEventType.unknown);
+    return MessageEventType.values.firstWhere((e) => e.value == value,
+        orElse: () => MessageEventType.unknown);
   }
 }
 
@@ -41,7 +42,9 @@ class ServerMessageEvent {
       json['memory_id'],
       json['processing_memory_id'],
       json['memory'] != null ? ServerMemory.fromJson(json['memory']) : null,
-      ((json['messages'] ?? []) as List<dynamic>).map((message) => ServerMessage.fromJson(message)).toList(),
+      ((json['messages'] ?? []) as List<dynamic>)
+          .map((message) => ServerMessage.fromJson(message))
+          .toList(),
     );
   }
 }

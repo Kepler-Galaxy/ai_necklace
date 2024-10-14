@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:friend_private/backend/preferences.dart';
-import 'package:friend_private/pages/facts/page.dart';
-import 'package:friend_private/pages/settings/change_name_widget.dart';
-import 'package:friend_private/pages/settings/privacy.dart';
-import 'package:friend_private/pages/settings/recordings_storage_permission.dart';
-import 'package:friend_private/pages/speech_profile/page.dart';
-import 'package:friend_private/utils/analytics/mixpanel.dart';
-import 'package:friend_private/utils/other/temp.dart';
-import 'package:friend_private/widgets/dialog.dart';
+import 'package:foxxy_package/backend/preferences.dart';
+import 'package:foxxy_package/pages/facts/page.dart';
+import 'package:foxxy_package/pages/settings/change_name_widget.dart';
+import 'package:foxxy_package/pages/settings/privacy.dart';
+import 'package:foxxy_package/pages/settings/recordings_storage_permission.dart';
+import 'package:foxxy_package/pages/speech_profile/page.dart';
+import 'package:foxxy_package/utils/analytics/mixpanel.dart';
+import 'package:foxxy_package/utils/other/temp.dart';
+import 'package:foxxy_package/widgets/dialog.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class ProfilePage extends StatefulWidget {
@@ -50,7 +50,8 @@ class _ProfilePageState extends State<ProfilePage> {
             // ),
             ListTile(
               contentPadding: const EdgeInsets.fromLTRB(4, 0, 24, 0),
-              title: const Text('Speech Profile', style: TextStyle(color: Colors.white)),
+              title: const Text('Speech Profile',
+                  style: TextStyle(color: Colors.white)),
               subtitle: const Text('Teach Foxxy your voice'),
               trailing: const Icon(Icons.multitrack_audio, size: 20),
               onTap: () {
@@ -61,10 +62,14 @@ class _ProfilePageState extends State<ProfilePage> {
             ListTile(
               contentPadding: const EdgeInsets.fromLTRB(4, 0, 24, 0),
               title: Text(
-                SharedPreferencesUtil().givenName.isEmpty ? 'Set Your Name' : 'Change Your Name',
+                SharedPreferencesUtil().givenName.isEmpty
+                    ? 'Set Your Name'
+                    : 'Change Your Name',
                 style: const TextStyle(color: Colors.white),
               ),
-              subtitle: Text(SharedPreferencesUtil().givenName.isEmpty ? 'Not set' : SharedPreferencesUtil().givenName),
+              subtitle: Text(SharedPreferencesUtil().givenName.isEmpty
+                  ? 'Not set'
+                  : SharedPreferencesUtil().givenName),
               trailing: const Icon(Icons.person, size: 20),
               onTap: () async {
                 MixpanelManager().pageOpened('Profile Change Name');
@@ -81,7 +86,8 @@ class _ProfilePageState extends State<ProfilePage> {
             const SizedBox(height: 24),
             ListTile(
               contentPadding: const EdgeInsets.fromLTRB(4, 0, 24, 0),
-              title: const Text('Delete Account', style: TextStyle(color: Colors.white)),
+              title: const Text('Delete Account',
+                  style: TextStyle(color: Colors.white)),
               trailing: const Icon(
                 Icons.warning,
                 size: 20,
@@ -104,13 +110,17 @@ class _ProfilePageState extends State<ProfilePage> {
             ),
             ListTile(
               contentPadding: const EdgeInsets.fromLTRB(4, 0, 24, 0),
-              title: const Text('Your User Id', style: TextStyle(color: Colors.white)),
+              title: const Text('Your User Id',
+                  style: TextStyle(color: Colors.white)),
               subtitle: Text(SharedPreferencesUtil().uid),
-              trailing: const Icon(Icons.copy_rounded, size: 20, color: Colors.white),
+              trailing:
+                  const Icon(Icons.copy_rounded, size: 20, color: Colors.white),
               onTap: () {
                 MixpanelManager().pageOpened('Authorize Saving Recordings');
-                Clipboard.setData(ClipboardData(text: SharedPreferencesUtil().uid));
-                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('UID copied to clipboard')));
+                Clipboard.setData(
+                    ClipboardData(text: SharedPreferencesUtil().uid));
+                ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('UID copied to clipboard')));
               },
             ),
           ],

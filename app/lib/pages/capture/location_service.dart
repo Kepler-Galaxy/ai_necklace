@@ -1,5 +1,5 @@
 import 'dart:async';
-import 'package:friend_private/backend/preferences.dart';
+import 'package:foxxy_package/backend/preferences.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:location/location.dart';
 
@@ -21,14 +21,16 @@ class LocationService {
       SharedPreferencesUtil().locationPermissionRequested = true;
     }
     var status = await permissionStatus();
-    return await isServiceEnabled() == false || (status != LocationPermission.always);
+    return await isServiceEnabled() == false ||
+        (status != LocationPermission.always);
   }
 
   Future<bool> isServiceEnabled() => location.serviceEnabled();
 
   Future<LocationPermission> permissionStatus() => Geolocator.checkPermission();
 
-  Future hasPermission() async => (await Geolocator.checkPermission()) == LocationPermission.always;
+  Future hasPermission() async =>
+      (await Geolocator.checkPermission()) == LocationPermission.always;
 
   Future<void> getDeviceLocation() async {
     locationData = await location.getLocation();

@@ -1,16 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:friend_private/backend/http/api/users.dart';
-import 'package:friend_private/backend/preferences.dart';
-import 'package:friend_private/widgets/dialog.dart';
+import 'package:foxxy_package/backend/http/api/users.dart';
+import 'package:foxxy_package/backend/preferences.dart';
+import 'package:foxxy_package/widgets/dialog.dart';
 
 class RecordingsStoragePermission extends StatefulWidget {
   const RecordingsStoragePermission({super.key});
 
   @override
-  State<RecordingsStoragePermission> createState() => _RecordingsStoragePermissionState();
+  State<RecordingsStoragePermission> createState() =>
+      _RecordingsStoragePermissionState();
 }
 
-class _RecordingsStoragePermissionState extends State<RecordingsStoragePermission> {
+class _RecordingsStoragePermissionState
+    extends State<RecordingsStoragePermission> {
   bool? _hasPermission;
   bool loading = false;
 
@@ -54,7 +56,9 @@ class _RecordingsStoragePermissionState extends State<RecordingsStoragePermissio
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      _hasPermission! ? "Thanks for authorizing!" : "We need your permission",
+                      _hasPermission!
+                          ? "Thanks for authorizing!"
+                          : "We need your permission",
                       style: Theme.of(context).textTheme.headlineSmall,
                     ),
                     const SizedBox(height: 16),
@@ -68,13 +72,15 @@ class _RecordingsStoragePermissionState extends State<RecordingsStoragePermissio
                     _buildReasonTile(
                       icon: Icons.person,
                       title: "Improve Your Speech Profile",
-                      description: "We use recordings to further train and enhance your personal speech profile.",
+                      description:
+                          "We use recordings to further train and enhance your personal speech profile.",
                     ),
                     SizedBox(height: 16),
                     _buildReasonTile(
                       icon: Icons.group,
                       title: "Train Profiles for Friends and Family",
-                      description: "Your recordings help us recognize and create profiles for your friends and family.",
+                      description:
+                          "Your recordings help us recognize and create profiles for your friends and family.",
                     ),
                     SizedBox(height: 16),
                     _buildReasonTile(
@@ -89,7 +95,9 @@ class _RecordingsStoragePermissionState extends State<RecordingsStoragePermissio
                       child: Text(
                         "Legal Notice: The legality of recording and storing voice data may vary depending on your location and how you use this feature. It's your responsibility to ensure compliance with local laws and regulations.",
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                              color: Theme.of(context).colorScheme.onSurfaceVariant,
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .onSurfaceVariant,
                             ),
                       ),
                     ),
@@ -123,7 +131,10 @@ class _RecordingsStoragePermissionState extends State<RecordingsStoragePermissio
     );
   }
 
-  Widget _buildReasonTile({required IconData icon, required String title, required String description}) {
+  Widget _buildReasonTile(
+      {required IconData icon,
+      required String title,
+      required String description}) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 16.0),
       child: Row(
@@ -137,7 +148,8 @@ class _RecordingsStoragePermissionState extends State<RecordingsStoragePermissio
               children: [
                 Text(title, style: Theme.of(context).textTheme.titleMedium),
                 const SizedBox(height: 4),
-                Text(description, style: Theme.of(context).textTheme.bodyMedium),
+                Text(description,
+                    style: Theme.of(context).textTheme.bodyMedium),
               ],
             ),
           ),
@@ -153,10 +165,11 @@ class _RecordingsStoragePermissionState extends State<RecordingsStoragePermissio
     if (success) {
       SharedPreferencesUtil().permissionStoreRecordingsEnabled = true;
       setState(() => _hasPermission = true);
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Authorization successful!")));
+      ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Authorization successful!")));
     } else {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(const SnackBar(content: Text("Failed to authorize. Please try again.")));
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          content: Text("Failed to authorize. Please try again.")));
     }
   }
 
@@ -165,7 +178,8 @@ class _RecordingsStoragePermissionState extends State<RecordingsStoragePermissio
     final success = await setRecordingPermission(false);
     changeLoadingState();
     if (success) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Authorization revoked.")));
+      ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Authorization revoked.")));
       setState(() {
         _hasPermission = false;
       });
@@ -177,7 +191,8 @@ class _RecordingsStoragePermissionState extends State<RecordingsStoragePermissio
           () => Navigator.pop(context),
           () {
             deletePermissionAndRecordings();
-            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Recordings deleted.")));
+            ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text("Recordings deleted.")));
             Navigator.pop(context);
           },
           'Permission Revoked',
@@ -187,7 +202,8 @@ class _RecordingsStoragePermissionState extends State<RecordingsStoragePermissio
       );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Failed to revoke authorization. Please try again.")),
+        const SnackBar(
+            content: Text("Failed to revoke authorization. Please try again.")),
       );
     }
   }

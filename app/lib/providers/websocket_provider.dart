@@ -2,17 +2,18 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:friend_private/backend/schema/message_event.dart';
-import 'package:friend_private/backend/schema/transcript_segment.dart';
-import 'package:friend_private/backend/schema/bt_device.dart';
-import 'package:friend_private/services/notification_service.dart';
-import 'package:friend_private/utils/websockets.dart';
+import 'package:foxxy_package/backend/schema/message_event.dart';
+import 'package:foxxy_package/backend/schema/transcript_segment.dart';
+import 'package:foxxy_package/backend/schema/bt_device.dart';
+import 'package:foxxy_package/services/notification_service.dart';
+import 'package:foxxy_package/utils/websockets.dart';
 import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
 import 'package:web_socket_channel/io.dart';
 
 @Deprecated("Use the socket service")
 class WebSocketProvider with ChangeNotifier {
-  WebsocketConnectionStatus wsConnectionState = WebsocketConnectionStatus.notConnected;
+  WebsocketConnectionStatus wsConnectionState =
+      WebsocketConnectionStatus.notConnected;
   bool websocketReconnecting = false;
   IOWebSocketChannel? websocketChannel;
   int _reconnectionAttempts = 0;
@@ -66,7 +67,8 @@ class WebSocketProvider with ChangeNotifier {
     }
 
     if (_internetStatus == InternetStatus.disconnected) {
-      debugPrint('No internet connection. Waiting for connection to be restored.');
+      debugPrint(
+          'No internet connection. Waiting for connection to be restored.');
       _isConnecting = false;
       return;
     }
@@ -105,7 +107,8 @@ class WebSocketProvider with ChangeNotifier {
           notifyListeners();
         },
         onWebsocketConnectionClosed: (int? closeCode, String? closeReason) {
-          debugPrint('WebSocket connection closed2: code ~ $closeCode, reason ~ $closeReason');
+          debugPrint(
+              'WebSocket connection closed2: code ~ $closeCode, reason ~ $closeReason');
           wsConnectionState = WebsocketConnectionStatus.closed;
           _isConnecting = false;
           onConnectionClosed(closeCode, closeReason);
@@ -176,12 +179,15 @@ class WebSocketProvider with ChangeNotifier {
     required bool newMemoryWatch,
   }) {
     _internetListener?.cancel();
-    _internetListener = InternetConnection().onStatusChange.listen((InternetStatus status) {
+    _internetListener =
+        InternetConnection().onStatusChange.listen((InternetStatus status) {
       _internetStatus = status;
       switch (status) {
         case InternetStatus.connected:
-          if (wsConnectionState != WebsocketConnectionStatus.connected && !_isConnecting) {
-            debugPrint('Internet connection restored. Attempting to reconnect WebSocket.');
+          if (wsConnectionState != WebsocketConnectionStatus.connected &&
+              !_isConnecting) {
+            debugPrint(
+                'Internet connection restored. Attempting to reconnect WebSocket.');
             internetLostNotificationDelay?.cancel();
             _reconnectionTimer?.cancel();
             _reconnectionAttempts = 0;
@@ -202,7 +208,8 @@ class WebSocketProvider with ChangeNotifier {
         case InternetStatus.disconnected:
           debugPrint('Internet connection lost. Disconnecting WebSocket.');
           internetLostNotificationDelay?.cancel();
-          internetLostNotificationDelay = Timer(const Duration(seconds: 60), () => _notifyInternetLost());
+          internetLostNotificationDelay =
+              Timer(const Duration(seconds: 60), () => _notifyInternetLost());
           websocketChannel?.sink.close(1000, 'Internet connection lost');
           _reconnectionTimer?.cancel();
           wsConnectionState = WebsocketConnectionStatus.notConnected;
@@ -225,13 +232,16 @@ class WebSocketProvider with ChangeNotifier {
     required bool includeSpeechProfile,
     required bool newMemoryWatch,
   }) {
-    if (websocketReconnecting || _internetStatus == InternetStatus.disconnected || _isConnecting) return;
+    if (websocketReconnecting ||
+        _internetStatus == InternetStatus.disconnected ||
+        _isConnecting) return;
 
     websocketReconnecting = true;
     _reconnectionAttempts++;
 
     int delaySeconds = _calculateReconnectDelay();
-    debugPrint('Scheduling reconnection attempt $_reconnectionAttempts in $delaySeconds seconds');
+    debugPrint(
+        'Scheduling reconnection attempt $_reconnectionAttempts in $delaySeconds seconds');
 
     _reconnectionTimer?.cancel();
     _reconnectionTimer = Timer(Duration(seconds: delaySeconds), () {
@@ -255,7 +265,8 @@ class WebSocketProvider with ChangeNotifier {
   }
 
   int _calculateReconnectDelay() {
-    int delay = _initialReconnectDelay * pow(2, _reconnectionAttempts - 1).toInt();
+    int delay =
+        _initialReconnectDelay * pow(2, _reconnectionAttempts - 1).toInt();
     return min(delay, _maxReconnectDelay);
   }
 
@@ -307,7 +318,8 @@ class WebSocketProvider with ChangeNotifier {
     NotificationService.instance.createNotification(
       notificationId: 3,
       title: 'Internet Connection Lost',
-      body: 'Your device is offline. Transcription is paused until connection is restored.',
+      body:
+          'Your device is offline. Transcription is paused until connection is restored.',
     );
   }
 

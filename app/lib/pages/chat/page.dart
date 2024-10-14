@@ -4,24 +4,24 @@ import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/scheduler.dart';
-import 'package:friend_private/backend/http/api/messages.dart';
-import 'package:friend_private/backend/preferences.dart';
-import 'package:friend_private/backend/schema/memory.dart';
-import 'package:friend_private/backend/schema/message.dart';
-import 'package:friend_private/backend/schema/plugin.dart';
-import 'package:friend_private/pages/chat/widgets/ai_message.dart';
-import 'package:friend_private/pages/chat/widgets/animated_mini_banner.dart';
-import 'package:friend_private/pages/chat/widgets/user_message.dart';
-import 'package:friend_private/providers/connectivity_provider.dart';
-import 'package:friend_private/providers/home_provider.dart';
-import 'package:friend_private/providers/memory_provider.dart';
-import 'package:friend_private/providers/message_provider.dart';
-import 'package:friend_private/widgets/dialog.dart';
+import 'package:foxxy_package/backend/http/api/messages.dart';
+import 'package:foxxy_package/backend/preferences.dart';
+import 'package:foxxy_package/backend/schema/memory.dart';
+import 'package:foxxy_package/backend/schema/message.dart';
+import 'package:foxxy_package/backend/schema/plugin.dart';
+import 'package:foxxy_package/pages/chat/widgets/ai_message.dart';
+import 'package:foxxy_package/pages/chat/widgets/animated_mini_banner.dart';
+import 'package:foxxy_package/pages/chat/widgets/user_message.dart';
+import 'package:foxxy_package/providers/connectivity_provider.dart';
+import 'package:foxxy_package/providers/home_provider.dart';
+import 'package:foxxy_package/providers/memory_provider.dart';
+import 'package:foxxy_package/providers/message_provider.dart';
+import 'package:foxxy_package/widgets/dialog.dart';
 import 'package:gradient_borders/gradient_borders.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:friend_private/generated/l10n.dart';
+import 'package:foxxy_package/generated/l10n.dart';
 
 class ChatPage extends StatefulWidget {
   const ChatPage({
@@ -59,7 +59,8 @@ class ChatPageState extends State<ChatPage> with AutomaticKeepAliveClientMixin {
     plugins = prefs.pluginsList;
     scrollController = ScrollController();
     scrollController.addListener(() {
-      if (scrollController.position.userScrollDirection == ScrollDirection.reverse) {
+      if (scrollController.position.userScrollDirection ==
+          ScrollDirection.reverse) {
         if (!isScrollingDown) {
           isScrollingDown = true;
           _showDeleteOption = true;
@@ -74,7 +75,8 @@ class ChatPageState extends State<ChatPage> with AutomaticKeepAliveClientMixin {
         }
       }
 
-      if (scrollController.position.userScrollDirection == ScrollDirection.forward) {
+      if (scrollController.position.userScrollDirection ==
+          ScrollDirection.forward) {
         if (isScrollingDown) {
           isScrollingDown = false;
           _showDeleteOption = false;
@@ -167,7 +169,8 @@ class ChatPageState extends State<ChatPage> with AutomaticKeepAliveClientMixin {
                         children: [
                           const SizedBox(height: 100),
                           const CircularProgressIndicator(
-                            valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                            valueColor:
+                                AlwaysStoppedAnimation<Color>(Colors.white),
                           ),
                           const SizedBox(height: 16),
                           Text(
@@ -181,7 +184,8 @@ class ChatPageState extends State<ChatPage> with AutomaticKeepAliveClientMixin {
                             children: [
                               SizedBox(height: 100),
                               CircularProgressIndicator(
-                                valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                                valueColor:
+                                    AlwaysStoppedAnimation<Color>(Colors.white),
                               ),
                               SizedBox(height: 16),
                               Text(
@@ -197,9 +201,11 @@ class ChatPageState extends State<ChatPage> with AutomaticKeepAliveClientMixin {
                                   child: Text(
                                       connectivityProvider.isConnected
                                           ? '${S.current.NoMessagesYet}\n${S.current.WhyDontConversation}'
-                                          : S.current.PleaseCheckInternetConnectionNote,
+                                          : S.current
+                                              .PleaseCheckInternetConnectionNote,
                                       textAlign: TextAlign.center,
-                                      style: const TextStyle(color: Colors.white)),
+                                      style:
+                                          const TextStyle(color: Colors.white)),
                                 ),
                               )
                             : ListView.builder(
@@ -210,7 +216,10 @@ class ChatPageState extends State<ChatPage> with AutomaticKeepAliveClientMixin {
                                 itemCount: provider.messages.length,
                                 itemBuilder: (context, chatIndex) {
                                   final message = provider.messages[chatIndex];
-                                  double topPadding = chatIndex == provider.messages.length - 1 ? 24 : 16;
+                                  double topPadding =
+                                      chatIndex == provider.messages.length - 1
+                                          ? 24
+                                          : 16;
                                   double bottomPadding = chatIndex == 0
                                       ? Platform.isAndroid
                                           ? 200
@@ -218,17 +227,28 @@ class ChatPageState extends State<ChatPage> with AutomaticKeepAliveClientMixin {
                                       : 0;
                                   return Padding(
                                     key: ValueKey(message.id),
-                                    padding:
-                                        EdgeInsets.only(bottom: bottomPadding, left: 18, right: 18, top: topPadding),
+                                    padding: EdgeInsets.only(
+                                        bottom: bottomPadding,
+                                        left: 18,
+                                        right: 18,
+                                        top: topPadding),
                                     child: message.sender == MessageSender.ai
                                         ? AIMessage(
-                                            showTypingIndicator: provider.showTypingIndicator && chatIndex == 0,
+                                            showTypingIndicator:
+                                                provider.showTypingIndicator &&
+                                                    chatIndex == 0,
                                             message: message,
                                             sendMessage: _sendMessageUtil,
-                                            displayOptions: provider.messages.length <= 1,
-                                            pluginSender: plugins.firstWhereOrNull((e) => e.id == message.pluginId),
-                                            updateMemory: (ServerMemory memory) {
-                                              context.read<MemoryProvider>().updateMemory(memory);
+                                            displayOptions:
+                                                provider.messages.length <= 1,
+                                            pluginSender:
+                                                plugins.firstWhereOrNull((e) =>
+                                                    e.id == message.pluginId),
+                                            updateMemory:
+                                                (ServerMemory memory) {
+                                              context
+                                                  .read<MemoryProvider>()
+                                                  .updateMemory(memory);
                                             },
                                           )
                                         : HumanMessage(message: message),
@@ -241,8 +261,12 @@ class ChatPageState extends State<ChatPage> with AutomaticKeepAliveClientMixin {
                   alignment: Alignment.bottomCenter,
                   child: Container(
                     width: double.maxFinite,
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 2),
-                    margin: EdgeInsets.only(left: 32, right: 32, bottom: home.isChatFieldFocused ? 120 : 120),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 16, vertical: 2),
+                    margin: EdgeInsets.only(
+                        left: 32,
+                        right: 32,
+                        bottom: home.isChatFieldFocused ? 120 : 120),
                     decoration: const BoxDecoration(
                       color: Colors.black,
                       borderRadius: BorderRadius.all(Radius.circular(16)),
@@ -268,7 +292,8 @@ class ChatPageState extends State<ChatPage> with AutomaticKeepAliveClientMixin {
                       textAlignVertical: TextAlignVertical.center,
                       decoration: InputDecoration(
                         hintText: S.current.AskYourAudioFairyAnything,
-                        hintStyle: const TextStyle(fontSize: 14.0, color: Colors.grey),
+                        hintStyle:
+                            const TextStyle(fontSize: 14.0, color: Colors.grey),
                         focusedBorder: InputBorder.none,
                         enabledBorder: InputBorder.none,
                         suffixIcon: IconButton(
@@ -284,7 +309,8 @@ class ChatPageState extends State<ChatPage> with AutomaticKeepAliveClientMixin {
                                   } else {
                                     ScaffoldMessenger.of(context).showSnackBar(
                                       SnackBar(
-                                        content: Text(S.current.PleaseCheckInternetConnectionNote),
+                                        content: Text(S.current
+                                            .PleaseCheckInternetConnectionNote),
                                         duration: const Duration(seconds: 2),
                                       ),
                                     );
@@ -295,7 +321,8 @@ class ChatPageState extends State<ChatPage> with AutomaticKeepAliveClientMixin {
                                   width: 16,
                                   height: 16,
                                   child: CircularProgressIndicator(
-                                    valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                                    valueColor: AlwaysStoppedAnimation<Color>(
+                                        Colors.white),
                                   ),
                                 )
                               : const Icon(
@@ -308,7 +335,8 @@ class ChatPageState extends State<ChatPage> with AutomaticKeepAliveClientMixin {
                       // maxLines: 8,
                       // minLines: 1,
                       // keyboardType: TextInputType.multiline,
-                      style: TextStyle(fontSize: 14.0, color: Colors.grey.shade200),
+                      style: TextStyle(
+                          fontSize: 14.0, color: Colors.grey.shade200),
                     ),
                   ),
                 );
@@ -322,15 +350,18 @@ class ChatPageState extends State<ChatPage> with AutomaticKeepAliveClientMixin {
 
   _sendMessageUtil(String message) async {
     changeLoadingState();
-    String? pluginId = SharedPreferencesUtil().selectedChatPluginId == 'no_selected'
-        ? null
-        : SharedPreferencesUtil().selectedChatPluginId;
-    var newMessage = ServerMessage(
-        const Uuid().v4(), DateTime.now(), message, MessageSender.human, MessageType.text, pluginId, false, []);
+    String? pluginId =
+        SharedPreferencesUtil().selectedChatPluginId == 'no_selected'
+            ? null
+            : SharedPreferencesUtil().selectedChatPluginId;
+    var newMessage = ServerMessage(const Uuid().v4(), DateTime.now(), message,
+        MessageSender.human, MessageType.text, pluginId, false, []);
     context.read<MessageProvider>().addMessage(newMessage);
     scrollToBottom();
     textController.clear();
-    await context.read<MessageProvider>().sendMessageToServer(message, pluginId);
+    await context
+        .read<MessageProvider>()
+        .sendMessageToServer(message, pluginId);
     // TODO: restore streaming capabilities, with initial empty message
     scrollToBottom();
     changeLoadingState();

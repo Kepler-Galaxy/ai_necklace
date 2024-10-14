@@ -3,9 +3,9 @@ import 'dart:io';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:friend_private/backend/auth.dart';
-import 'package:friend_private/backend/preferences.dart';
-import 'package:friend_private/utils/alerts/app_snackbar.dart';
+import 'package:foxxy_package/backend/auth.dart';
+import 'package:foxxy_package/backend/preferences.dart';
+import 'package:foxxy_package/utils/alerts/app_snackbar.dart';
 
 class ChangeNameWidget extends StatefulWidget {
   const ChangeNameWidget({super.key});
@@ -55,7 +55,8 @@ class _ChangeNameWidgetState extends State<ChangeNameWidget> {
           CupertinoDialogAction(
             textStyle: const TextStyle(color: Colors.white),
             onPressed: () {
-              if (nameController.text.isEmpty || nameController.text.trim().isEmpty) {
+              if (nameController.text.isEmpty ||
+                  nameController.text.trim().isEmpty) {
                 AppSnackbar.showSnackbarError('Name cannot be empty');
                 return;
               }
@@ -96,7 +97,8 @@ class _ChangeNameWidgetState extends State<ChangeNameWidget> {
           ),
           TextButton(
             onPressed: () {
-              if (nameController.text.isEmpty || nameController.text.trim().isEmpty) {
+              if (nameController.text.isEmpty ||
+                  nameController.text.trim().isEmpty) {
                 AppSnackbar.showSnackbarError('Name cannot be empty');
                 return;
               }

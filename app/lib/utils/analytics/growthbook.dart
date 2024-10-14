@@ -1,8 +1,8 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:friend_private/backend/preferences.dart';
-import 'package:friend_private/env/env.dart';
+import 'package:foxxy_package/backend/preferences.dart';
+import 'package:foxxy_package/env/env.dart';
 import 'package:growthbook_sdk_flutter/growthbook_sdk_flutter.dart';
 
 class GrowthbookUtil {
@@ -28,7 +28,8 @@ class GrowthbookUtil {
       enable: true,
       attributes: attr,
       growthBookTrackingCallBack: (gbExperiment, gbExperimentResult) {
-        debugPrint('growthBookTrackingCallBack: $gbExperiment $gbExperimentResult');
+        debugPrint(
+            'growthBookTrackingCallBack: $gbExperiment $gbExperimentResult');
       },
       hostURL: 'https://cdn.growthbook.io/',
       qaMode: true,

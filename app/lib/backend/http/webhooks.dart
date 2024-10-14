@@ -2,15 +2,16 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:friend_private/backend/schema/transcript_segment.dart';
-import 'package:friend_private/backend/http/shared.dart';
-import 'package:friend_private/backend/preferences.dart';
-import 'package:friend_private/backend/schema/memory.dart';
+import 'package:foxxy_package/backend/schema/transcript_segment.dart';
+import 'package:foxxy_package/backend/http/shared.dart';
+import 'package:foxxy_package/backend/preferences.dart';
+import 'package:foxxy_package/backend/schema/memory.dart';
 import 'package:http/http.dart';
 import 'package:instabug_flutter/instabug_flutter.dart';
 import 'package:mime/mime.dart';
 
-Future<String> webhookOnMemoryCreatedCall(ServerMemory? memory, {bool returnRawBody = false}) async {
+Future<String> webhookOnMemoryCreatedCall(ServerMemory? memory,
+    {bool returnRawBody = false}) async {
   if (memory == null) return '';
   debugPrint('devModeWebhookCall: $memory');
   String url = SharedPreferencesUtil().webhookOnMemoryCreated;
@@ -31,7 +32,9 @@ Future<String> webhookOnMemoryCreatedCall(ServerMemory? memory, {bool returnRawB
       method: 'POST',
     );
     debugPrint('response: ${response?.statusCode}');
-    if (returnRawBody) return jsonEncode({'statusCode': response?.statusCode, 'body': response?.body});
+    if (returnRawBody)
+      return jsonEncode(
+          {'statusCode': response?.statusCode, 'body': response?.body});
     var body = jsonDecode(response?.body ?? '{}');
     print(body);
     //TODO: Some endpoints return an array. I guess it makes sense to have standardised response strcuture. What do you think? @josancamon19
@@ -42,21 +45,27 @@ Future<String> webhookOnMemoryCreatedCall(ServerMemory? memory, {bool returnRawB
   } catch (e) {
     debugPrint('Error triggering memory request at endpoint: $e');
     // TODO: is it bad for reporting?  I imagine most of the time is backend error, so nah.
-    CrashReporting.reportHandledCrash(e, StackTrace.current, level: NonFatalExceptionLevel.info, userAttributes: {
-      'url': url,
-    });
+    CrashReporting.reportHandledCrash(e, StackTrace.current,
+        level: NonFatalExceptionLevel.info,
+        userAttributes: {
+          'url': url,
+        });
     return '';
   }
 }
 
-Future<String> webhookOnTranscriptReceivedCall(List<TranscriptSegment> segments, String sessionId) async {
+Future<String> webhookOnTranscriptReceivedCall(
+    List<TranscriptSegment> segments, String sessionId) async {
   // was called twice?
-  if (segments.isEmpty || SharedPreferencesUtil().webhookOnTranscriptReceived.isEmpty) return '';
+  if (segments.isEmpty ||
+      SharedPreferencesUtil().webhookOnTranscriptReceived.isEmpty) return '';
   debugPrint('webhookOnTranscriptReceivedCall: $segments');
-  return triggerTranscriptSegmentsRequest(SharedPreferencesUtil().webhookOnTranscriptReceived, sessionId, segments);
+  return triggerTranscriptSegmentsRequest(
+      SharedPreferencesUtil().webhookOnTranscriptReceived, sessionId, segments);
 }
 
-Future<String> triggerTranscriptSegmentsRequest(String url, String sessionId, List<TranscriptSegment> segments) async {
+Future<String> triggerTranscriptSegmentsRequest(
+    String url, String sessionId, List<TranscriptSegment> segments) async {
   debugPrint('triggerMemoryRequestAtEndpoint: $url');
   if (url.isEmpty) return '';
   if (url.contains('?')) {
@@ -92,9 +101,11 @@ Future<String> triggerTranscriptSegmentsRequest(String url, String sessionId, Li
   } catch (e) {
     debugPrint('Error triggering transcript request at endpoint: $e');
     // TODO: is it bad for reporting?  I imagine most of the time is backend error, so nah.
-    CrashReporting.reportHandledCrash(e, StackTrace.current, level: NonFatalExceptionLevel.info, userAttributes: {
-      'url': url,
-    });
+    CrashReporting.reportHandledCrash(e, StackTrace.current,
+        level: NonFatalExceptionLevel.info,
+        userAttributes: {
+          'url': url,
+        });
     return '';
   }
 }

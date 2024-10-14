@@ -1,29 +1,29 @@
 import 'package:flutter/material.dart';
-import 'package:friend_private/backend/preferences.dart';
-import 'package:friend_private/backend/schema/bt_device.dart';
-import 'package:friend_private/backend/schema/transcript_segment.dart';
-import 'package:friend_private/pages/capture/connect.dart';
-import 'package:friend_private/pages/speech_profile/page.dart';
-import 'package:friend_private/providers/capture_provider.dart';
-import 'package:friend_private/providers/connectivity_provider.dart';
-import 'package:friend_private/providers/device_provider.dart';
-import 'package:friend_private/providers/home_provider.dart';
-import 'package:friend_private/utils/analytics/mixpanel.dart';
-import 'package:friend_private/utils/enums.dart';
-import 'package:friend_private/utils/other/temp.dart';
-import 'package:friend_private/utils/websockets.dart';
-import 'package:friend_private/widgets/device_widget.dart';
-import 'package:friend_private/widgets/dialog.dart';
-import 'package:friend_private/widgets/photos_grid.dart';
-import 'package:friend_private/widgets/scanning_ui.dart';
-import 'package:friend_private/widgets/transcript.dart';
+import 'package:foxxy_package/backend/preferences.dart';
+import 'package:foxxy_package/backend/schema/bt_device.dart';
+import 'package:foxxy_package/backend/schema/transcript_segment.dart';
+import 'package:foxxy_package/pages/capture/connect.dart';
+import 'package:foxxy_package/pages/speech_profile/page.dart';
+import 'package:foxxy_package/providers/capture_provider.dart';
+import 'package:foxxy_package/providers/connectivity_provider.dart';
+import 'package:foxxy_package/providers/device_provider.dart';
+import 'package:foxxy_package/providers/home_provider.dart';
+import 'package:foxxy_package/utils/analytics/mixpanel.dart';
+import 'package:foxxy_package/utils/enums.dart';
+import 'package:foxxy_package/utils/other/temp.dart';
+import 'package:foxxy_package/utils/websockets.dart';
+import 'package:foxxy_package/widgets/device_widget.dart';
+import 'package:foxxy_package/widgets/dialog.dart';
+import 'package:foxxy_package/widgets/photos_grid.dart';
+import 'package:foxxy_package/widgets/scanning_ui.dart';
+import 'package:foxxy_package/widgets/transcript.dart';
 import 'package:gradient_borders/gradient_borders.dart';
 import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
 import 'package:tuple/tuple.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:friend_private/generated/l10n.dart';
+import 'package:foxxy_package/generated/l10n.dart';
 
 getConnectionStateWidgets(
   BuildContext context,
@@ -39,17 +39,20 @@ getConnectionStateWidgets(
           ? _getNoFriendConnectedYet(context)
           : const ScanningUI(
               string1: 'Looking for Foxxy wearable',
-              string2: 'Locating your Foxxy device. Keep it near your phone for pairing',
+              string2:
+                  'Locating your Foxxy device. Keep it near your phone for pairing',
             ),
     ];
   }
 
   bool isWebsocketError =
-      wsConnectionState == WebsocketConnectionStatus.failed || wsConnectionState == WebsocketConnectionStatus.error;
+      wsConnectionState == WebsocketConnectionStatus.failed ||
+          wsConnectionState == WebsocketConnectionStatus.error;
 
   return [
     const Center(child: DeviceAnimationWidget(sizeMultiplier: 0.7)),
-    Consumer<ConnectivityProvider>(builder: (context, connectivityProvider, child) {
+    Consumer<ConnectivityProvider>(
+        builder: (context, connectivityProvider, child) {
       return GestureDetector(
         onTap: !connectivityProvider.isConnected || isWebsocketError
             ? () {
@@ -59,7 +62,9 @@ getConnectionStateWidgets(
                     context,
                     () => Navigator.pop(context),
                     () => Navigator.pop(context),
-                    !connectivityProvider.isConnected ? 'Internet Connection Lost' : 'Connection Issue',
+                    !connectivityProvider.isConnected
+                        ? 'Internet Connection Lost'
+                        : 'Connection Issue',
                     !connectivityProvider.isConnected
                         ? 'Your device is offline. Transcription is paused until connection is restored.'
                         : 'Unable to connect to the transcript service. Please restart the app or contact support if the problem persists.',
@@ -111,10 +116,12 @@ getConnectionStateWidgets(
             ),
             const SizedBox(width: 24),
             !connectivityProvider.isConnected
-                ? Lottie.asset('assets/lottie_animations/no_internet.json', height: 56, width: 56)
+                ? Lottie.asset('assets/lottie_animations/no_internet.json',
+                    height: 56, width: 56)
                 : isWebsocketError
                     // ? Lottie.network('https://lottie.host/8223dbf8-8a50-4d48-8e37-0b845b1f1094/TQcT5w5Mn4.json', height: 48, width: 48)
-                    ? Lottie.asset('assets/lottie_animations/no_internet.json', height: 56, width: 56)
+                    ? Lottie.asset('assets/lottie_animations/no_internet.json',
+                        height: 56, width: 56)
                     // TODO: find a better animation for server
                     : Container(
                         width: 10,
@@ -180,7 +187,8 @@ _getNoFriendConnectedYet(BuildContext context) {
           const SizedBox(height: 4),
           TextButton(
             onPressed: () async {
-              Navigator.of(context).push(MaterialPageRoute(builder: (c) => const ConnectDevicePage()));
+              Navigator.of(context).push(
+                  MaterialPageRoute(builder: (c) => const ConnectDevicePage()));
               MixpanelManager().connectFriendClicked();
             },
             style: ElevatedButton.styleFrom(
@@ -226,18 +234,23 @@ class SpeechProfileCardWidget extends StatelessWidget {
                   GestureDetector(
                     onTap: () async {
                       MixpanelManager().pageOpened('Speech Profile Memories');
-                      bool hasSpeakerProfile = SharedPreferencesUtil().hasSpeakerProfile;
+                      bool hasSpeakerProfile =
+                          SharedPreferencesUtil().hasSpeakerProfile;
                       await routeToPage(context, const SpeechProfilePage());
-                      if (hasSpeakerProfile != SharedPreferencesUtil().hasSpeakerProfile) {
+                      if (hasSpeakerProfile !=
+                          SharedPreferencesUtil().hasSpeakerProfile) {
                         if (context.mounted) {
-                          context.read<CaptureProvider>().onRecordProfileSettingChanged();
+                          context
+                              .read<CaptureProvider>()
+                              .onRecordProfileSettingChanged();
                         }
                       }
                     },
                     child: Container(
                       decoration: BoxDecoration(
                         color: Colors.grey.shade900,
-                        borderRadius: const BorderRadius.all(Radius.circular(12)),
+                        borderRadius:
+                            const BorderRadius.all(Radius.circular(12)),
                       ),
                       margin: const EdgeInsets.fromLTRB(16, 0, 16, 16),
                       padding: const EdgeInsets.all(16),
@@ -251,7 +264,8 @@ class SpeechProfileCardWidget extends StatelessWidget {
                                 SizedBox(width: 16),
                                 Text(
                                   'Teach Foxxy your voice',
-                                  style: TextStyle(color: Colors.white, fontSize: 16),
+                                  style: TextStyle(
+                                      color: Colors.white, fontSize: 16),
                                 ),
                               ],
                             ),
@@ -267,7 +281,8 @@ class SpeechProfileCardWidget extends StatelessWidget {
                     child: Container(
                       width: 12,
                       height: 12,
-                      decoration: const BoxDecoration(color: Colors.red, shape: BoxShape.circle),
+                      decoration: const BoxDecoration(
+                          color: Colors.red, shape: BoxShape.circle),
                     ),
                   ),
                 ],
@@ -322,9 +337,11 @@ connectionStatusWidgets(
 ) {
   if (segments.isEmpty) return [];
 
-  bool isWifiDisconnected = !Provider.of<ConnectivityProvider>(context, listen: false).isConnected;
+  bool isWifiDisconnected =
+      !Provider.of<ConnectivityProvider>(context, listen: false).isConnected;
   bool isWebsocketError =
-      wsConnectionState == WebsocketConnectionStatus.failed || wsConnectionState == WebsocketConnectionStatus.error;
+      wsConnectionState == WebsocketConnectionStatus.failed ||
+          wsConnectionState == WebsocketConnectionStatus.error;
   if (!isWifiDisconnected && !isWebsocketError) return [];
   return [
     GestureDetector(
@@ -335,7 +352,9 @@ connectionStatusWidgets(
             context,
             () => Navigator.pop(context),
             () => Navigator.pop(context),
-            isWifiDisconnected ? 'Internet Connection Lost' : 'Connection Issue',
+            isWifiDisconnected
+                ? 'Internet Connection Lost'
+                : 'Connection Issue',
             isWifiDisconnected
                 ? 'Your device is offline. Transcription is paused until connection is restored.'
                 : 'Unable to connect to the transcript service. Please restart the app or contact support if the problem persists.',
@@ -362,8 +381,10 @@ connectionStatusWidgets(
             Padding(
               padding: const EdgeInsets.only(bottom: 6),
               child: isWifiDisconnected
-                  ? Lottie.asset('assets/lottie_animations/no_internet.json', height: 48, width: 48)
-                  : Lottie.asset('assets/lottie_animations/no_internet.json', height: 48, width: 48),
+                  ? Lottie.asset('assets/lottie_animations/no_internet.json',
+                      height: 48, width: 48)
+                  : Lottie.asset('assets/lottie_animations/no_internet.json',
+                      height: 48, width: 48),
             )
           ],
         ),
@@ -372,8 +393,10 @@ connectionStatusWidgets(
   ];
 }
 
-getPhoneMicRecordingButton(VoidCallback recordingToggled, RecordingState state) {
-  if (SharedPreferencesUtil().btDeviceStruct.id.isNotEmpty) return const SizedBox.shrink();
+getPhoneMicRecordingButton(
+    VoidCallback recordingToggled, RecordingState state) {
+  if (SharedPreferencesUtil().btDeviceStruct.id.isNotEmpty)
+    return const SizedBox.shrink();
   return Visibility(
     visible: true,
     child: Padding(
@@ -385,7 +408,8 @@ getPhoneMicRecordingButton(VoidCallback recordingToggled, RecordingState state) 
             borderRadius: BorderRadius.circular(12),
             // side: BorderSide(color: state == RecordState.record ? Colors.red : Colors.white),
           ),
-          onPressed: state == RecordingState.initialising ? null : recordingToggled,
+          onPressed:
+              state == RecordingState.initialising ? null : recordingToggled,
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
             child: Row(
@@ -408,7 +432,9 @@ getPhoneMicRecordingButton(VoidCallback recordingToggled, RecordingState state) 
                 Text(
                   state == RecordingState.initialising
                       ? 'Initialising Recorder'
-                      : (state == RecordingState.record ? S.current.StopRecording : S.current.TryWithPhoneMic),
+                      : (state == RecordingState.record
+                          ? S.current.StopRecording
+                          : S.current.TryWithPhoneMic),
                   style: const TextStyle(fontSize: 14),
                 ),
                 const SizedBox(width: 4),

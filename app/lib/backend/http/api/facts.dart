@@ -1,9 +1,9 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:friend_private/backend/http/shared.dart';
-import 'package:friend_private/backend/schema/fact.dart';
-import 'package:friend_private/env/env.dart';
+import 'package:foxxy_package/backend/http/shared.dart';
+import 'package:foxxy_package/backend/schema/fact.dart';
+import 'package:foxxy_package/env/env.dart';
 
 Future<bool> createFact(String content, FactCategory category) async {
   var response = await makeApiCall(

@@ -2,15 +2,21 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:friend_private/backend/preferences.dart';
-import 'package:friend_private/backend/schema/bt_device.dart';
-import 'package:friend_private/backend/schema/message_event.dart';
-import 'package:friend_private/backend/schema/transcript_segment.dart';
-import 'package:friend_private/env/env.dart';
+import 'package:foxxy_package/backend/preferences.dart';
+import 'package:foxxy_package/backend/schema/bt_device.dart';
+import 'package:foxxy_package/backend/schema/message_event.dart';
+import 'package:foxxy_package/backend/schema/transcript_segment.dart';
+import 'package:foxxy_package/env/env.dart';
 import 'package:instabug_flutter/instabug_flutter.dart';
 import 'package:web_socket_channel/io.dart';
 
-enum WebsocketConnectionStatus { notConnected, connected, failed, closed, error }
+enum WebsocketConnectionStatus {
+  notConnected,
+  connected,
+  failed,
+  closed,
+  error
+}
 
 Future<IOWebSocketChannel?> _initWebsocketStream(
   void Function(List<TranscriptSegment>) onMessageReceived,
@@ -26,7 +32,8 @@ Future<IOWebSocketChannel?> _initWebsocketStream(
 ) async {
   debugPrint('Websocket Opening');
   final recordingsLanguage = SharedPreferencesUtil().recordingsLanguage;
-  var params = '?language=$recordingsLanguage&sample_rate=$sampleRate&codec=$codec&uid=${SharedPreferencesUtil().uid}'
+  var params =
+      '?language=$recordingsLanguage&sample_rate=$sampleRate&codec=$codec&uid=${SharedPreferencesUtil().uid}'
       '&include_speech_profile=$includeSpeechProfile&new_memory_watch=$newMemoryWatch&stt_service=${SharedPreferencesUtil().transcriptionModel}';
 
   IOWebSocketChannel channel = IOWebSocketChannel.connect(
@@ -45,7 +52,8 @@ Future<IOWebSocketChannel?> _initWebsocketStream(
         if (jsonEvent is List) {
           var segments = jsonEvent;
           if (segments.isEmpty) return;
-          onMessageReceived(segments.map((e) => TranscriptSegment.fromJson(e)).toList());
+          onMessageReceived(
+              segments.map((e) => TranscriptSegment.fromJson(e)).toList());
           return;
         }
 
@@ -64,7 +72,8 @@ Future<IOWebSocketChannel?> _initWebsocketStream(
       },
       onError: (err, stackTrace) {
         onWebsocketConnectionError(err); // error during connection
-        CrashReporting.reportHandledCrash(err!, stackTrace, level: NonFatalExceptionLevel.warning);
+        CrashReporting.reportHandledCrash(err!, stackTrace,
+            level: NonFatalExceptionLevel.warning);
       },
       onDone: (() {
         // debugPrint('Websocket connection onDone ${channel}'); // FIXME
@@ -75,7 +84,8 @@ Future<IOWebSocketChannel?> _initWebsocketStream(
   }).onError((err, stackTrace) {
     // no closing reason or code
     print(err);
-    CrashReporting.reportHandledCrash(err!, stackTrace, level: NonFatalExceptionLevel.warning);
+    CrashReporting.reportHandledCrash(err!, stackTrace,
+        level: NonFatalExceptionLevel.warning);
     onWebsocketConnectionFailed(err); // initial connection failed
   });
 

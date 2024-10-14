@@ -1,9 +1,9 @@
 import 'package:flutter/cupertino.dart';
-import 'package:friend_private/backend/http/api/speech_profile.dart';
-import 'package:friend_private/backend/http/api/users.dart';
-import 'package:friend_private/backend/preferences.dart';
-import 'package:friend_private/backend/schema/person.dart';
-import 'package:friend_private/providers/base_provider.dart';
+import 'package:foxxy_package/backend/http/api/speech_profile.dart';
+import 'package:foxxy_package/backend/http/api/users.dart';
+import 'package:foxxy_package/backend/preferences.dart';
+import 'package:foxxy_package/backend/schema/person.dart';
+import 'package:foxxy_package/providers/base_provider.dart';
 import 'package:just_audio/just_audio.dart';
 
 class PeopleProvider extends BaseProvider {
@@ -42,7 +42,8 @@ class PeopleProvider extends BaseProvider {
   }
 
   Future<void> playPause(int personIdx, int sampleIdx, String fileUrl) async {
-    if (currentPlayingPersonIndex == personIdx && currentPlayingIndex == sampleIdx) {
+    if (currentPlayingPersonIndex == personIdx &&
+        currentPlayingIndex == sampleIdx) {
       if (isPlaying) {
         _audioPlayer.pause();
         isPlaying = false;
@@ -62,9 +63,11 @@ class PeopleProvider extends BaseProvider {
     }
   }
 
-  void addOrUpdatePersonProvider(Person? person, TextEditingController nameController) async {
+  void addOrUpdatePersonProvider(
+      Person? person, TextEditingController nameController) async {
     if (loading) return;
-    String name = nameController.text.toString()[0].toUpperCase() + nameController.text.toString().substring(1);
+    String name = nameController.text.toString()[0].toUpperCase() +
+        nameController.text.toString().substring(1);
     if (person == null) {
       loading = true;
       notifyListeners();

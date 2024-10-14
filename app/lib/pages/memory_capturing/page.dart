@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:friend_private/backend/schema/memory.dart';
-import 'package:friend_private/pages/capture/widgets/widgets.dart';
-import 'package:friend_private/pages/memory_detail/page.dart';
-import 'package:friend_private/providers/capture_provider.dart';
-import 'package:friend_private/providers/device_provider.dart';
-import 'package:friend_private/widgets/dialog.dart';
+import 'package:foxxy_package/backend/schema/memory.dart';
+import 'package:foxxy_package/pages/capture/widgets/widgets.dart';
+import 'package:foxxy_package/pages/memory_detail/page.dart';
+import 'package:foxxy_package/providers/capture_provider.dart';
+import 'package:foxxy_package/providers/device_provider.dart';
+import 'package:foxxy_package/widgets/dialog.dart';
 import 'package:gradient_borders/box_borders/gradient_box_border.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:friend_private/generated/l10n.dart';
+import 'package:foxxy_package/generated/l10n.dart';
 
 class MemoryCapturingPage extends StatefulWidget {
   final String? topMemoryId;
@@ -22,7 +22,8 @@ class MemoryCapturingPage extends StatefulWidget {
   State<MemoryCapturingPage> createState() => _MemoryCapturingPageState();
 }
 
-class _MemoryCapturingPageState extends State<MemoryCapturingPage> with TickerProviderStateMixin {
+class _MemoryCapturingPageState extends State<MemoryCapturingPage>
+    with TickerProviderStateMixin {
   final scaffoldKey = GlobalKey<ScaffoldState>();
   TabController? _controller;
 
@@ -45,10 +46,12 @@ class _MemoryCapturingPageState extends State<MemoryCapturingPage> with TickerPr
 
   @override
   Widget build(BuildContext context) {
-    return Consumer2<CaptureProvider, DeviceProvider>(builder: (context, provider, deviceProvider, child) {
+    return Consumer2<CaptureProvider, DeviceProvider>(
+        builder: (context, provider, deviceProvider, child) {
       // Track memory
       if ((provider.memoryProvider?.memories ?? []).isNotEmpty &&
-          (provider.memoryProvider!.memories.first.id != widget.topMemoryId || widget.topMemoryId == null)) {
+          (provider.memoryProvider!.memories.first.id != widget.topMemoryId ||
+              widget.topMemoryId == null)) {
         _pushNewMemory(context, provider.memoryProvider!.memories.first);
       }
 
@@ -93,7 +96,10 @@ class _MemoryCapturingPageState extends State<MemoryCapturingPage> with TickerPr
                 padding: EdgeInsets.zero,
                 indicatorPadding: EdgeInsets.zero,
                 controller: _controller,
-                labelStyle: Theme.of(context).textTheme.titleLarge!.copyWith(fontSize: 18),
+                labelStyle: Theme.of(context)
+                    .textTheme
+                    .titleLarge!
+                    .copyWith(fontSize: 18),
                 tabs: [
                   Tab(
                     text: memorySource == MemorySource.openglass
@@ -104,7 +110,9 @@ class _MemoryCapturingPageState extends State<MemoryCapturingPage> with TickerPr
                   ),
                   Tab(text: S.current.Summary)
                 ],
-                indicator: BoxDecoration(color: Colors.transparent, borderRadius: BorderRadius.circular(16)),
+                indicator: BoxDecoration(
+                    color: Colors.transparent,
+                    borderRadius: BorderRadius.circular(16)),
               ),
               Expanded(
                 child: Padding(
@@ -121,10 +129,16 @@ class _MemoryCapturingPageState extends State<MemoryCapturingPage> with TickerPr
                                   children: [
                                     const SizedBox(height: 80),
                                     Center(
-                                        child: Text(memorySource == MemorySource.friend ? "No transcript" : "Empty")),
+                                        child: Text(
+                                            memorySource == MemorySource.friend
+                                                ? "No transcript"
+                                                : "Empty")),
                                   ],
                                 )
-                              : getTranscriptWidget(provider.memoryCreating, provider.segments, provider.photos,
+                              : getTranscriptWidget(
+                                  provider.memoryCreating,
+                                  provider.segments,
+                                  provider.photos,
                                   deviceProvider.connectedDevice)
                         ],
                       ),
@@ -134,7 +148,8 @@ class _MemoryCapturingPageState extends State<MemoryCapturingPage> with TickerPr
                           const SizedBox(height: 80),
                           Center(
                             child: Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 16.0),
                               child: Text(
                                 provider.segments.isEmpty
                                     ? "No summary"
@@ -162,10 +177,13 @@ class _MemoryCapturingPageState extends State<MemoryCapturingPage> with TickerPr
                                     ),
                                     borderRadius: BorderRadius.circular(12),
                                   ),
-                                  margin: const EdgeInsets.symmetric(horizontal: 48),
+                                  margin: const EdgeInsets.symmetric(
+                                      horizontal: 48),
                                   child: MaterialButton(
                                     onPressed: () async {
-                                      context.read<CaptureProvider>().createMemory();
+                                      context
+                                          .read<CaptureProvider>()
+                                          .createMemory();
                                       showDialog(
                                         context: context,
                                         builder: (context) => getDialog(
@@ -184,11 +202,15 @@ class _MemoryCapturingPageState extends State<MemoryCapturingPage> with TickerPr
                                         ),
                                       );
                                     },
-                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(8)),
                                     child: const Padding(
-                                        padding: EdgeInsets.symmetric(horizontal: 12, vertical: 0),
-                                        child:
-                                            Text('Summarise Now', style: TextStyle(color: Colors.white, fontSize: 16))),
+                                        padding: EdgeInsets.symmetric(
+                                            horizontal: 12, vertical: 0),
+                                        child: Text('Summarise Now',
+                                            style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 16))),
                                   ),
                                 ),
                         ],

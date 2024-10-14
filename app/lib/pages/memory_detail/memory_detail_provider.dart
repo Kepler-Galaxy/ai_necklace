@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_provider_utilities/flutter_provider_utilities.dart';
-import 'package:friend_private/backend/http/api/memories.dart';
-import 'package:friend_private/backend/preferences.dart';
-import 'package:friend_private/backend/schema/memory.dart';
-import 'package:friend_private/backend/schema/plugin.dart';
-import 'package:friend_private/backend/schema/structured.dart';
-import 'package:friend_private/backend/schema/transcript_segment.dart';
-import 'package:friend_private/providers/memory_provider.dart';
-import 'package:friend_private/providers/plugin_provider.dart';
-import 'package:friend_private/utils/analytics/mixpanel.dart';
+import 'package:foxxy_package/backend/http/api/memories.dart';
+import 'package:foxxy_package/backend/preferences.dart';
+import 'package:foxxy_package/backend/schema/memory.dart';
+import 'package:foxxy_package/backend/schema/plugin.dart';
+import 'package:foxxy_package/backend/schema/structured.dart';
+import 'package:foxxy_package/backend/schema/transcript_segment.dart';
+import 'package:foxxy_package/providers/memory_provider.dart';
+import 'package:foxxy_package/providers/plugin_provider.dart';
+import 'package:foxxy_package/utils/analytics/mixpanel.dart';
 import 'package:instabug_flutter/instabug_flutter.dart';
 import 'package:tuple/tuple.dart';
 
@@ -28,7 +28,8 @@ class MemoryDetailProvider extends ChangeNotifier with MessageNotifierMixin {
   final focusOverviewField = FocusNode();
   List<Plugin> pluginsList = [];
 
-  Structured get structured => memoryProvider!.memoriesWithDates[memoryIdx].structured;
+  Structured get structured =>
+      memoryProvider!.memoriesWithDates[memoryIdx].structured;
   ServerMemory get memory => memoryProvider!.memoriesWithDates[memoryIdx];
   List<bool> pluginResponseExpanded = [];
 
@@ -118,7 +119,8 @@ class MemoryDetailProvider extends ChangeNotifier with MessageNotifierMixin {
   Future initMemory() async {
     // updateLoadingState(true);
     photos = [];
-    canDisplaySeconds = TranscriptSegment.canDisplaySeconds(memory.transcriptSegments);
+    canDisplaySeconds =
+        TranscriptSegment.canDisplaySeconds(memory.transcriptSegments);
     if (memory.source == MemorySource.openglass) {
       await getMemoryPhotos(memory.id).then((value) async {
         photos = value;
@@ -155,10 +157,14 @@ class MemoryDetailProvider extends ChangeNotifier with MessageNotifierMixin {
     } catch (err, stacktrace) {
       print(err);
       var memoryReporting = MixpanelManager().getMemoryEventProperties(memory);
-      CrashReporting.reportHandledCrash(err, stacktrace, level: NonFatalExceptionLevel.critical, userAttributes: {
-        'memory_transcript_length': memoryReporting['transcript_length'].toString(),
-        'memory_transcript_word_count': memoryReporting['transcript_word_count'].toString(),
-      });
+      CrashReporting.reportHandledCrash(err, stacktrace,
+          level: NonFatalExceptionLevel.critical,
+          userAttributes: {
+            'memory_transcript_length':
+                memoryReporting['transcript_length'].toString(),
+            'memory_transcript_word_count':
+                memoryReporting['transcript_word_count'].toString(),
+          });
       notifyError('REPROCESS_FAILED');
       updateReprocessMemoryLoadingState(false);
       notifyListeners();

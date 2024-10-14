@@ -2,11 +2,11 @@ import 'dart:convert';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:friend_private/backend/schema/geolocation.dart';
-import 'package:friend_private/backend/schema/message.dart';
-import 'package:friend_private/backend/schema/structured.dart';
-import 'package:friend_private/backend/schema/transcript_segment.dart';
-import 'package:friend_private/widgets/dialog.dart';
+import 'package:foxxy_package/backend/schema/geolocation.dart';
+import 'package:foxxy_package/backend/schema/message.dart';
+import 'package:foxxy_package/backend/schema/structured.dart';
+import 'package:foxxy_package/backend/schema/transcript_segment.dart';
+import 'package:foxxy_package/widgets/dialog.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class CreateMemoryResponse {
@@ -17,8 +17,11 @@ class CreateMemoryResponse {
 
   factory CreateMemoryResponse.fromJson(Map<String, dynamic> json) {
     return CreateMemoryResponse(
-      messages: ((json['messages'] ?? []) as List<dynamic>).map((message) => ServerMessage.fromJson(message)).toList(),
-      memory: json['memory'] != null ? ServerMemory.fromJson(json['memory']) : null,
+      messages: ((json['messages'] ?? []) as List<dynamic>)
+          .map((message) => ServerMessage.fromJson(message))
+          .toList(),
+      memory:
+          json['memory'] != null ? ServerMemory.fromJson(json['memory']) : null,
     );
   }
 }
@@ -30,12 +33,19 @@ class MemoryExternalData {
 
   MemoryExternalData({required this.text});
 
-  factory MemoryExternalData.fromJson(Map<String, dynamic> json) => MemoryExternalData(text: json['text'] ?? '');
+  factory MemoryExternalData.fromJson(Map<String, dynamic> json) =>
+      MemoryExternalData(text: json['text'] ?? '');
 
   Map<String, dynamic> toJson() => {'text': text};
 }
 
-enum MemoryPostProcessingStatus { not_started, in_progress, completed, canceled, failed }
+enum MemoryPostProcessingStatus {
+  not_started,
+  in_progress,
+  completed,
+  canceled,
+  failed
+}
 
 enum MemoryPostProcessingModel { fal_whisperx, custom_whisperx }
 
@@ -44,22 +54,28 @@ class MemoryPostProcessing {
   final MemoryPostProcessingModel? model;
   final String? failReason;
 
-  MemoryPostProcessing({required this.status, required this.model, this.failReason});
+  MemoryPostProcessing(
+      {required this.status, required this.model, this.failReason});
 
   factory MemoryPostProcessing.fromJson(Map<String, dynamic> json) {
     return MemoryPostProcessing(
-      status: MemoryPostProcessingStatus.values.asNameMap()[json['status']] ?? MemoryPostProcessingStatus.in_progress,
-      model: MemoryPostProcessingModel.values.asNameMap()[json['model']] ?? MemoryPostProcessingModel.fal_whisperx,
+      status: MemoryPostProcessingStatus.values.asNameMap()[json['status']] ??
+          MemoryPostProcessingStatus.in_progress,
+      model: MemoryPostProcessingModel.values.asNameMap()[json['model']] ??
+          MemoryPostProcessingModel.fal_whisperx,
       failReason: json['fail_reason'],
     );
   }
 
-  toJson() => {'status': status.toString().split('.').last, 'model': model.toString().split('.').last};
+  toJson() => {
+        'status': status.toString().split('.').last,
+        'model': model.toString().split('.').last
+      };
 }
 
 DateTime parseUtcToLocal(String dateString) {
-    DateTime parsedDate = DateTime.parse(dateString);
-    DateTime utcDateTime = DateTime.utc(
+  DateTime parsedDate = DateTime.parse(dateString);
+  DateTime utcDateTime = DateTime.utc(
       parsedDate.year,
       parsedDate.month,
       parsedDate.day,
@@ -67,11 +83,10 @@ DateTime parseUtcToLocal(String dateString) {
       parsedDate.minute,
       parsedDate.second,
       parsedDate.millisecond,
-      parsedDate.microsecond
-    );
-    return utcDateTime.toLocal();
-  }
-  
+      parsedDate.microsecond);
+  return utcDateTime.toLocal();
+}
+
 class ServerProcessingMemory {
   final String id;
   final DateTime createdAt;
@@ -87,7 +102,9 @@ class ServerProcessingMemory {
     return ServerProcessingMemory(
       id: json['id'],
       createdAt: parseUtcToLocal(json['created_at']),
-      startedAt: json['started_at'] != null ? parseUtcToLocal(json['started_at']) : null,
+      startedAt: json['started_at'] != null
+          ? parseUtcToLocal(json['started_at'])
+          : null,
     );
   }
 
@@ -119,7 +136,9 @@ class UpdateProcessingMemoryResponse {
 
   factory UpdateProcessingMemoryResponse.fromJson(Map<String, dynamic> json) {
     return UpdateProcessingMemoryResponse(
-      result: json['result'] != null ? ServerProcessingMemory.fromJson(json['result']) : null,
+      result: json['result'] != null
+          ? ServerProcessingMemory.fromJson(json['result'])
+          : null,
     );
   }
 }
@@ -264,25 +283,40 @@ class ServerMemory {
       id: json['id'],
       createdAt: parseUtcToLocal(json['created_at']),
       structured: Structured.fromJson(json['structured']),
-      startedAt: json['started_at'] != null ? parseUtcToLocal(json['started_at']) : null,
-      finishedAt: json['finished_at'] != null ? parseUtcToLocal(json['finished_at']) : null,
+      startedAt: json['started_at'] != null
+          ? parseUtcToLocal(json['started_at'])
+          : null,
+      finishedAt: json['finished_at'] != null
+          ? parseUtcToLocal(json['finished_at'])
+          : null,
       transcriptSegments: ((json['transcript_segments'] ?? []) as List<dynamic>)
           .map((segment) => TranscriptSegment.fromJson(segment))
           .toList(),
-      pluginsResults:
-          ((json['plugins_results'] ?? []) as List<dynamic>).map((result) => PluginResponse.fromJson(result)).toList(),
-      geolocation: json['geolocation'] != null ? Geolocation.fromJson(json['geolocation']) : null,
-      photos: (json['photos'] as List<dynamic>).map((photo) => MemoryPhoto.fromJson(photo)).toList(),
+      pluginsResults: ((json['plugins_results'] ?? []) as List<dynamic>)
+          .map((result) => PluginResponse.fromJson(result))
+          .toList(),
+      geolocation: json['geolocation'] != null
+          ? Geolocation.fromJson(json['geolocation'])
+          : null,
+      photos: (json['photos'] as List<dynamic>)
+          .map((photo) => MemoryPhoto.fromJson(photo))
+          .toList(),
       discarded: json['discarded'] ?? false,
-      source: json['source'] != null ? MemorySource.values.asNameMap()[json['source']] : MemorySource.friend,
+      source: json['source'] != null
+          ? MemorySource.values.asNameMap()[json['source']]
+          : MemorySource.friend,
       language: json['language'],
       deleted: json['deleted'] ?? false,
       failed: json['failed'] ?? false,
       retries: json['retries'] ?? 0,
-      externalIntegration: json['external_data'] != null ? MemoryExternalData.fromJson(json['external_data']) : null,
+      externalIntegration: json['external_data'] != null
+          ? MemoryExternalData.fromJson(json['external_data'])
+          : null,
       // postprocessing: json['postprocessing'] != null ? MemoryPostProcessing.fromJson(json['postprocessing']) : null,
       processingMemoryId: json['processing_memory_id'],
-      externalLink: json['external_link'] != null ? MemoryExternalLink.fromJson(json['external_link']) : null,
+      externalLink: json['external_link'] != null
+          ? MemoryExternalLink.fromJson(json['external_link'])
+          : null,
     );
   }
 
@@ -305,8 +339,10 @@ class ServerMemory {
       'structured': structured.toJson(),
       'started_at': startedAt?.toUtc().toIso8601String(),
       'finished_at': finishedAt?.toUtc().toIso8601String(),
-      'transcript_segments': transcriptSegments.map((segment) => segment.toJson()).toList(),
-      'plugins_results': pluginsResults.map((result) => result.toJson()).toList(),
+      'transcript_segments':
+          transcriptSegments.map((segment) => segment.toJson()).toList(),
+      'plugins_results':
+          pluginsResults.map((result) => result.toJson()).toList(),
       'geolocation': geolocation?.toJson(),
       'photos': photos.map((photo) => photo.toJson()).toList(),
       'discarded': discarded,
@@ -327,7 +363,8 @@ class ServerMemory {
     if (source == MemorySource.openglass) return 'Openglass';
     if (failed) return 'Failed';
     if (discarded) return 'Discarded';
-    return structured.category.substring(0, 1).toUpperCase() + structured.category.substring(1);
+    return structured.category.substring(0, 1).toUpperCase() +
+        structured.category.substring(1);
   }
 
   Color getTagTextColor() {
@@ -341,20 +378,28 @@ class ServerMemory {
   }
 
   VoidCallback? onTagPressed(BuildContext context) {
-    if (source == MemorySource.screenpipe) return () => launchUrl(Uri.parse('https://screenpi.pe/'));
+    if (source == MemorySource.screenpipe)
+      return () => launchUrl(Uri.parse('https://screenpi.pe/'));
     if (failed) {
       return () => showDialog(
-          builder: (c) => getDialog(context, () => Navigator.pop(context), () => Navigator.pop(context),
-              'Failed Memory', 'This memory failed to be created. Will be retried once you reopen the app.',
-              singleButton: true, okButtonText: 'OK'),
+          builder: (c) => getDialog(
+              context,
+              () => Navigator.pop(context),
+              () => Navigator.pop(context),
+              'Failed Memory',
+              'This memory failed to be created. Will be retried once you reopen the app.',
+              singleButton: true,
+              okButtonText: 'OK'),
           context: context);
     }
     return null;
   }
 
   String getTranscript({int? maxCount, bool generate = false}) {
-    var transcript = TranscriptSegment.segmentsAsString(transcriptSegments, includeTimestamps: true);
-    if (maxCount != null) transcript = transcript.substring(0, min(maxCount, transcript.length));
+    var transcript = TranscriptSegment.segmentsAsString(transcriptSegments,
+        includeTimestamps: true);
+    if (maxCount != null)
+      transcript = transcript.substring(0, min(maxCount, transcript.length));
     try {
       return utf8.decode(transcript.codeUnits);
     } catch (e) {

@@ -1,10 +1,10 @@
 import 'package:collection/collection.dart';
-import 'package:friend_private/backend/http/api/plugins.dart';
-import 'package:friend_private/backend/preferences.dart';
-import 'package:friend_private/backend/schema/plugin.dart';
-import 'package:friend_private/providers/base_provider.dart';
-import 'package:friend_private/utils/alerts/app_dialog.dart';
-import 'package:friend_private/utils/analytics/mixpanel.dart';
+import 'package:foxxy_package/backend/http/api/plugins.dart';
+import 'package:foxxy_package/backend/preferences.dart';
+import 'package:foxxy_package/backend/schema/plugin.dart';
+import 'package:foxxy_package/providers/base_provider.dart';
+import 'package:foxxy_package/utils/alerts/app_dialog.dart';
+import 'package:foxxy_package/utils/analytics/mixpanel.dart';
 
 class PluginProvider extends BaseProvider {
   List<Plugin> plugins = [];
@@ -89,7 +89,8 @@ class PluginProvider extends BaseProvider {
       if (!enabled) {
         AppDialog.show(
           title: 'Error activating the plugin',
-          content: 'If this is an integration plugin, make sure the setup is completed.',
+          content:
+              'If this is an integration plugin, make sure the setup is completed.',
           singleButton: true,
         );
 

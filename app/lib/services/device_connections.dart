@@ -5,11 +5,11 @@ import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
-import 'package:friend_private/backend/schema/bt_device.dart';
-import 'package:friend_private/services/devices.dart';
-import 'package:friend_private/services/frame_connection.dart';
-import 'package:friend_private/services/friend_connection.dart';
-import 'package:friend_private/services/notification_service.dart';
+import 'package:foxxy_package/backend/schema/bt_device.dart';
+import 'package:foxxy_package/services/devices.dart';
+import 'package:foxxy_package/services/frame_connection.dart';
+import 'package:foxxy_package/services/friend_connection.dart';
+import 'package:foxxy_package/services/notification_service.dart';
 
 class DeviceConnectionFactory {
   static DeviceConnection? create(

@@ -1,10 +1,10 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:friend_private/backend/schema/memory_connection.dart';
-import 'package:friend_private/generated/l10n.dart';
-import 'package:friend_private/pages/diary/memory_connection_node_view.dart';
-import 'package:friend_private/backend/schema/diary.dart';
+import 'package:foxxy_package/backend/schema/memory_connection.dart';
+import 'package:foxxy_package/generated/l10n.dart';
+import 'package:foxxy_package/pages/diary/memory_connection_node_view.dart';
+import 'package:foxxy_package/backend/schema/diary.dart';
 
 class DiaryTabView extends StatelessWidget {
   final List<MemoryConnectionNode> forest;

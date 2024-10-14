@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:friend_private/providers/onboarding_provider.dart';
+import 'package:foxxy_package/providers/onboarding_provider.dart';
 import 'package:gradient_borders/box_borders/gradient_box_border.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:friend_private/generated/l10n.dart';
+import 'package:foxxy_package/generated/l10n.dart';
 
 class BluetoothPermissionWidget extends StatefulWidget {
   final VoidCallback goNext;
@@ -12,7 +12,8 @@ class BluetoothPermissionWidget extends StatefulWidget {
   const BluetoothPermissionWidget({super.key, required this.goNext});
 
   @override
-  State<BluetoothPermissionWidget> createState() => _BluetoothPermissionWidgetState();
+  State<BluetoothPermissionWidget> createState() =>
+      _BluetoothPermissionWidgetState();
 }
 
 class _BluetoothPermissionWidgetState extends State<BluetoothPermissionWidget> {
@@ -48,7 +49,8 @@ class _BluetoothPermissionWidgetState extends State<BluetoothPermissionWidget> {
               ),
               contentPadding: const EdgeInsets.only(left: 8),
               // controlAffinity: ListTileControlAffinity.leading,
-              checkboxShape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+              checkboxShape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16)),
             ),
             const SizedBox(height: 16),
             Row(
@@ -71,7 +73,8 @@ class _BluetoothPermissionWidgetState extends State<BluetoothPermissionWidget> {
                           )
                         : null,
                     child: MaterialButton(
-                      padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 32, vertical: 16),
                       onPressed: () {
                         if (!provider.hasBluetoothPermission) {
                           showDialog(
@@ -118,9 +121,13 @@ class _BluetoothPermissionWidgetState extends State<BluetoothPermissionWidget> {
                         }
                       },
                       child: Text(
-                        provider.hasBluetoothPermission ? S.current.Continue : S.current.Skip,
+                        provider.hasBluetoothPermission
+                            ? S.current.Continue
+                            : S.current.Skip,
                         style: TextStyle(
-                          decoration: provider.hasBluetoothPermission ? TextDecoration.none : TextDecoration.underline,
+                          decoration: provider.hasBluetoothPermission
+                              ? TextDecoration.none
+                              : TextDecoration.underline,
                         ),
                       ),
                     ),

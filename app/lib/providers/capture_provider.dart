@@ -7,31 +7,31 @@ import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_foreground_task/flutter_foreground_task.dart';
 import 'package:flutter_provider_utilities/flutter_provider_utilities.dart';
-import 'package:friend_private/backend/http/api/memories.dart';
-import 'package:friend_private/backend/http/api/processing_memories.dart';
-import 'package:friend_private/backend/preferences.dart';
-import 'package:friend_private/backend/schema/bt_device.dart';
-import 'package:friend_private/backend/schema/geolocation.dart';
-import 'package:friend_private/backend/schema/memory.dart';
-import 'package:friend_private/backend/schema/message.dart';
-import 'package:friend_private/backend/schema/message_event.dart';
-import 'package:friend_private/backend/schema/structured.dart';
-import 'package:friend_private/backend/schema/transcript_segment.dart';
-import 'package:friend_private/pages/capture/logic/openglass_mixin.dart';
-import 'package:friend_private/providers/memory_provider.dart';
-import 'package:friend_private/providers/message_provider.dart';
-import 'package:friend_private/services/services.dart';
-import 'package:friend_private/utils/analytics/growthbook.dart';
-import 'package:friend_private/utils/analytics/mixpanel.dart';
-import 'package:friend_private/utils/audio/wav_bytes.dart';
-import 'package:friend_private/utils/ble/communication.dart';
-import 'package:friend_private/utils/enums.dart';
-import 'package:friend_private/utils/features/calendar.dart';
-import 'package:friend_private/utils/logger.dart';
-import 'package:friend_private/utils/memories/integrations.dart';
-import 'package:friend_private/utils/memories/process.dart';
-import 'package:friend_private/utils/other/notifications.dart';
-import 'package:friend_private/utils/pure_socket.dart';
+import 'package:foxxy_package/backend/http/api/memories.dart';
+import 'package:foxxy_package/backend/http/api/processing_memories.dart';
+import 'package:foxxy_package/backend/preferences.dart';
+import 'package:foxxy_package/backend/schema/bt_device.dart';
+import 'package:foxxy_package/backend/schema/geolocation.dart';
+import 'package:foxxy_package/backend/schema/memory.dart';
+import 'package:foxxy_package/backend/schema/message.dart';
+import 'package:foxxy_package/backend/schema/message_event.dart';
+import 'package:foxxy_package/backend/schema/structured.dart';
+import 'package:foxxy_package/backend/schema/transcript_segment.dart';
+import 'package:foxxy_package/pages/capture/logic/openglass_mixin.dart';
+import 'package:foxxy_package/providers/memory_provider.dart';
+import 'package:foxxy_package/providers/message_provider.dart';
+import 'package:foxxy_package/services/services.dart';
+import 'package:foxxy_package/utils/analytics/growthbook.dart';
+import 'package:foxxy_package/utils/analytics/mixpanel.dart';
+import 'package:foxxy_package/utils/audio/wav_bytes.dart';
+import 'package:foxxy_package/utils/ble/communication.dart';
+import 'package:foxxy_package/utils/enums.dart';
+import 'package:foxxy_package/utils/features/calendar.dart';
+import 'package:foxxy_package/utils/logger.dart';
+import 'package:foxxy_package/utils/memories/integrations.dart';
+import 'package:foxxy_package/utils/memories/process.dart';
+import 'package:foxxy_package/utils/other/notifications.dart';
+import 'package:foxxy_package/utils/pure_socket.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:uuid/uuid.dart';
 
@@ -75,7 +75,8 @@ class CaptureProvider extends ChangeNotifier
   bool _transcriptServiceReady = false;
   bool get transcriptServiceReady => _transcriptServiceReady;
 
-  bool get recordingDeviceServiceReady => _recordingDevice != null || recordingState == RecordingState.record;
+  bool get recordingDeviceServiceReady =>
+      _recordingDevice != null || recordingState == RecordingState.record;
 
   // -----------------------
   // Memory creation variables
@@ -123,7 +124,8 @@ class CaptureProvider extends ChangeNotifier
   }
 
   void _updateRecordingDevice(BTDeviceStruct? device) {
-    debugPrint('connected device changed from ${_recordingDevice?.id} to ${device?.id}');
+    debugPrint(
+        'connected device changed from ${_recordingDevice?.id} to ${device?.id}');
     _recordingDevice = device;
     notifyListeners();
   }
@@ -156,7 +158,8 @@ class CaptureProvider extends ChangeNotifier
 
   Future<void> _onMemoryCreated(ServerMessageEvent event) async {
     if (event.memory == null) {
-      debugPrint("Memory is not found, processing memory ${event.processingMemoryId}");
+      debugPrint(
+          "Memory is not found, processing memory ${event.processingMemoryId}");
       return;
     }
     createNotification(
@@ -190,7 +193,8 @@ class CaptureProvider extends ChangeNotifier
     memoryProvider?.updateMemory(memory);
   }
 
-  Future<void> _processOnMemoryCreated(ServerMemory? memory, List<ServerMessage> messages) async {
+  Future<void> _processOnMemoryCreated(
+      ServerMemory? memory, List<ServerMessage> messages) async {
     if (memory == null) {
       return;
     }
@@ -275,7 +279,9 @@ class CaptureProvider extends ChangeNotifier
         structured: Structured('', '', emoji: '⛓️‍💥', category: 'other'),
         discarded: true,
         geolocation: geolocation,
-        photos: photos.map<MemoryPhoto>((e) => MemoryPhoto(e.item1, e.item2)).toList(),
+        photos: photos
+            .map<MemoryPhoto>((e) => MemoryPhoto(e.item1, e.item2))
+            .toList(),
         failed: true,
         source: MemorySource.openglass,
         // TODO: Frame device ?
@@ -372,7 +378,9 @@ class CaptureProvider extends ChangeNotifier
     debugPrint('is ws null: ${_socket == null}');
 
     // Get memory socket
-    _socket = await ServiceManager.instance().socket.memory(codec: codec, sampleRate: sampleRate, force: force);
+    _socket = await ServiceManager.instance()
+        .socket
+        .memory(codec: codec, sampleRate: sampleRate, force: force);
     if (_socket == null) {
       throw Exception("Can not create new memory socket");
     }
@@ -382,7 +390,8 @@ class CaptureProvider extends ChangeNotifier
     if (segments.isNotEmpty) {
       // means that it was a reconnection, so we need to reset
       streamStartedAtSecond = null;
-      secondsMissedOnReconnect = (DateTime.now().difference(firstStreamReceivedAt!).inSeconds);
+      secondsMissedOnReconnect =
+          (DateTime.now().difference(firstStreamReceivedAt!).inSeconds);
     }
   }
 
@@ -415,7 +424,8 @@ class CaptureProvider extends ChangeNotifier
     if (_storageStream != null) {
       _storageStream?.cancel();
     }
-    _storageStream = await _getBleStorageBytesListener(id, onStorageBytesReceived: (List<int> value) async {
+    _storageStream = await _getBleStorageBytesListener(id,
+        onStorageBytesReceived: (List<int> value) async {
       if (value.isEmpty) return;
 
       storageUtil!.storeFrameStoragePacket(value);
@@ -436,8 +446,10 @@ class CaptureProvider extends ChangeNotifier
         } else if (value[0] == 100) {
           //valid end command
           debugPrint('done. sending to backend....trying to dl more');
-          File storageFile = (await storageUtil.createWavFile(removeLastNSeconds: 0)).item1;
-          List<ServerMemory> result = await sendStorageToBackend(storageFile, dateTimeStorageString);
+          File storageFile =
+              (await storageUtil.createWavFile(removeLastNSeconds: 0)).item1;
+          List<ServerMemory> result =
+              await sendStorageToBackend(storageFile, dateTimeStorageString);
           for (ServerMemory memory in result) {
             memoryProvider?.addMemory(memory);
           }
@@ -510,7 +522,8 @@ class CaptureProvider extends ChangeNotifier
       var res = await _createPhotoCharacteristicMemory();
       notifyListeners();
       if (res != null && !res) {
-        notifyError('Memory creation failed. It\' stored locally and will be retried soon.');
+        notifyError(
+            'Memory creation failed. It\' stored locally and will be retried soon.');
       } else {
         notifyInfo('Memory created successfully 🚀');
       }
@@ -519,7 +532,8 @@ class CaptureProvider extends ChangeNotifier
 
   // TODO: use connection directly
   Future<BleAudioCodec> _getAudioCodec(String deviceId) async {
-    var connection = await ServiceManager.instance().device.ensureConnection(deviceId);
+    var connection =
+        await ServiceManager.instance().device.ensureConnection(deviceId);
     if (connection == null) {
       return BleAudioCodec.pcm8;
     }
@@ -530,26 +544,31 @@ class CaptureProvider extends ChangeNotifier
     String deviceId, {
     required void Function(List<int>) onStorageBytesReceived,
   }) async {
-    var connection = await ServiceManager.instance().device.ensureConnection(deviceId);
+    var connection =
+        await ServiceManager.instance().device.ensureConnection(deviceId);
     if (connection == null) {
       return Future.value(null);
     }
-    return connection.getBleStorageBytesListener(onStorageBytesReceived: onStorageBytesReceived);
+    return connection.getBleStorageBytesListener(
+        onStorageBytesReceived: onStorageBytesReceived);
   }
 
   Future<StreamSubscription?> _getBleAudioBytesListener(
     String deviceId, {
     required void Function(List<int>) onAudioBytesReceived,
   }) async {
-    var connection = await ServiceManager.instance().device.ensureConnection(deviceId);
+    var connection =
+        await ServiceManager.instance().device.ensureConnection(deviceId);
     if (connection == null) {
       return Future.value(null);
     }
-    return connection.getBleAudioBytesListener(onAudioBytesReceived: onAudioBytesReceived);
+    return connection.getBleAudioBytesListener(
+        onAudioBytesReceived: onAudioBytesReceived);
   }
 
   Future<bool> _writeToStorage(String deviceId, int numFile) async {
-    var connection = await ServiceManager.instance().device.ensureConnection(deviceId);
+    var connection =
+        await ServiceManager.instance().device.ensureConnection(deviceId);
     if (connection == null) {
       return Future.value(false);
     }
@@ -557,7 +576,8 @@ class CaptureProvider extends ChangeNotifier
   }
 
   Future<List<int>> _getStorageList(String deviceId) async {
-    var connection = await ServiceManager.instance().device.ensureConnection(deviceId);
+    var connection =
+        await ServiceManager.instance().device.ensureConnection(deviceId);
     if (connection == null) {
       return [];
     }
@@ -565,7 +585,8 @@ class CaptureProvider extends ChangeNotifier
   }
 
   Future<bool> _hasPhotoStreamingCharacteristic(String deviceId) async {
-    var connection = await ServiceManager.instance().device.ensureConnection(deviceId);
+    var connection =
+        await ServiceManager.instance().device.ensureConnection(deviceId);
     if (connection == null) {
       return false;
     }
@@ -576,7 +597,8 @@ class CaptureProvider extends ChangeNotifier
     if (_recordingDevice != null) {
       BleAudioCodec newCodec = await _getAudioCodec(_recordingDevice!.id);
       if (SharedPreferencesUtil().deviceCodec != newCodec) {
-        debugPrint('Device codec changed from ${SharedPreferencesUtil().deviceCodec} to $newCodec');
+        debugPrint(
+            'Device codec changed from ${SharedPreferencesUtil().deviceCodec} to $newCodec');
         await SharedPreferencesUtil().setDeviceCodec(newCodec);
         return true;
       }
@@ -587,19 +609,23 @@ class CaptureProvider extends ChangeNotifier
   Future<void> _ensureSocketConnection({bool force = false}) async {
     debugPrint("_ensureSocketConnection");
     var codec = SharedPreferencesUtil().deviceCodec;
-    if (force || (codec != _socket?.codec || _socket?.state != SocketServiceState.connected)) {
+    if (force ||
+        (codec != _socket?.codec ||
+            _socket?.state != SocketServiceState.connected)) {
       await _socket?.stop(reason: 'reset state, force $force');
       await _initiateWebsocket(force: force);
     }
   }
 
   Future<void> _initiateFriendAudioStreaming() async {
-    debugPrint('_recordingDevice: $_recordingDevice in initiateFriendAudioStreaming');
+    debugPrint(
+        '_recordingDevice: $_recordingDevice in initiateFriendAudioStreaming');
     if (_recordingDevice == null) return;
 
     BleAudioCodec codec = await _getAudioCodec(_recordingDevice!.id);
     if (SharedPreferencesUtil().deviceCodec != codec) {
-      debugPrint('Device codec changed from ${SharedPreferencesUtil().deviceCodec} to $codec');
+      debugPrint(
+          'Device codec changed from ${SharedPreferencesUtil().deviceCodec} to $codec');
       SharedPreferencesUtil().deviceCodec = codec;
       notifyInfo('FIM_CHANGE');
       await _ensureSocketConnection();
@@ -612,7 +638,8 @@ class CaptureProvider extends ChangeNotifier
       } else {
         // Is the app in foreground when this happens?
         Logger.handle(Exception('Device Not Connected'), StackTrace.current,
-            message: 'Device Not Connected. Please make sure the device is turned on and nearby.');
+            message:
+                'Device Not Connected. Please make sure the device is turned on and nearby.');
       }
     }
 
@@ -724,12 +751,14 @@ class CaptureProvider extends ChangeNotifier
   }
 
   void _startKeepAlivedServices() {
-    if (_recordingDevice != null && _socket?.state != SocketServiceState.connected) {
+    if (_recordingDevice != null &&
+        _socket?.state != SocketServiceState.connected) {
       _keepAliveTimer?.cancel();
       _keepAliveTimer = Timer.periodic(const Duration(seconds: 15), (t) async {
         debugPrint("[Provider] keep alived...");
 
-        if (_recordingDevice == null || _socket?.state == SocketServiceState.connected) {
+        if (_recordingDevice == null ||
+            _socket?.state == SocketServiceState.connected) {
           t.cancel();
           return;
         }
@@ -805,7 +834,9 @@ class CaptureProvider extends ChangeNotifier
       FlutterForegroundTask.sendDataToTask(jsonEncode({'location': true}));
       var currentSeconds = (audioStorage?.frames.length ?? 0) ~/ 100;
       var removeUpToSecond = newSegments[0].start.toInt();
-      audioStorage?.removeFramesRange(fromSecond: 0, toSecond: min(max(currentSeconds - 5, 0), removeUpToSecond));
+      audioStorage?.removeFramesRange(
+          fromSecond: 0,
+          toSecond: min(max(currentSeconds - 5, 0), removeUpToSecond));
       firstStreamReceivedAt = DateTime.now();
     }
 
@@ -816,14 +847,16 @@ class CaptureProvider extends ChangeNotifier
       toRemoveSeconds: streamStartedAtSecond ?? 0,
       toAddSeconds: secondsMissedOnReconnect ?? 0,
     );
-    triggerTranscriptSegmentReceivedEvents(newSegments, conversationId, sendMessageToChat: (v) {
+    triggerTranscriptSegmentReceivedEvents(newSegments, conversationId,
+        sendMessageToChat: (v) {
       messageProvider?.addMessage(v);
     });
 
     debugPrint('Memory creation timer restarted');
     _memoryCreationTimer?.cancel();
-    _memoryCreationTimer =
-        Timer(const Duration(seconds: quietSecondsForMemoryCreation), () => _createPhotoCharacteristicMemory());
+    _memoryCreationTimer = Timer(
+        const Duration(seconds: quietSecondsForMemoryCreation),
+        () => _createPhotoCharacteristicMemory());
     setHasTranscripts(true);
     notifyListeners();
   }

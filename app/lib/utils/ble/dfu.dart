@@ -1,7 +1,7 @@
 // import 'package:flutter/foundation.dart';
 // import 'package:nordic_dfu/nordic_dfu.dart';
-// import 'package:friend_private/backend/schema/bt_device.dart';
-// import 'package:friend_private/utils/ble/connect.dart';
+// import 'package:foxxy_package/backend/schema/bt_device.dart';
+// import 'package:foxxy_package/utils/ble/connect.dart';
 
 // Future<void> startDfu(BTDeviceStruct btDevice, String firmwareFile,
 //     {bool fileInAssets = false}) async {

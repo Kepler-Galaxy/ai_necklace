@@ -1,8 +1,8 @@
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
-import 'package:friend_private/backend/preferences.dart';
-import 'package:friend_private/backend/schema/bt_device.dart';
-import 'package:friend_private/utils/ble/connect.dart';
-import 'package:friend_private/utils/ble/find.dart';
+import 'package:foxxy_package/backend/preferences.dart';
+import 'package:foxxy_package/backend/schema/bt_device.dart';
+import 'package:foxxy_package/utils/ble/connect.dart';
+import 'package:foxxy_package/utils/ble/find.dart';
 
 Future<BTDeviceStruct?> scanAndConnectDevice(
     {bool autoConnect = true, bool timeout = false}) async {

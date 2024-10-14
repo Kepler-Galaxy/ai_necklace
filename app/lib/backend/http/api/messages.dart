@@ -1,13 +1,17 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:friend_private/backend/http/shared.dart';
-import 'package:friend_private/backend/schema/message.dart';
-import 'package:friend_private/env/env.dart';
+import 'package:foxxy_package/backend/http/shared.dart';
+import 'package:foxxy_package/backend/schema/message.dart';
+import 'package:foxxy_package/env/env.dart';
 
 Future<List<ServerMessage>> getMessagesServer() async {
   // TODO: Add pagination
-  var response = await makeApiCall(url: '${Env.apiBaseUrl}v1/messages', headers: {}, method: 'GET', body: '');
+  var response = await makeApiCall(
+      url: '${Env.apiBaseUrl}v1/messages',
+      headers: {},
+      method: 'GET',
+      body: '');
   if (response == null) return [];
   debugPrint('getMessages: ${response.body}');
   if (response.statusCode == 200) {
@@ -16,7 +20,8 @@ Future<List<ServerMessage>> getMessagesServer() async {
     if (decodedBody.isEmpty) {
       return [];
     }
-    var messages = decodedBody.map((memory) => ServerMessage.fromJson(memory)).toList();
+    var messages =
+        decodedBody.map((memory) => ServerMessage.fromJson(memory)).toList();
     debugPrint('getMessages length: ${messages.length}');
     return messages;
   }
@@ -24,7 +29,11 @@ Future<List<ServerMessage>> getMessagesServer() async {
 }
 
 Future<List<ServerMessage>> clearChatServer() async {
-  var response = await makeApiCall(url: '${Env.apiBaseUrl}v1/messages', headers: {}, method: 'DELETE', body: '');
+  var response = await makeApiCall(
+      url: '${Env.apiBaseUrl}v1/messages',
+      headers: {},
+      method: 'DELETE',
+      body: '');
   if (response == null) throw Exception('Failed to delete chat');
   if (response.statusCode == 200) {
     return [ServerMessage.fromJson(jsonDecode(response.body))];

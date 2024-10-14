@@ -1,13 +1,13 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import 'package:friend_private/backend/preferences.dart';
-import 'package:friend_private/backend/schema/bt_device.dart';
-import 'package:friend_private/pages/home/firmware_update.dart';
-import 'package:friend_private/providers/device_provider.dart';
-import 'package:friend_private/providers/onboarding_provider.dart';
-import 'package:friend_private/services/services.dart';
-import 'package:friend_private/utils/analytics/mixpanel.dart';
+import 'package:foxxy_package/backend/preferences.dart';
+import 'package:foxxy_package/backend/schema/bt_device.dart';
+import 'package:foxxy_package/pages/home/firmware_update.dart';
+import 'package:foxxy_package/providers/device_provider.dart';
+import 'package:foxxy_package/providers/onboarding_provider.dart';
+import 'package:foxxy_package/services/services.dart';
+import 'package:foxxy_package/utils/analytics/mixpanel.dart';
 import 'package:gradient_borders/gradient_borders.dart';
 import 'package:intercom_flutter/intercom_flutter.dart';
 import 'package:provider/provider.dart';
@@ -22,7 +22,8 @@ class DeviceSettings extends StatefulWidget {
 class _DeviceSettingsState extends State<DeviceSettings> {
   // TODO: thinh, use connection directly
   Future _bleDisconnectDevice(BTDeviceStruct btDevice) async {
-    var connection = await ServiceManager.instance().device.ensureConnection(btDevice.id);
+    var connection =
+        await ServiceManager.instance().device.ensureConnection(btDevice.id);
     if (connection == null) {
       return Future.value(null);
     }
@@ -53,7 +54,8 @@ class _DeviceSettingsState extends State<DeviceSettings> {
               Stack(
                 children: [
                   Column(
-                    children: deviceSettingsWidgets(provider.deviceInfo, provider.connectedDevice, context),
+                    children: deviceSettingsWidgets(
+                        provider.deviceInfo, provider.connectedDevice, context),
                   ),
                   if (!provider.isConnected)
                     ClipRRect(
@@ -93,7 +95,8 @@ class _DeviceSettingsState extends State<DeviceSettings> {
               ),
               GestureDetector(
                 onTap: () async {
-                  await Intercom.instance.displayArticle('9907475-how-to-charge-the-device');
+                  await Intercom.instance
+                      .displayArticle('9907475-how-to-charge-the-device');
                 },
                 child: const ListTile(
                   title: Text('Issues charging the device?'),
@@ -107,7 +110,8 @@ class _DeviceSettingsState extends State<DeviceSettings> {
             ? Padding(
                 padding: const EdgeInsets.only(bottom: 70, left: 30, right: 30),
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 0),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 0),
                   decoration: BoxDecoration(
                     border: const GradientBoxBorder(
                       gradient: LinearGradient(colors: [
@@ -122,7 +126,8 @@ class _DeviceSettingsState extends State<DeviceSettings> {
                   ),
                   child: TextButton(
                     onPressed: () async {
-                      await SharedPreferencesUtil().btDeviceStructSet(BTDeviceStruct(id: '', name: ''));
+                      await SharedPreferencesUtil()
+                          .btDeviceStructSet(BTDeviceStruct(id: '', name: ''));
                       SharedPreferencesUtil().deviceName = '';
                       if (provider.connectedDevice != null) {
                         await _bleDisconnectDevice(provider.connectedDevice!);
@@ -140,7 +145,9 @@ class _DeviceSettingsState extends State<DeviceSettings> {
                       MixpanelManager().disconnectFriendClicked();
                     },
                     child: Text(
-                      provider.connectedDevice == null ? "Unpair" : "Disconnect",
+                      provider.connectedDevice == null
+                          ? "Unpair"
+                          : "Disconnect",
                       style: const TextStyle(color: Colors.white, fontSize: 16),
                     ),
                   ),
@@ -152,7 +159,8 @@ class _DeviceSettingsState extends State<DeviceSettings> {
   }
 }
 
-List<Widget> deviceSettingsWidgets(DeviceInfo? deviceInfo, BTDeviceStruct? device, BuildContext context) {
+List<Widget> deviceSettingsWidgets(
+    DeviceInfo? deviceInfo, BTDeviceStruct? device, BuildContext context) {
   return [
     ListTile(
       title: const Text('Device Name'),

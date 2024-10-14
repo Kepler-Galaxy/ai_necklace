@@ -2,9 +2,9 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
-import 'package:friend_private/backend/preferences.dart';
-import 'package:friend_private/backend/schema/bt_device.dart';
-import 'package:friend_private/utils/logger.dart';
+import 'package:foxxy_package/backend/preferences.dart';
+import 'package:foxxy_package/backend/schema/bt_device.dart';
+import 'package:foxxy_package/utils/logger.dart';
 
 Future<BTDeviceStruct?> getConnectedDevice() async {
   var deviceId = SharedPreferencesUtil().btDeviceStruct.id;
@@ -22,7 +22,8 @@ Future<BTDeviceStruct?> getConnectedDevice() async {
         debugPrint('Error reading RSSI: $e');
         debugPrint('Device is disconnected');
         Logger.handle(e, StackTrace.current,
-            message: 'Oops! Looks like the device is disconnected. Please connect to the device and try again.');
+            message:
+                'Oops! Looks like the device is disconnected. Please connect to the device and try again.');
         return null;
       }
     }
@@ -37,7 +38,8 @@ StreamSubscription<OnConnectionStateChangedEvent>? getConnectionStateListener({
   required Function(BTDeviceStruct) onConnected,
 }) {
   return FlutterBluePlus.events.onConnectionStateChanged.listen((event) async {
-    debugPrint('onConnectionStateChanged: ${event.device.remoteId.str} ${event.connectionState}');
+    debugPrint(
+        'onConnectionStateChanged: ${event.device.remoteId.str} ${event.connectionState}');
     if (event.device.remoteId.str == deviceId) {
       if (event.connectionState == BluetoothConnectionState.disconnected) {
         onDisconnected();
@@ -54,7 +56,8 @@ StreamSubscription<OnConnectionStateChangedEvent>? getConnectionStateListener({
             // TODO: add firmware version
           ));
         } catch (e) {
-          debugPrint('Error reading RSSI, device disconnected by the time rssi was read: $e');
+          debugPrint(
+              'Error reading RSSI, device disconnected by the time rssi was read: $e');
         }
       }
     }

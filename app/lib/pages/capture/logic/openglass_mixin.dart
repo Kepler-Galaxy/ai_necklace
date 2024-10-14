@@ -3,10 +3,10 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
-import 'package:friend_private/backend/http/openai.dart';
-import 'package:friend_private/backend/schema/bt_device.dart';
-import 'package:friend_private/services/services.dart';
-import 'package:friend_private/utils/audio/wav_bytes.dart';
+import 'package:foxxy_package/backend/http/openai.dart';
+import 'package:foxxy_package/backend/schema/bt_device.dart';
+import 'package:foxxy_package/services/services.dart';
+import 'package:foxxy_package/utils/audio/wav_bytes.dart';
 import 'package:tuple/tuple.dart';
 
 mixin OpenGlassMixin {
@@ -16,7 +16,8 @@ mixin OpenGlassMixin {
 
   // TODO: use connection directly
   Future<BleAudioCodec> _getAudioCodec(String deviceId) async {
-    var connection = await ServiceManager.instance().device.ensureConnection(deviceId);
+    var connection =
+        await ServiceManager.instance().device.ensureConnection(deviceId);
     return connection?.getAudioCodec() ?? Future.value(BleAudioCodec.pcm8);
   }
 
@@ -24,22 +25,27 @@ mixin OpenGlassMixin {
     String deviceId, {
     required void Function(Uint8List base64JpgData) onImageReceived,
   }) async {
-    var connection = await ServiceManager.instance().device.ensureConnection(deviceId);
-    return connection?.getImageListener(onImageReceived: onImageReceived) ?? Future.value(null);
+    var connection =
+        await ServiceManager.instance().device.ensureConnection(deviceId);
+    return connection?.getImageListener(onImageReceived: onImageReceived) ??
+        Future.value(null);
   }
 
   Future _cameraStopPhotoController(String deviceId) async {
-    var connection = await ServiceManager.instance().device.ensureConnection(deviceId);
+    var connection =
+        await ServiceManager.instance().device.ensureConnection(deviceId);
     return connection?.cameraStopPhotoController() ?? Future.value(null);
   }
 
   Future _cameraStartPhotoController(String deviceId) async {
-    var connection = await ServiceManager.instance().device.ensureConnection(deviceId);
+    var connection =
+        await ServiceManager.instance().device.ensureConnection(deviceId);
     return connection?.cameraStartPhotoController() ?? Future.value(null);
   }
 
   Future<bool> _hasPhotoStreamingCharacteristic(String deviceId) async {
-    var connection = await ServiceManager.instance().device.ensureConnection(deviceId);
+    var connection =
+        await ServiceManager.instance().device.ensureConnection(deviceId);
     return connection?.hasPhotoStreamingCharacteristic() ?? Future.value(false);
   }
 
@@ -53,7 +59,8 @@ mixin OpenGlassMixin {
       onImageReceived: (Uint8List completedImage) async {
         if (completedImage.isNotEmpty) {
           debugPrint('Completed image bytes length: ${completedImage.length}');
-          Tuple2<String, String> photo = Tuple2(base64Encode(completedImage), '');
+          Tuple2<String, String> photo =
+              Tuple2(base64Encode(completedImage), '');
           photos.add(photo);
           getPhotoDescription(completedImage).then((description) {
             photos[photos.indexOf(photo)] = Tuple2(photo.item1, description);

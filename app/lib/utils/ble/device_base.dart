@@ -1,8 +1,8 @@
 import 'dart:async';
 import 'dart:typed_data';
 
-import 'package:friend_private/backend/schema/bt_device.dart';
-import 'package:friend_private/services/notification_service.dart';
+import 'package:foxxy_package/backend/schema/bt_device.dart';
+import 'package:foxxy_package/services/notification_service.dart';
 
 abstract class DeviceBase {
   abstract final String deviceId;
@@ -26,7 +26,8 @@ abstract class DeviceBase {
     void Function(int)? onBatteryLevelChange,
   }) async {
     if (await isConnected()) {
-      return await performGetBleBatteryLevelListener(onBatteryLevelChange: onBatteryLevelChange);
+      return await performGetBleBatteryLevelListener(
+          onBatteryLevelChange: onBatteryLevelChange);
     }
     _showDeviceDisconnectedNotification();
     return null;
@@ -40,7 +41,8 @@ abstract class DeviceBase {
     required void Function(List<int>) onAudioBytesReceived,
   }) async {
     if (await isConnected()) {
-      return await performGetBleAudioBytesListener(onAudioBytesReceived: onAudioBytesReceived);
+      return await performGetBleAudioBytesListener(
+          onAudioBytesReceived: onAudioBytesReceived);
     }
     _showDeviceDisconnectedNotification();
     return null;
@@ -71,13 +73,12 @@ abstract class DeviceBase {
 
   Future<List<int>> performGetStorageList();
 
-  Future<bool> performWriteToStorage(int numFile,int command);
+  Future<bool> performWriteToStorage(int numFile, int command);
 
-  Future<bool> writeToStorage(int numFile,int command) async {
- 
+  Future<bool> writeToStorage(int numFile, int command) async {
     if (await isConnected()) {
-      return await performWriteToStorage(numFile,command);
-    } 
+      return await performWriteToStorage(numFile, command);
+    }
     _showDeviceDisconnectedNotification();
     return Future.value(false);
   }
@@ -86,7 +87,8 @@ abstract class DeviceBase {
     required void Function(List<int>) onStorageBytesReceived,
   }) async {
     if (await isConnected()) {
-      return await performGetBleStorageBytesListener(onStorageBytesReceived: onStorageBytesReceived);
+      return await performGetBleStorageBytesListener(
+          onStorageBytesReceived: onStorageBytesReceived);
     }
     _showDeviceDisconnectedNotification();
     return null;

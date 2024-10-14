@@ -2,13 +2,13 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:friend_private/backend/http/shared.dart';
-import 'package:friend_private/backend/schema/geolocation.dart';
-import 'package:friend_private/backend/schema/memory.dart';
-import 'package:friend_private/backend/schema/structured.dart';
-import 'package:friend_private/backend/schema/transcript_segment.dart';
-import 'package:friend_private/env/env.dart';
-import 'package:friend_private/utils/analytics/growthbook.dart';
+import 'package:foxxy_package/backend/http/shared.dart';
+import 'package:foxxy_package/backend/schema/geolocation.dart';
+import 'package:foxxy_package/backend/schema/memory.dart';
+import 'package:foxxy_package/backend/schema/structured.dart';
+import 'package:foxxy_package/backend/schema/transcript_segment.dart';
+import 'package:foxxy_package/env/env.dart';
+import 'package:foxxy_package/utils/analytics/growthbook.dart';
 import 'package:http/http.dart' as http;
 import 'package:instabug_flutter/instabug_flutter.dart';
 import 'package:path/path.dart';
@@ -38,15 +38,19 @@ Future<CreateMemoryResponse?> createMemoryServer({
   String? processingMemoryId,
 }) async {
   var response = await makeApiCall(
-    url: '${Env.apiBaseUrl}v1/memories?trigger_integrations=$triggerIntegrations&source=$source',
+    url:
+        '${Env.apiBaseUrl}v1/memories?trigger_integrations=$triggerIntegrations&source=$source',
     headers: {},
     method: 'POST',
     body: jsonEncode({
       'started_at': startedAt.toUtc().toIso8601String(),
       'finished_at': finishedAt.toUtc().toIso8601String(),
-      'transcript_segments': transcriptSegments.map((segment) => segment.toJson()).toList(),
+      'transcript_segments':
+          transcriptSegments.map((segment) => segment.toJson()).toList(),
       'geolocation': geolocation?.toJson(),
-      'photos': photos.map((photo) => {'base64': photo.item1, 'description': photo.item2}).toList(),
+      'photos': photos
+          .map((photo) => {'base64': photo.item1, 'description': photo.item2})
+          .toList(),
       'source': transcriptSegments.isNotEmpty ? 'friend' : 'openglass',
       'language': language, // maybe determine auto?
       'processing_memory_id': processingMemoryId,
@@ -65,7 +69,8 @@ Future<CreateMemoryResponse?> createMemoryServer({
       level: NonFatalExceptionLevel.info,
       userAttributes: {
         'response': response.body,
-        'transcriptSegments': TranscriptSegment.segmentsAsString(transcriptSegments),
+        'transcriptSegments':
+            TranscriptSegment.segmentsAsString(transcriptSegments),
       },
     );
   }
@@ -74,12 +79,17 @@ Future<CreateMemoryResponse?> createMemoryServer({
 
 Future<List<ServerMemory>> getMemories({int limit = 50, int offset = 0}) async {
   var response = await makeApiCall(
-      url: '${Env.apiBaseUrl}v1/memories?limit=$limit&offset=$offset', headers: {}, method: 'GET', body: '');
+      url: '${Env.apiBaseUrl}v1/memories?limit=$limit&offset=$offset',
+      headers: {},
+      method: 'GET',
+      body: '');
   if (response == null) return [];
   if (response.statusCode == 200) {
     // decode body bytes to utf8 string and then parse json so as to avoid utf8 char issues
     var body = utf8.decode(response.bodyBytes);
-    var memories = (jsonDecode(body) as List<dynamic>).map((memory) => ServerMemory.fromJson(memory)).toList();
+    var memories = (jsonDecode(body) as List<dynamic>)
+        .map((memory) => ServerMemory.fromJson(memory))
+        .toList();
     debugPrint('getMemories length: ${memories.length}');
     return memories;
   }
@@ -156,7 +166,9 @@ Future<List<MemoryPhoto>> getMemoryPhotos(String memoryId) async {
   if (response == null) return [];
   debugPrint('getMemoryPhotos: ${response.body}');
   if (response.statusCode == 200) {
-    return (jsonDecode(response.body) as List<dynamic>).map((photo) => MemoryPhoto.fromJson(photo)).toList();
+    return (jsonDecode(response.body) as List<dynamic>)
+        .map((photo) => MemoryPhoto.fromJson(photo))
+        .toList();
   }
   return [];
 }
@@ -176,11 +188,18 @@ class TranscriptsResponse {
 
   factory TranscriptsResponse.fromJson(Map<String, dynamic> json) {
     return TranscriptsResponse(
-      deepgram: (json['deepgram'] as List<dynamic>).map((segment) => TranscriptSegment.fromJson(segment)).toList(),
-      soniox: (json['soniox'] as List<dynamic>).map((segment) => TranscriptSegment.fromJson(segment)).toList(),
-      whisperx: (json['whisperx'] as List<dynamic>).map((segment) => TranscriptSegment.fromJson(segment)).toList(),
-      speechmatics:
-          (json['speechmatics'] as List<dynamic>).map((segment) => TranscriptSegment.fromJson(segment)).toList(),
+      deepgram: (json['deepgram'] as List<dynamic>)
+          .map((segment) => TranscriptSegment.fromJson(segment))
+          .toList(),
+      soniox: (json['soniox'] as List<dynamic>)
+          .map((segment) => TranscriptSegment.fromJson(segment))
+          .toList(),
+      whisperx: (json['whisperx'] as List<dynamic>)
+          .map((segment) => TranscriptSegment.fromJson(segment))
+          .toList(),
+      speechmatics: (json['speechmatics'] as List<dynamic>)
+          .map((segment) => TranscriptSegment.fromJson(segment))
+          .toList(),
     );
   }
 }
@@ -206,11 +225,10 @@ Future<bool> uploadMemoryAudio(String memoryId, File file) async {
     'POST',
     Uri.parse('${Env.apiBaseUrl}v1/memories/$memoryId/upload_audio'),
   );
-  request.files.add(await http.MultipartFile.fromPath('file', file.path, filename: basename(file.path)));
-  request.headers.addAll({
-    'Authorization': await getAuthHeader(),
-    'Provider': 'authing'
-  });
+  request.files.add(await http.MultipartFile.fromPath('file', file.path,
+      filename: basename(file.path)));
+  request.headers
+      .addAll({'Authorization': await getAuthHeader(), 'Provider': 'authing'});
 
   try {
     var response = await request.send();
@@ -222,7 +240,8 @@ Future<bool> uploadMemoryAudio(String memoryId, File file) async {
   }
 }
 
-Future<Map<String, dynamic>> getMemoryConnectionsGraph(List<String> memoryIds, int levels) async {
+Future<Map<String, dynamic>> getMemoryConnectionsGraph(
+    List<String> memoryIds, int levels) async {
   try {
     final response = await makeApiCall(
       url: '${Env.apiBaseUrl}v1/memories/connections_graph',
@@ -241,7 +260,8 @@ Future<Map<String, dynamic>> getMemoryConnectionsGraph(List<String> memoryIds, i
     if (response.statusCode == 200) {
       return jsonDecode(response.body) as Map<String, dynamic>;
     } else {
-      throw Exception('Failed to get memory connections graph: ${response.statusCode}');
+      throw Exception(
+          'Failed to get memory connections graph: ${response.statusCode}');
     }
   } catch (e) {
     debugPrint('Error in getMemoryConnectionsGraph: $e');
@@ -273,7 +293,8 @@ Future<bool> assignMemoryTranscriptSegment(
 }) async {
   String assignType = isUser != null ? 'is_user' : 'person_id';
   var response = await makeApiCall(
-    url: '${Env.apiBaseUrl}v1/memories/$memoryId/segments/$segmentIdx/assign?value=${isUser ?? personId}'
+    url:
+        '${Env.apiBaseUrl}v1/memories/$memoryId/segments/$segmentIdx/assign?value=${isUser ?? personId}'
         '&assign_type=$assignType&use_for_speech_training=$useForSpeechTraining',
     headers: {},
     method: 'PATCH',
@@ -284,9 +305,11 @@ Future<bool> assignMemoryTranscriptSegment(
   return response.statusCode == 200;
 }
 
-Future<bool> setMemoryVisibility(String memoryId, {String visibility = 'shared'}) async {
+Future<bool> setMemoryVisibility(String memoryId,
+    {String visibility = 'shared'}) async {
   var response = await makeApiCall(
-    url: '${Env.apiBaseUrl}v1/memories/$memoryId/visibility?value=$visibility&visibility=$visibility',
+    url:
+        '${Env.apiBaseUrl}v1/memories/$memoryId/visibility?value=$visibility&visibility=$visibility',
     headers: {},
     method: 'PATCH',
     body: '',
@@ -320,13 +343,16 @@ Future<bool> setMemoryEventsState(
 }
 
 //this is expected to return complete memories
-Future<List<ServerMemory>> sendStorageToBackend(File file, String dateTimeStorageString) async {
+Future<List<ServerMemory>> sendStorageToBackend(
+    File file, String dateTimeStorageString) async {
   var request = http.MultipartRequest(
     'POST',
-    Uri.parse('${Env.apiBaseUrl}sdcard_memory?date_time=$dateTimeStorageString'),
+    Uri.parse(
+        '${Env.apiBaseUrl}sdcard_memory?date_time=$dateTimeStorageString'),
   );
   request.headers.addAll({'Authorization': await getAuthHeader()});
-  request.files.add(await http.MultipartFile.fromPath('file', file.path, filename: basename(file.path)));
+  request.files.add(await http.MultipartFile.fromPath('file', file.path,
+      filename: basename(file.path)));
   try {
     var streamedResponse = await request.send();
     var response = await http.Response.fromStream(streamedResponse);
@@ -338,7 +364,9 @@ Future<List<ServerMemory>> sendStorageToBackend(File file, String dateTimeStorag
       return [];
     }
 
-    var memories = (jsonDecode(response.body) as List<dynamic>).map((memory) => ServerMemory.fromJson(memory)).toList();
+    var memories = (jsonDecode(response.body) as List<dynamic>)
+        .map((memory) => ServerMemory.fromJson(memory))
+        .toList();
     debugPrint('getMemories length: ${memories.length}');
 
     return memories;

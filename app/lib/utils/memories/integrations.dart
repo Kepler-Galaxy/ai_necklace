@@ -1,7 +1,7 @@
-import 'package:friend_private/backend/schema/transcript_segment.dart';
-import 'package:friend_private/backend/http/webhooks.dart';
-import 'package:friend_private/backend/schema/message.dart';
-import 'package:friend_private/services/notification_service.dart';
+import 'package:foxxy_package/backend/schema/transcript_segment.dart';
+import 'package:foxxy_package/backend/http/webhooks.dart';
+import 'package:foxxy_package/backend/schema/message.dart';
+import 'package:foxxy_package/services/notification_service.dart';
 
 triggerTranscriptSegmentReceivedEvents(
   List<TranscriptSegment> segments,
@@ -10,8 +10,10 @@ triggerTranscriptSegmentReceivedEvents(
 }) async {
   webhookOnTranscriptReceivedCall(segments, sessionId).then((s) {
     if (s.isNotEmpty)
-      NotificationService.instance
-          .createNotification(title: 'Developer: On Transcript Received', body: s, notificationId: 10);
+      NotificationService.instance.createNotification(
+          title: 'Developer: On Transcript Received',
+          body: s,
+          notificationId: 10);
   });
   // TODO: restore me, how to trigger from backend
 }

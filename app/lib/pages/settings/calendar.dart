@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:friend_private/backend/preferences.dart';
-import 'package:friend_private/providers/calendar_provider.dart';
-import 'package:friend_private/widgets/extensions/functions.dart';
+import 'package:foxxy_package/backend/preferences.dart';
+import 'package:foxxy_package/providers/calendar_provider.dart';
+import 'package:foxxy_package/widgets/extensions/functions.dart';
 import 'package:provider/provider.dart';
 
 class CalendarPage extends StatefulWidget {
@@ -42,7 +42,8 @@ class _CalendarPageState extends State<CalendarPage> {
             children: [
               Container(
                 margin: const EdgeInsets.all(8),
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -86,20 +87,24 @@ class _CalendarPageState extends State<CalendarPage> {
               if (provider.calendarEnabled) ...[
                 RadioListTile(
                   title: const Text('Automatic'),
-                  subtitle: const Text('Omi Will automatically scheduled your events.'),
+                  subtitle: const Text(
+                      'Omi Will automatically scheduled your events.'),
                   value: 'auto',
                   groupValue: SharedPreferencesUtil().calendarType,
                   onChanged: provider.onCalendarTypeChanged,
                 ),
                 RadioListTile(
                   title: const Text('Manual'),
-                  subtitle: const Text('Your events will be drafted, but you will have to confirm their creation.'),
+                  subtitle: const Text(
+                      'Your events will be drafted, but you will have to confirm their creation.'),
                   value: 'manual',
                   groupValue: SharedPreferencesUtil().calendarType,
                   onChanged: provider.onCalendarTypeChanged,
                 ),
               ],
-              provider.calendarEnabled ? const SizedBox(height: 48) : const SizedBox(),
+              provider.calendarEnabled
+                  ? const SizedBox(height: 48)
+                  : const SizedBox(),
               provider.calendarEnabled
                   ? Divider(
                       color: Colors.grey.shade400,
@@ -135,7 +140,9 @@ class _CalendarPageState extends State<CalendarPage> {
         RadioListTile(
           contentPadding: const EdgeInsets.symmetric(horizontal: 24),
           title: Text(calendar.name!),
-          subtitle: (calendar.accountName?.isNotEmpty ?? false) ? Text(calendar.accountName!) : null,
+          subtitle: (calendar.accountName?.isNotEmpty ?? false)
+              ? Text(calendar.accountName!)
+              : null,
           value: calendar.id!,
           groupValue: SharedPreferencesUtil().calendarId,
           onChanged: (v) => provider.selectCalendar(v, calendar),

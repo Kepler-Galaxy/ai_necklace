@@ -1,20 +1,21 @@
 import 'package:flutter/material.dart';
-import 'package:friend_private/backend/preferences.dart';
-import 'package:friend_private/backend/schema/bt_device.dart';
-import 'package:friend_private/backend/schema/memory.dart';
-import 'package:friend_private/pages/memories/widgets/capture.dart';
-import 'package:friend_private/pages/memory_capturing/page.dart';
-import 'package:friend_private/providers/capture_provider.dart';
-import 'package:friend_private/providers/connectivity_provider.dart';
-import 'package:friend_private/providers/device_provider.dart';
-import 'package:friend_private/utils/analytics/mixpanel.dart';
-import 'package:friend_private/utils/enums.dart';
-import 'package:friend_private/utils/other/temp.dart';
-import 'package:friend_private/widgets/dialog.dart';
+import 'package:foxxy_package/backend/preferences.dart';
+import 'package:foxxy_package/backend/schema/bt_device.dart';
+import 'package:foxxy_package/backend/schema/memory.dart';
+import 'package:foxxy_package/pages/memories/widgets/capture.dart';
+import 'package:foxxy_package/pages/memory_capturing/page.dart';
+import 'package:foxxy_package/providers/capture_provider.dart';
+import 'package:foxxy_package/providers/connectivity_provider.dart';
+import 'package:foxxy_package/providers/device_provider.dart';
+import 'package:foxxy_package/utils/analytics/mixpanel.dart';
+import 'package:foxxy_package/utils/enums.dart';
+import 'package:foxxy_package/utils/other/temp.dart';
+import 'package:foxxy_package/widgets/dialog.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:friend_private/generated/l10n.dart';
-import 'package:friend_private/pages/memories/widgets/language_setting.dart';
+import 'package:foxxy_package/generated/l10n.dart';
+import 'package:foxxy_package/pages/memories/widgets/language_setting.dart';
+
 class MemoryCaptureWidget extends StatefulWidget {
   final ServerProcessingMemory? memory;
 
@@ -28,15 +29,17 @@ class MemoryCaptureWidget extends StatefulWidget {
 }
 
 class _MemoryCaptureWidgetState extends State<MemoryCaptureWidget> {
-
   @override
   Widget build(BuildContext context) {
     return Consumer3<CaptureProvider, DeviceProvider, ConnectivityProvider>(
-        builder: (context, provider, deviceProvider, connectivityProvider, child) {
-      var topMemoryId =
-          (provider.memoryProvider?.memories ?? []).isNotEmpty ? provider.memoryProvider!.memories.first.id : null;
+        builder:
+            (context, provider, deviceProvider, connectivityProvider, child) {
+      var topMemoryId = (provider.memoryProvider?.memories ?? []).isNotEmpty
+          ? provider.memoryProvider!.memories.first.id
+          : null;
 
-      bool showPhoneMic = deviceProvider.connectedDevice == null && !deviceProvider.isConnecting;
+      bool showPhoneMic = deviceProvider.connectedDevice == null &&
+          !deviceProvider.isConnecting;
       bool isConnected = deviceProvider.connectedDevice != null ||
           provider.recordingState == RecordingState.record ||
           (provider.memoryCreating && deviceProvider.connectedDevice != null);
@@ -44,8 +47,10 @@ class _MemoryCaptureWidgetState extends State<MemoryCaptureWidget> {
       return (showPhoneMic || isConnected || deviceProvider.isConnecting)
           ? GestureDetector(
               onTap: () async {
-                if (provider.segments.isEmpty && provider.photos.isEmpty) return;
-                routeToPage(context, MemoryCapturingPage(topMemoryId: topMemoryId));
+                if (provider.segments.isEmpty && provider.photos.isEmpty)
+                  return;
+                routeToPage(
+                    context, MemoryCapturingPage(topMemoryId: topMemoryId));
               },
               child: Container(
                 margin: const EdgeInsets.symmetric(horizontal: 16),
@@ -55,7 +60,8 @@ class _MemoryCaptureWidgetState extends State<MemoryCaptureWidget> {
                   borderRadius: BorderRadius.circular(16.0),
                 ),
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -129,35 +135,42 @@ class _MemoryCaptureWidgetState extends State<MemoryCaptureWidget> {
     } else if (captureProvider.memoryCreating) {
       stateText = "Processing";
       isConnected = deviceProvider.connectedDevice != null;
-    } else if (captureProvider.recordingDeviceServiceReady && captureProvider.transcriptServiceReady) {
+    } else if (captureProvider.recordingDeviceServiceReady &&
+        captureProvider.transcriptServiceReady) {
       stateText = "Listening";
       isConnected = true;
-    } else if (captureProvider.recordingDeviceServiceReady || captureProvider.transcriptServiceReady) {
+    } else if (captureProvider.recordingDeviceServiceReady ||
+        captureProvider.transcriptServiceReady) {
       stateText = "Preparing";
       isConnected = true;
     }
 
-    var isUsingPhoneMic = captureProvider.recordingState == RecordingState.record ||
-        captureProvider.recordingState == RecordingState.initialising ||
-        captureProvider.recordingState == RecordingState.pause;
+    var isUsingPhoneMic =
+        captureProvider.recordingState == RecordingState.record ||
+            captureProvider.recordingState == RecordingState.initialising ||
+            captureProvider.recordingState == RecordingState.pause;
 
     return Padding(
       padding: const EdgeInsets.only(left: 0, right: 12),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          if (deviceProvider.connectedDevice == null && !deviceProvider.isConnecting)
+          if (deviceProvider.connectedDevice == null &&
+              !deviceProvider.isConnecting)
             getPhoneMicRecordingButton(
-                context,
-                () => _toggleRecording(context, captureProvider),
-                captureProvider.recordingState,
+              context,
+              () => _toggleRecording(context, captureProvider),
+              captureProvider.recordingState,
             )
           else if (isConnected && !isUsingPhoneMic)
             Row(
               children: [
                 const Text(
                   '🎙️',
-                  style: TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.w600),
+                  style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 22,
+                      fontWeight: FontWeight.w600),
                 ),
                 const SizedBox(width: 12),
                 Container(
@@ -165,12 +178,17 @@ class _MemoryCaptureWidgetState extends State<MemoryCaptureWidget> {
                     color: Colors.grey.shade800,
                     borderRadius: BorderRadius.circular(16),
                   ),
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                   child: Text(
-                    captureProvider.segments.isNotEmpty || captureProvider.photos.isNotEmpty
+                    captureProvider.segments.isNotEmpty ||
+                            captureProvider.photos.isNotEmpty
                         ? 'In progress...'
                         : 'Say something...',
-                    style: Theme.of(context).textTheme.bodyMedium!.copyWith(color: Colors.white),
+                    style: Theme.of(context)
+                        .textTheme
+                        .bodyMedium!
+                        .copyWith(color: Colors.white),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -205,10 +223,12 @@ class RecordingStatusIndicator extends StatefulWidget {
   const RecordingStatusIndicator({super.key});
 
   @override
-  _RecordingStatusIndicatorState createState() => _RecordingStatusIndicatorState();
+  _RecordingStatusIndicatorState createState() =>
+      _RecordingStatusIndicatorState();
 }
 
-class _RecordingStatusIndicatorState extends State<RecordingStatusIndicator> with SingleTickerProviderStateMixin {
+class _RecordingStatusIndicatorState extends State<RecordingStatusIndicator>
+    with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _opacityAnim;
 
@@ -232,13 +252,16 @@ class _RecordingStatusIndicatorState extends State<RecordingStatusIndicator> wit
   Widget build(BuildContext context) {
     return FadeTransition(
       opacity: _opacityAnim,
-      child: const Icon(Icons.fiber_manual_record, color: Colors.red, size: 16.0),
+      child:
+          const Icon(Icons.fiber_manual_record, color: Colors.red, size: 16.0),
     );
   }
 }
 
-getPhoneMicRecordingButton(BuildContext context, toggleRecording, RecordingState state) {
-  if (SharedPreferencesUtil().btDeviceStruct.id.isNotEmpty) return const SizedBox.shrink();
+getPhoneMicRecordingButton(
+    BuildContext context, toggleRecording, RecordingState state) {
+  if (SharedPreferencesUtil().btDeviceStruct.id.isNotEmpty)
+    return const SizedBox.shrink();
   return MaterialButton(
     onPressed: state == RecordingState.initialising ? null : toggleRecording,
     child: Row(
@@ -262,8 +285,13 @@ getPhoneMicRecordingButton(BuildContext context, toggleRecording, RecordingState
         Text(
           state == RecordingState.initialising
               ? 'Initialising Recorder'
-              : (state == RecordingState.record ? S.current.StopRecording : S.current.TryWithPhoneMic),
-          style: Theme.of(context).textTheme.bodyMedium!.copyWith(color: Colors.white, fontWeight: FontWeight.w600),
+              : (state == RecordingState.record
+                  ? S.current.StopRecording
+                  : S.current.TryWithPhoneMic),
+          style: Theme.of(context)
+              .textTheme
+              .bodyMedium!
+              .copyWith(color: Colors.white, fontWeight: FontWeight.w600),
         ),
         const SizedBox(width: 4),
       ],

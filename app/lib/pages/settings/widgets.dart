@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:friend_private/backend/preferences.dart';
-import 'package:friend_private/utils/analytics/growthbook.dart';
-import 'package:friend_private/utils/analytics/mixpanel.dart';
+import 'package:foxxy_package/backend/preferences.dart';
+import 'package:foxxy_package/utils/analytics/growthbook.dart';
+import 'package:foxxy_package/utils/analytics/mixpanel.dart';
 
 getPreferencesWidgets({
   required VoidCallback onOptInAnalytics,
@@ -15,7 +15,7 @@ getPreferencesWidgets({
   required bool authorizeSavingRecordings,
 }) {
   return [
-  const Align(
+    const Align(
       alignment: Alignment.centerLeft,
       child: Text(
         'PREFERENCES',
@@ -85,7 +85,8 @@ getPreferencesWidgets({
             children: [
               const Text(
                 'Authorize saving recordings',
-                style: TextStyle(color: Color.fromARGB(255, 150, 150, 150), fontSize: 16),
+                style: TextStyle(
+                    color: Color.fromARGB(255, 150, 150, 150), fontSize: 16),
               ),
               Container(
                 decoration: BoxDecoration(
@@ -100,13 +101,14 @@ getPreferencesWidgets({
                 ),
                 width: 22,
                 height: 22,
-                child: authorizeSavingRecordings // Show the icon only when checked
-                    ? const Icon(
-                        Icons.check,
-                        color: Colors.white, // Tick color
-                        size: 18,
-                      )
-                    : null, // No icon when unchecked
+                child:
+                    authorizeSavingRecordings // Show the icon only when checked
+                        ? const Icon(
+                            Icons.check,
+                            color: Colors.white, // Tick color
+                            size: 18,
+                          )
+                        : null, // No icon when unchecked
               ),
             ],
           ),
@@ -118,8 +120,10 @@ getPreferencesWidgets({
       child: Padding(
         padding: const EdgeInsets.fromLTRB(0, 0, 8, 0),
         child: InkWell(
-          onTap:
-              (SharedPreferencesUtil().hasSpeakerProfile || optInEmotionalFeedback) ? onOptInEmotionalFeedback : null,
+          onTap: (SharedPreferencesUtil().hasSpeakerProfile ||
+                  optInEmotionalFeedback)
+              ? onOptInEmotionalFeedback
+              : null,
           child: Padding(
             padding: const EdgeInsets.symmetric(vertical: 12.0),
             child: Column(
@@ -152,13 +156,14 @@ getPreferencesWidgets({
                       ),
                       width: 22,
                       height: 22,
-                      child: optInEmotionalFeedback // Show the icon only when checked
-                          ? const Icon(
-                              Icons.check,
-                              color: Colors.white, // Tick color
-                              size: 18,
-                            )
-                          : null, // No icon when unchecked
+                      child:
+                          optInEmotionalFeedback // Show the icon only when checked
+                              ? const Icon(
+                                  Icons.check,
+                                  color: Colors.white, // Tick color
+                                  size: 18,
+                                )
+                              : null, // No icon when unchecked
                     ),
                   ],
                 ),
@@ -221,14 +226,16 @@ getPreferencesWidgets({
 
 getItemAddonWrapper(List<Widget> widgets) {
   return Card(
-    shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(8))),
+    shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.all(Radius.circular(8))),
     child: Column(
       children: widgets,
     ),
   );
 }
 
-getItemAddOn(String title, VoidCallback onTap, {required IconData icon, bool visibility = true}) {
+getItemAddOn(String title, VoidCallback onTap,
+    {required IconData icon, bool visibility = true}) {
   return Visibility(
     visible: visibility,
     child: GestureDetector(
@@ -237,8 +244,10 @@ getItemAddOn(String title, VoidCallback onTap, {required IconData icon, bool vis
         padding: const EdgeInsets.fromLTRB(0, 12, 8, 0),
         child: Container(
           decoration: BoxDecoration(
-            color: const Color.fromARGB(255, 29, 29, 29), // Replace with your desired color
-            borderRadius: BorderRadius.circular(10.0), // Adjust for desired rounded corners
+            color: const Color.fromARGB(
+                255, 29, 29, 29), // Replace with your desired color
+            borderRadius: BorderRadius.circular(
+                10.0), // Adjust for desired rounded corners
           ),
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -249,13 +258,16 @@ getItemAddOn(String title, VoidCallback onTap, {required IconData icon, bool vis
                   children: [
                     Text(
                       title,
-                      style: const TextStyle(color: Color.fromARGB(255, 150, 150, 150), fontSize: 16),
+                      style: const TextStyle(
+                          color: Color.fromARGB(255, 150, 150, 150),
+                          fontSize: 16),
                     ),
                     const SizedBox(width: 16),
                     Icon(icon, color: Colors.white, size: 16),
                   ],
                 ),
-                const Icon(Icons.arrow_forward_ios, color: Colors.white, size: 16),
+                const Icon(Icons.arrow_forward_ios,
+                    color: Colors.white, size: 16),
               ],
             ),
           ),
@@ -267,7 +279,7 @@ getItemAddOn(String title, VoidCallback onTap, {required IconData icon, bool vis
 
 getItemAddOn2(String title, VoidCallback onTap, {required IconData icon}) {
   return GestureDetector(
-    onTap: (){
+    onTap: () {
       MixpanelManager().pageOpened('Settings $title');
       onTap();
     },
@@ -287,13 +299,16 @@ getItemAddOn2(String title, VoidCallback onTap, {required IconData icon}) {
                 children: [
                   Text(
                     title,
-                    style: const TextStyle(color: Color.fromARGB(255, 150, 150, 150), fontSize: 16),
+                    style: const TextStyle(
+                        color: Color.fromARGB(255, 150, 150, 150),
+                        fontSize: 16),
                   ),
                   const SizedBox(width: 16),
                   Icon(icon, color: Colors.white, size: 18),
                 ],
               ),
-              const Icon(Icons.arrow_forward_ios, color: Colors.white, size: 16),
+              const Icon(Icons.arrow_forward_ios,
+                  color: Colors.white, size: 16),
             ],
           ),
         ),

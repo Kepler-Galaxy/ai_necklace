@@ -2,12 +2,12 @@ import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:friend_private/backend/schema/fact.dart';
-import 'package:friend_private/providers/connectivity_provider.dart';
-import 'package:friend_private/providers/facts_provider.dart';
-import 'package:friend_private/utils/analytics/mixpanel.dart';
-import 'package:friend_private/widgets/extensions/functions.dart';
-import 'package:friend_private/widgets/extensions/string.dart';
+import 'package:foxxy_package/backend/schema/fact.dart';
+import 'package:foxxy_package/providers/connectivity_provider.dart';
+import 'package:foxxy_package/providers/facts_provider.dart';
+import 'package:foxxy_package/utils/analytics/mixpanel.dart';
+import 'package:foxxy_package/widgets/extensions/functions.dart';
+import 'package:foxxy_package/widgets/extensions/string.dart';
 import 'package:provider/provider.dart';
 
 class FactsPage extends StatelessWidget {
@@ -59,7 +59,9 @@ class _FactsPageState extends State<_FactsPage> {
                       : 'About your ${provider.selectedCategory.toString().split('.').last}'),
               leading: provider.selectedCategory != null
                   ? IconButton(
-                      icon: Platform.isIOS ? const Icon(Icons.arrow_back_ios_new) : const Icon(Icons.arrow_back),
+                      icon: Platform.isIOS
+                          ? const Icon(Icons.arrow_back_ios_new)
+                          : const Icon(Icons.arrow_back),
                       onPressed: () {
                         setState(() {
                           provider.setCategory(null);
@@ -91,20 +93,25 @@ class _FactsPageState extends State<_FactsPage> {
     );
   }
 
-  Future<void> _showFactDialog(BuildContext context, FactsProvider provider, {Fact? fact}) async {
-    final connectivityProvider = Provider.of<ConnectivityProvider>(context, listen: false);
+  Future<void> _showFactDialog(BuildContext context, FactsProvider provider,
+      {Fact? fact}) async {
+    final connectivityProvider =
+        Provider.of<ConnectivityProvider>(context, listen: false);
     if (!connectivityProvider.isConnected) {
       ConnectivityProvider.showNoInternetDialog(context);
       return;
     }
 
-    final contentController = TextEditingController(text: fact?.content.decodeSting ?? '');
+    final contentController =
+        TextEditingController(text: fact?.content.decodeSting ?? '');
     final formKey = GlobalKey<FormState>();
 
     await showDialog(
       context: context,
       builder: (BuildContext context) {
-        FactCategory selectedCategory = fact?.category ?? provider.selectedCategory ?? FactCategory.values.first;
+        FactCategory selectedCategory = fact?.category ??
+            provider.selectedCategory ??
+            FactCategory.values.first;
         return StatefulBuilder(
           builder: (BuildContext context, StateSetter setModalState) {
             setCategory(FactCategory category) {
@@ -115,7 +122,8 @@ class _FactsPageState extends State<_FactsPage> {
 
             return Platform.isIOS
                 ? CupertinoAlertDialog(
-                    content: _showFactDialogForm(formKey, contentController, selectedCategory, provider, setCategory),
+                    content: _showFactDialogForm(formKey, contentController,
+                        selectedCategory, provider, setCategory),
                     actions: _showFactDialogActions(
                       context,
                       formKey,
@@ -127,7 +135,8 @@ class _FactsPageState extends State<_FactsPage> {
                     ),
                   )
                 : AlertDialog(
-                    content: _showFactDialogForm(formKey, contentController, selectedCategory, provider, setCategory),
+                    content: _showFactDialogForm(formKey, contentController,
+                        selectedCategory, provider, setCategory),
                     actions: _showFactDialogActions(
                       context,
                       formKey,
@@ -165,7 +174,8 @@ class _FactsPageState extends State<_FactsPage> {
                   textAlign: TextAlign.start,
                   placeholderStyle: const TextStyle(color: Colors.white54),
                   style: const TextStyle(color: Colors.white),
-                  validator: (value) => value!.isEmpty ? 'Can\'t be empty' : null,
+                  validator: (value) =>
+                      value!.isEmpty ? 'Can\'t be empty' : null,
                   maxLines: 1,
                 )
               : TextFormField(
@@ -177,7 +187,8 @@ class _FactsPageState extends State<_FactsPage> {
                   ),
                   keyboardType: TextInputType.text,
                   textCapitalization: TextCapitalization.sentences,
-                  validator: (value) => value!.isEmpty ? 'Can\'t be empty' : null,
+                  validator: (value) =>
+                      value!.isEmpty ? 'Can\'t be empty' : null,
                   maxLines: 1,
                   style: const TextStyle(color: Colors.white),
                 ),
@@ -255,7 +266,8 @@ class _FactsPageState extends State<_FactsPage> {
     onPressed() async {
       if (formKey.currentState!.validate()) {
         if (isEditing && fact != null) {
-          provider.editFactProvider(fact, contentController.text, selectedCategory);
+          provider.editFactProvider(
+              fact, contentController.text, selectedCategory);
           MixpanelManager().factsPageEditedFact();
         } else {
           provider.createFactProvider(contentController.text, selectedCategory);
@@ -269,11 +281,13 @@ class _FactsPageState extends State<_FactsPage> {
         ? [
             CupertinoDialogAction(
               onPressed: () => Navigator.pop(context),
-              child: const Text('Cancel', style: TextStyle(color: Colors.white)),
+              child:
+                  const Text('Cancel', style: TextStyle(color: Colors.white)),
             ),
             CupertinoDialogAction(
               onPressed: onPressed,
-              child: Text(isEditing ? 'Update' : 'Add', style: const TextStyle(color: Colors.white)),
+              child: Text(isEditing ? 'Update' : 'Add',
+                  style: const TextStyle(color: Colors.white)),
             ),
           ]
         : [
@@ -283,7 +297,8 @@ class _FactsPageState extends State<_FactsPage> {
             ),
             TextButton(
               onPressed: onPressed,
-              child: Text(isEditing ? 'Update' : 'Add', style: const TextStyle(color: Colors.white)),
+              child: Text(isEditing ? 'Update' : 'Add',
+                  style: const TextStyle(color: Colors.white)),
             ),
           ];
   }
@@ -321,7 +336,8 @@ class _FactsPageState extends State<_FactsPage> {
                   ],
                 ),
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
@@ -403,7 +419,8 @@ class _FactsPageState extends State<_FactsPage> {
                     padding: const EdgeInsets.only(top: 16.0),
                     child: ListTile(
                       title: Text(fact.content.decodeSting),
-                      onTap: () => _showFactDialog(context, provider, fact: fact),
+                      onTap: () =>
+                          _showFactDialog(context, provider, fact: fact),
                     ),
                   ),
                 ),

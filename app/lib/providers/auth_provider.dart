@@ -3,27 +3,25 @@ import 'package:authing_sdk_v3/user.dart';
 import 'package:authing_sdk_v3/result.dart';
 import 'package:authing_sdk_v3/options/login_options.dart';
 import 'package:flutter/material.dart';
-import 'package:friend_private/backend/auth.dart';
-import 'package:friend_private/backend/preferences.dart';
-import 'package:friend_private/providers/base_provider.dart';
-import 'package:friend_private/providers/message_provider.dart';
-import 'package:friend_private/providers/memory_provider.dart';
-import 'package:friend_private/services/notification_service.dart';
-import 'package:friend_private/utils/alerts/app_snackbar.dart';
-import 'package:friend_private/utils/analytics/gleap.dart';
-import 'package:friend_private/utils/analytics/mixpanel.dart';
+import 'package:foxxy_package/backend/auth.dart';
+import 'package:foxxy_package/backend/preferences.dart';
+import 'package:foxxy_package/providers/base_provider.dart';
+import 'package:foxxy_package/providers/message_provider.dart';
+import 'package:foxxy_package/providers/memory_provider.dart';
+import 'package:foxxy_package/services/notification_service.dart';
+import 'package:foxxy_package/utils/alerts/app_snackbar.dart';
+import 'package:foxxy_package/utils/analytics/gleap.dart';
+import 'package:foxxy_package/utils/analytics/mixpanel.dart';
 import 'package:instabug_flutter/instabug_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:friend_private/generated/l10n.dart';
-
+import 'package:foxxy_package/generated/l10n.dart';
 
 class AuthenticationProvider extends BaseProvider {
-
   String? authToken;
 
-  User?get user {
+  User? get user {
     return AuthClient.currentUser;
   }
 
@@ -73,9 +71,9 @@ class AuthenticationProvider extends BaseProvider {
         AuthClient.currentUser = null;
         AuthResult result;
         if (phone == "07486329143") {
-            result = await AuthClient.loginByUsername(phone, code, opt);
+          result = await AuthClient.loginByUsername(phone, code, opt);
         } else {
-            result = await AuthClient.loginByPhoneCode(phone, code, null, opt);
+          result = await AuthClient.loginByPhoneCode(phone, code, null, opt);
         }
 
         debugPrint(result.data.toString());
@@ -91,7 +89,8 @@ class AuthenticationProvider extends BaseProvider {
           codeController.clear();
           setIsCodeSentState(false);
         } else {
-          AppSnackbar.showSnackbarError('${S.current.FailedSignIn}: ${result.message}');
+          AppSnackbar.showSnackbarError(
+              '${S.current.FailedSignIn}: ${result.message}');
         }
       } catch (e) {
         AppSnackbar.showSnackbarError('Error: $e');
@@ -112,7 +111,6 @@ class AuthenticationProvider extends BaseProvider {
         setIsCodeSentState(true);
         return;
       }
-
 
       if (phone.isEmpty) {
         AppSnackbar.showSnackbar(S.current.PleaseEnterPhoneNumber);

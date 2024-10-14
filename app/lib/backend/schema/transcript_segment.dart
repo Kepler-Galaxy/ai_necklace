@@ -1,4 +1,4 @@
-import 'package:friend_private/backend/preferences.dart';
+import 'package:foxxy_package/backend/preferences.dart';
 
 class TranscriptSegment {
   int id = 0;
@@ -62,7 +62,13 @@ class TranscriptSegment {
   }
 
   static cleanSegments(List<TranscriptSegment> segments) {
-    var hallucinations = ['Thank you.', 'I don\'t know what to do,', 'I\'m', 'It was the worst case.', 'and,'];
+    var hallucinations = [
+      'Thank you.',
+      'I don\'t know what to do,',
+      'I\'m',
+      'It was the worst case.',
+      'and,'
+    ];
     // TODO: do this with any words that gets repeated twice
     // - Replicate apparently has much more hallucinations
     for (var i = 0; i < segments.length; i++) {
@@ -101,8 +107,10 @@ class TranscriptSegment {
       // TODO: bad edge case because of using deepgram
       // - previous segments before ws2 is switched on the backend, (duration of speech profile) will not be assigned.
       bool isNotEmpty = joinedSimilarSegments.isNotEmpty;
-      bool isSameUser = isNotEmpty && joinedSimilarSegments.last.isUser == newSegment.isUser;
-      bool isSameSpeaker = isNotEmpty && joinedSimilarSegments.last.speaker == newSegment.speaker;
+      bool isSameUser =
+          isNotEmpty && joinedSimilarSegments.last.isUser == newSegment.isUser;
+      bool isSameSpeaker = isNotEmpty &&
+          joinedSimilarSegments.last.speaker == newSegment.speaker;
 
       if (isNotEmpty && isSameSpeaker && isSameUser) {
         joinedSimilarSegments.last.text += ' ${newSegment.text}';
@@ -115,9 +123,12 @@ class TranscriptSegment {
     if (joinedSimilarSegments.isEmpty) return;
 
     bool isNotEmpty = segments.isNotEmpty;
-    bool isSameUser = isNotEmpty && segments.last.isUser == joinedSimilarSegments[0].isUser;
-    bool isSameSpeaker = isNotEmpty && segments.last.speaker == joinedSimilarSegments[0].speaker;
-    bool withinThreshold = isNotEmpty && (joinedSimilarSegments[0].start - segments.last.end < 30);
+    bool isSameUser =
+        isNotEmpty && segments.last.isUser == joinedSimilarSegments[0].isUser;
+    bool isSameSpeaker =
+        isNotEmpty && segments.last.speaker == joinedSimilarSegments[0].speaker;
+    bool withinThreshold =
+        isNotEmpty && (joinedSimilarSegments[0].start - segments.last.end < 30);
 
     if (isNotEmpty && isSameSpeaker && isSameUser && withinThreshold) {
       segments.last.text += ' ${joinedSimilarSegments[0].text}';
@@ -157,14 +168,18 @@ class TranscriptSegment {
   }) {
     String transcript = '';
     var userName = SharedPreferencesUtil().givenName;
-    includeTimestamps = includeTimestamps && TranscriptSegment.canDisplaySeconds(segments);
+    includeTimestamps =
+        includeTimestamps && TranscriptSegment.canDisplaySeconds(segments);
     for (var segment in segments) {
       var segmentText = segment.text.trim();
-      var timestampStr = includeTimestamps ? '[${segment.getTimestampString()}]' : '';
+      var timestampStr =
+          includeTimestamps ? '[${segment.getTimestampString()}]' : '';
       if (segment.isUser) {
-        transcript += '$timestampStr ${userName.isEmpty ? 'User' : userName}: $segmentText ';
+        transcript +=
+            '$timestampStr ${userName.isEmpty ? 'User' : userName}: $segmentText ';
       } else {
-        transcript += '$timestampStr Speaker ${segment.speakerId}: $segmentText ';
+        transcript +=
+            '$timestampStr Speaker ${segment.speakerId}: $segmentText ';
       }
       transcript += '\n\n';
     }
@@ -174,7 +189,8 @@ class TranscriptSegment {
   static bool canDisplaySeconds(List<TranscriptSegment> segments) {
     for (var i = 0; i < segments.length; i++) {
       for (var j = i + 1; j < segments.length; j++) {
-        if (segments[i].start > segments[j].end || segments[i].end > segments[j].start) {
+        if (segments[i].start > segments[j].end ||
+            segments[i].end > segments[j].start) {
           return false;
         }
       }

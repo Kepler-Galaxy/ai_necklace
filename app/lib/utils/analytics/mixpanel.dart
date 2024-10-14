@@ -1,11 +1,11 @@
-import 'package:friend_private/backend/preferences.dart';
-import 'package:friend_private/backend/schema/fact.dart';
-import 'package:friend_private/backend/schema/memory.dart';
-import 'package:friend_private/env/env.dart';
+import 'package:foxxy_package/backend/preferences.dart';
+import 'package:foxxy_package/backend/schema/fact.dart';
+import 'package:foxxy_package/backend/schema/memory.dart';
+import 'package:foxxy_package/env/env.dart';
 import 'package:mixpanel_flutter/mixpanel_flutter.dart';
-import 'package:friend_private/utils/other/string_utils.dart';
-import 'package:friend_private/backend/schema/memory_connection.dart';
-import 'package:friend_private/backend/schema/diary.dart';
+import 'package:foxxy_package/utils/other/string_utils.dart';
+import 'package:foxxy_package/backend/schema/memory_connection.dart';
+import 'package:foxxy_package/backend/schema/diary.dart';
 
 class MixpanelManager {
   static final MixpanelManager _instance = MixpanelManager._internal();
@@ -34,18 +34,22 @@ class MixpanelManager {
     setUserProperty('Notifications Enabled', _preferences.notificationsEnabled);
     setUserProperty('Location Enabled', _preferences.locationEnabled);
     setUserProperty('Plugins Enabled Count', _preferences.enabledPluginsCount);
-    setUserProperty('Plugins Integrations Enabled Count', _preferences.enabledPluginsIntegrationsCount);
+    setUserProperty('Plugins Integrations Enabled Count',
+        _preferences.enabledPluginsIntegrationsCount);
     setUserProperty('Speaker Profile', _preferences.hasSpeakerProfile);
     setUserProperty('Calendar Enabled', _preferences.calendarEnabled);
     setUserProperty('Recordings Language', _preferences.recordingsLanguage);
-    setUserProperty('Authorized Storing Recordings', _preferences.permissionStoreRecordingsEnabled);
+    setUserProperty('Authorized Storing Recordings',
+        _preferences.permissionStoreRecordingsEnabled);
     setUserProperty(
       'GCP Integration Set',
-      _preferences.gcpCredentials.isNotEmpty && _preferences.gcpBucketName.isNotEmpty,
+      _preferences.gcpCredentials.isNotEmpty &&
+          _preferences.gcpBucketName.isNotEmpty,
     );
   }
 
-  setUserProperty(String key, dynamic value) => _mixpanel?.getPeople().set(key, value);
+  setUserProperty(String key, dynamic value) =>
+      _mixpanel?.getPeople().set(key, value);
 
   void optInTracking() {
     _mixpanel?.optInTracking();
@@ -83,7 +87,8 @@ class MixpanelManager {
 
   void onboardingCompleted() => track('Onboarding Completed');
 
-  void onboardingStepCompleted(String step) => track('Onboarding Step $step Completed');
+  void onboardingStepCompleted(String step) =>
+      track('Onboarding Step $step Completed');
 
   void settingsSaved({
     bool hasGCPCredentials = false,
@@ -111,7 +116,8 @@ class MixpanelManager {
   }
 
   void pluginRated(String pluginId, double rating) {
-    track('Plugin Rated', properties: {'plugin_id': pluginId, 'rating': rating});
+    track('Plugin Rated',
+        properties: {'plugin_id': pluginId, 'rating': rating});
   }
 
   void phoneMicRecordingStarted() => track('Phone Mic Recording Started');
@@ -119,7 +125,8 @@ class MixpanelManager {
   void phoneMicRecordingStopped() => track('Phone Mic Recording Stopped');
 
   void pluginResultExpanded(ServerMemory memory, String pluginId) {
-    track('Plugin Result Expanded', properties: getMemoryEventProperties(memory)..['plugin_id'] = pluginId);
+    track('Plugin Result Expanded',
+        properties: getMemoryEventProperties(memory)..['plugin_id'] = pluginId);
   }
 
   void recordingLanguageChanged(String language) {
@@ -137,21 +144,23 @@ class MixpanelManager {
     setUserProperty('Calendar Enabled', false);
   }
 
-  void calendarTypeChanged(String type) => track('Calendar Type Changed', properties: {'type': type});
+  void calendarTypeChanged(String type) =>
+      track('Calendar Type Changed', properties: {'type': type});
 
   void calendarSelected() => track('Calendar Selected');
 
-  void bottomNavigationTabClicked(String tab) => track('Bottom Navigation Tab Clicked', properties: {'tab': tab});
+  void bottomNavigationTabClicked(String tab) =>
+      track('Bottom Navigation Tab Clicked', properties: {'tab': tab});
 
-  void deviceConnected() =>
-      track('Device Connected', properties: {
+  void deviceConnected() => track('Device Connected', properties: {
         ..._preferences.btDeviceStruct.toJson(fwverAsString: true),
       });
 
   void deviceDisconnected() => track('Device Disconnected');
 
   void factsPageCategoryOpened(FactCategory category) =>
-      track('Fact Page Category Opened', properties: {'category': category.toString().split('.').last});
+      track('Fact Page Category Opened',
+          properties: {'category': category.toString().split('.').last});
 
   void factsPageDeletedFact(Fact fact) => track(
         'Fact Page Deleted Fact',
@@ -162,10 +171,12 @@ class MixpanelManager {
 
   void factsPageEditedFact() => track('Fact Page Edited Fact');
 
-  void factsPageCreateFactBtn() => track('Fact Page Create Fact Button Pressed');
+  void factsPageCreateFactBtn() =>
+      track('Fact Page Create Fact Button Pressed');
 
   void factsPageCreatedFact(FactCategory category) =>
-      track('Fact Page Created Fact', properties: {'fact_category': category.toString().split('.').last});
+      track('Fact Page Created Fact',
+          properties: {'fact_category': category.toString().split('.').last});
 
   Map<String, dynamic> _getTranscriptProperties(String transcript) {
     String transcriptCopy = transcript.substring(0, transcript.length);
@@ -188,7 +199,8 @@ class MixpanelManager {
     properties['memory_hours_since_creation'] = hoursAgo;
     properties['memory_id'] = memory.id;
     properties['memory_discarded'] = memory.discarded;
-    properties['has_transcript_segments'] = memory.transcriptSegments.isNotEmpty;
+    properties['has_transcript_segments'] =
+        memory.transcriptSegments.isNotEmpty;
     properties['has_web_link'] = memory.externalLink != null;
     return properties;
   }
@@ -202,42 +214,56 @@ class MixpanelManager {
   }
 
   void memoryListItemClicked(ServerMemory memory, int idx) =>
-      track('Memory List Item Clicked', properties: getMemoryEventProperties(memory));
+      track('Memory List Item Clicked',
+          properties: getMemoryEventProperties(memory));
 
   void memoryShareButtonClick(ServerMemory memory) =>
-      track('Memory Share Button Clicked', properties: getMemoryEventProperties(memory));
+      track('Memory Share Button Clicked',
+          properties: getMemoryEventProperties(memory));
 
-  void memoryDeleted(ServerMemory memory) => track('Memory Deleted', properties: getMemoryEventProperties(memory));
+  void memoryDeleted(ServerMemory memory) =>
+      track('Memory Deleted', properties: getMemoryEventProperties(memory));
 
-  void chatMessageSent(String message) => track('Chat Message Sent',
-      properties: {'message_length': message.length, 'message_word_count': wordsCount(message)});
+  void chatMessageSent(String message) =>
+      track('Chat Message Sent', properties: {
+        'message_length': message.length,
+        'message_word_count': wordsCount(message)
+      });
 
   void memoryConnectionNodeViewed(MemoryConnectionNode node) =>
-      track('Memory Connection Node Viewed', properties: node.toAnalyticsJson());
+      track('Memory Connection Node Viewed',
+          properties: node.toAnalyticsJson());
 
-  void viewDiaryForDay(DateTime day, ServerDiary? diary) =>
-      track('View Diary For Day', properties: {'day': day.toString(), ...diary?.toAnalyticsJson() ?? {}});
+  void viewDiaryForDay(DateTime day, ServerDiary? diary) => track(
+      'View Diary For Day',
+      properties: {'day': day.toString(), ...diary?.toAnalyticsJson() ?? {}});
 
-  void speechProfileCapturePageClicked() => track('Speech Profile Capture Page Clicked');
+  void speechProfileCapturePageClicked() =>
+      track('Speech Profile Capture Page Clicked');
 
   void showDiscardedMemoriesToggled(bool showDiscarded) =>
-      track('Show Discarded Memories Toggled', properties: {'show_discarded': showDiscarded});
+      track('Show Discarded Memories Toggled',
+          properties: {'show_discarded': showDiscarded});
 
   void chatMessageMemoryClicked(ServerMemory memory) =>
-      track('Chat Message Memory Clicked', properties: getMemoryEventProperties(memory));
+      track('Chat Message Memory Clicked',
+          properties: getMemoryEventProperties(memory));
 
   void addManualMemoryClicked() => track('Add Manual Memory Clicked');
 
   void manualMemoryCreated(ServerMemory memory) =>
-      track('Manual Memory Created', properties: getMemoryEventProperties(memory));
+      track('Manual Memory Created',
+          properties: getMemoryEventProperties(memory));
 
-  void setUserProperties(String whatDoYouDo, String whereDoYouPlanToUseYourFriend, String ageRange) {
+  void setUserProperties(String whatDoYouDo,
+      String whereDoYouPlanToUseYourFriend, String ageRange) {
     setUserProperty('What the user does', whatDoYouDo);
     setUserProperty('Using Friend At', whereDoYouPlanToUseYourFriend);
     setUserProperty('Age Range', ageRange);
   }
 
-  void reProcessMemory(ServerMemory memory) => track('Re-process Memory', properties: getMemoryEventProperties(memory));
+  void reProcessMemory(ServerMemory memory) =>
+      track('Re-process Memory', properties: getMemoryEventProperties(memory));
 
   void developerModeEnabled() {
     track('Developer Mode Enabled');
@@ -260,7 +286,8 @@ class MixpanelManager {
   void supportContacted() => track('Support Contacted');
 
   void copiedMemoryDetails(ServerMemory memory, {String source = ''}) =>
-      track('Copied Memory Detail $source'.trim(), properties: getMemoryEventProperties(memory));
+      track('Copied Memory Detail $source'.trim(),
+          properties: getMemoryEventProperties(memory));
 
   void upgradeModalDismissed() => track('Upgrade Modal Dismissed');
 
@@ -274,9 +301,11 @@ class MixpanelManager {
 
   void batteryIndicatorClicked() => track('Battery Indicator Clicked');
 
-  void useWithoutDeviceOnboardingWelcome() => track('Use Without Device Onboarding Welcome');
+  void useWithoutDeviceOnboardingWelcome() =>
+      track('Use Without Device Onboarding Welcome');
 
-  void useWithoutDeviceOnboardingFindDevices() => track('Use Without Device Onboarding Find Devices');
+  void useWithoutDeviceOnboardingFindDevices() =>
+      track('Use Without Device Onboarding Find Devices');
 
   // void pageViewed(String pageName) => startTimingEvent('Page View $pageName');
 
@@ -286,7 +315,8 @@ class MixpanelManager {
 
   void assignSheetOpened() => track('Assign Sheet Opened');
 
-  void assignedSegment(String assignType) => track('Assigned Segment $assignType');
+  void assignedSegment(String assignType) =>
+      track('Assigned Segment $assignType');
 
   void unassignedSegment() => track('Unassigned Segment');
 }

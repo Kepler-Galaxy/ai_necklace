@@ -4,27 +4,29 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:flutter_provider_utilities/flutter_provider_utilities.dart';
-import 'package:friend_private/backend/http/api/speech_profile.dart';
-import 'package:friend_private/backend/http/api/users.dart';
-import 'package:friend_private/backend/http/cloud_storage.dart';
-import 'package:friend_private/backend/preferences.dart';
-import 'package:friend_private/backend/schema/bt_device.dart';
-import 'package:friend_private/backend/schema/memory.dart';
-import 'package:friend_private/backend/schema/message_event.dart';
-import 'package:friend_private/backend/schema/structured.dart';
-import 'package:friend_private/backend/schema/transcript_segment.dart';
-import 'package:friend_private/providers/device_provider.dart';
-import 'package:friend_private/services/devices.dart';
-import 'package:friend_private/services/services.dart';
-import 'package:friend_private/utils/audio/wav_bytes.dart';
-import 'package:friend_private/utils/memories/process.dart';
-import 'package:friend_private/utils/pure_socket.dart';
+import 'package:foxxy_package/backend/http/api/speech_profile.dart';
+import 'package:foxxy_package/backend/http/api/users.dart';
+import 'package:foxxy_package/backend/http/cloud_storage.dart';
+import 'package:foxxy_package/backend/preferences.dart';
+import 'package:foxxy_package/backend/schema/bt_device.dart';
+import 'package:foxxy_package/backend/schema/memory.dart';
+import 'package:foxxy_package/backend/schema/message_event.dart';
+import 'package:foxxy_package/backend/schema/structured.dart';
+import 'package:foxxy_package/backend/schema/transcript_segment.dart';
+import 'package:foxxy_package/providers/device_provider.dart';
+import 'package:foxxy_package/services/devices.dart';
+import 'package:foxxy_package/services/services.dart';
+import 'package:foxxy_package/utils/audio/wav_bytes.dart';
+import 'package:foxxy_package/utils/memories/process.dart';
+import 'package:foxxy_package/utils/pure_socket.dart';
 import 'package:uuid/uuid.dart';
-import 'package:friend_private/utils/other/string_utils.dart';
+import 'package:foxxy_package/utils/other/string_utils.dart';
 
 class SpeechProfileProvider extends ChangeNotifier
     with MessageNotifierMixin
-    implements IDeviceServiceSubsciption, ITransctipSegmentSocketServiceListener {
+    implements
+        IDeviceServiceSubsciption,
+        ITransctipSegmentSocketServiceListener {
   DeviceProvider? deviceProvider;
   bool? permissionEnabled;
   bool loading = false;
@@ -89,7 +91,8 @@ class SpeechProfileProvider extends ChangeNotifier
     notifyListeners();
   }
 
-  Future<void> initialise(bool isFromOnboarding, {Function? finalizedCallback}) async {
+  Future<void> initialise(bool isFromOnboarding,
+      {Function? finalizedCallback}) async {
     _isFromOnboarding = isFromOnboarding;
     _finalizedCallback = finalizedCallback;
     setInitialising(true);
@@ -124,9 +127,8 @@ class SpeechProfileProvider extends ChangeNotifier
   }
 
   Future<void> _initiateWebsocket({bool force = false}) async {
-    _socket = await ServiceManager.instance()
-        .socket
-        .speechProfile(codec: BleAudioCodec.opus, sampleRate: 16000, force: force);
+    _socket = await ServiceManager.instance().socket.speechProfile(
+        codec: BleAudioCodec.opus, sampleRate: 16000, force: force);
     if (_socket == null) {
       throw Exception("Can not create new speech profile socket");
     }
@@ -172,7 +174,8 @@ class SpeechProfileProvider extends ChangeNotifier
 
       updateLoadingText('Memorizing your voice...');
       List<List<int>> raw = List.from(audioStorage.rawPackets);
-      var data = await audioStorage.createWavFile(filename: 'speaker_profile.wav');
+      var data =
+          await audioStorage.createWavFile(filename: 'speaker_profile.wav');
       try {
         await uploadProfile(data.item1);
         await uploadProfileBytes(raw, duration);
@@ -200,11 +203,13 @@ class SpeechProfileProvider extends ChangeNotifier
     String deviceId, {
     required void Function(List<int>) onAudioBytesReceived,
   }) async {
-    var connection = await ServiceManager.instance().device.ensureConnection(deviceId);
+    var connection =
+        await ServiceManager.instance().device.ensureConnection(deviceId);
     if (connection == null) {
       return Future.value(null);
     }
-    return connection.getBleAudioBytesListener(onAudioBytesReceived: onAudioBytesReceived);
+    return connection.getBleAudioBytesListener(
+        onAudioBytesReceived: onAudioBytesReceived);
   }
 
   Future<void> initiateFriendAudioStreaming() async {
@@ -230,12 +235,14 @@ class SpeechProfileProvider extends ChangeNotifier
         {},
         (previousValue, element) {
           previousValue[element.speakerId] =
-              (previousValue[element.speakerId] ?? 0) + wordsCount(element.text);
+              (previousValue[element.speakerId] ?? 0) +
+                  wordsCount(element.text);
           return previousValue;
         },
       );
       debugPrint('speakerToWords: $speakerToWords');
-      if (speakerToWords.values.every((element) => element / segments.length > 0.2)) {
+      if (speakerToWords.values
+          .every((element) => element / segments.length > 0.2)) {
         notifyError('MULTIPLE_SPEAKERS');
       }
     }
@@ -322,8 +329,11 @@ class SpeechProfileProvider extends ChangeNotifier
         discarded: true,
         transcriptSegments: segments,
         failed: true,
-        source: segments.isNotEmpty ? MemorySource.friend : MemorySource.openglass,
-        language: segments.isNotEmpty ? SharedPreferencesUtil().recordingsLanguage : null,
+        source:
+            segments.isNotEmpty ? MemorySource.friend : MemorySource.openglass,
+        language: segments.isNotEmpty
+            ? SharedPreferencesUtil().recordingsLanguage
+            : null,
       );
       SharedPreferencesUtil().addFailedMemory(memory!);
       // TODO: store anyways something temporal and retry once connected again.
@@ -347,10 +357,12 @@ class SpeechProfileProvider extends ChangeNotifier
   }
 
   @override
-  void onDeviceConnectionStateChanged(String deviceId, DeviceConnectionState state) async {
+  void onDeviceConnectionStateChanged(
+      String deviceId, DeviceConnectionState state) async {
     switch (state) {
       case DeviceConnectionState.connected:
-        var connection = await ServiceManager.instance().device.ensureConnection(deviceId);
+        var connection =
+            await ServiceManager.instance().device.ensureConnection(deviceId);
         if (connection == null) {
           return;
         }
@@ -393,7 +405,8 @@ class SpeechProfileProvider extends ChangeNotifier
   void onSegmentReceived(List<TranscriptSegment> newSegments) {
     if (newSegments.isEmpty) return;
     if (segments.isEmpty) {
-      audioStorage.removeFramesRange(fromSecond: 0, toSecond: newSegments[0].start.toInt());
+      audioStorage.removeFramesRange(
+          fromSecond: 0, toSecond: newSegments[0].start.toInt());
     }
     streamStartedAtSecond ??= newSegments[0].start;
 

@@ -4,22 +4,22 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:friend_private/backend/http/api/memories.dart';
-import 'package:friend_private/backend/preferences.dart';
-import 'package:friend_private/backend/schema/memory.dart';
-import 'package:friend_private/backend/schema/message.dart';
-import 'package:friend_private/backend/schema/plugin.dart';
-import 'package:friend_private/pages/chat/widgets/typing_indicator.dart';
-import 'package:friend_private/pages/memory_detail/memory_detail_provider.dart';
-import 'package:friend_private/pages/memory_detail/page.dart';
-import 'package:friend_private/providers/memory_provider.dart';
-import 'package:friend_private/utils/analytics/mixpanel.dart';
-import 'package:friend_private/providers/connectivity_provider.dart';
-import 'package:friend_private/utils/other/temp.dart';
-import 'package:friend_private/widgets/extensions/string.dart';
+import 'package:foxxy_package/backend/http/api/memories.dart';
+import 'package:foxxy_package/backend/preferences.dart';
+import 'package:foxxy_package/backend/schema/memory.dart';
+import 'package:foxxy_package/backend/schema/message.dart';
+import 'package:foxxy_package/backend/schema/plugin.dart';
+import 'package:foxxy_package/pages/chat/widgets/typing_indicator.dart';
+import 'package:foxxy_package/pages/memory_detail/memory_detail_provider.dart';
+import 'package:foxxy_package/pages/memory_detail/page.dart';
+import 'package:foxxy_package/providers/memory_provider.dart';
+import 'package:foxxy_package/utils/analytics/mixpanel.dart';
+import 'package:foxxy_package/providers/connectivity_provider.dart';
+import 'package:foxxy_package/utils/other/temp.dart';
+import 'package:foxxy_package/widgets/extensions/string.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:friend_private/generated/l10n.dart';
+import 'package:foxxy_package/generated/l10n.dart';
 
 class AIMessage extends StatefulWidget {
   final bool showTypingIndicator;
@@ -54,13 +54,14 @@ class _AIMessageState extends State<AIMessage> {
 
   @override
   Widget build(BuildContext context) {
-    var messageMemories =
-        widget.message.memories.length > 3 ? widget.message.memories.sublist(0, 3) : widget.message.memories;
+    var messageMemories = widget.message.memories.length > 3
+        ? widget.message.memories.sublist(0, 3)
+        : widget.message.memories;
     final message = widget.message.text;
     final messageText = message.isEmpty
-       ? '...'
-      // : message.text.replaceAll(r'\n', '\n').replaceAll('**', '').replaceAll('\\"', '\"'),
-       : message.decodeSting;
+        ? '...'
+        // : message.text.replaceAll(r'\n', '\n').replaceAll('**', '').replaceAll('\\"', '\"'),
+        : message.decodeSting;
     final createdAtDate = widget.message.createdAt;
 
     return Row(
@@ -75,7 +76,8 @@ class _AIMessageState extends State<AIMessage> {
                   radius: 16,
                   backgroundImage: imageProvider,
                 ),
-                placeholder: (context, url) => const CircularProgressIndicator(),
+                placeholder: (context, url) =>
+                    const CircularProgressIndicator(),
                 errorWidget: (context, url, error) => const Icon(Icons.error),
               )
             : Container(
@@ -125,7 +127,9 @@ class _AIMessageState extends State<AIMessage> {
                         decoration: TextDecoration.underline,
                       ),
                     ),
-              widget.message.type == MessageType.daySummary ? const SizedBox(height: 16) : const SizedBox(height: 10),
+              widget.message.type == MessageType.daySummary
+                  ? const SizedBox(height: 16)
+                  : const SizedBox(height: 10),
               SelectionArea(
                 child: widget.showTypingIndicator
                     ? const Row(
@@ -139,23 +143,32 @@ class _AIMessageState extends State<AIMessage> {
                     : AutoSizeText(
                         messageText,
                         // : utf8.decode(widget.message.text.codeUnits),
-                        style: TextStyle(fontSize: 15.0, fontWeight: FontWeight.w500, color: Colors.grey.shade300),
+                        style: TextStyle(
+                            fontSize: 15.0,
+                            fontWeight: FontWeight.w500,
+                            color: Colors.grey.shade300),
                       ),
               ),
-              if (widget.message.id != 1 || !widget.showTypingIndicator) _getCopyButton(context), // RESTORE ME
+              if (widget.message.id != 1 || !widget.showTypingIndicator)
+                _getCopyButton(context), // RESTORE ME
               if (widget.displayOptions) const SizedBox(height: 8),
               if (widget.displayOptions) ..._getInitialOptions(context),
               if (messageMemories.isNotEmpty) ...[
                 const SizedBox(height: 16),
                 for (var data in messageMemories.indexed) ...[
                   Padding(
-                    padding: const EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 0.0, 4.0),
+                    padding: const EdgeInsetsDirectional.fromSTEB(
+                        0.0, 0.0, 0.0, 4.0),
                     child: GestureDetector(
                       onTap: () async {
-                        final connectivityProvider = Provider.of<ConnectivityProvider>(context, listen: false);
+                        final connectivityProvider =
+                            Provider.of<ConnectivityProvider>(context,
+                                listen: false);
                         if (connectivityProvider.isConnected) {
-                          var memProvider = Provider.of<MemoryProvider>(context, listen: false);
-                          var idx = memProvider.memoriesWithDates.indexWhere((e) {
+                          var memProvider = Provider.of<MemoryProvider>(context,
+                              listen: false);
+                          var idx =
+                              memProvider.memoriesWithDates.indexWhere((e) {
                             if (e.runtimeType == ServerMemory) {
                               return e.id == data.$2.id;
                             }
@@ -163,7 +176,9 @@ class _AIMessageState extends State<AIMessage> {
                           });
 
                           if (idx != -1) {
-                            context.read<MemoryDetailProvider>().updateMemory(idx);
+                            context
+                                .read<MemoryDetailProvider>()
+                                .updateMemory(idx);
                             var m = memProvider.memoriesWithDates[idx];
                             MixpanelManager().chatMessageMemoryClicked(m);
                             await Navigator.of(context).push(
@@ -180,8 +195,11 @@ class _AIMessageState extends State<AIMessage> {
                             if (m == null) return;
                             idx = memProvider.addMemoryWithDate(m);
                             MixpanelManager().chatMessageMemoryClicked(m);
-                            setState(() => memoryDetailLoading[data.$1] = false);
-                            context.read<MemoryDetailProvider>().updateMemory(idx);
+                            setState(
+                                () => memoryDetailLoading[data.$1] = false);
+                            context
+                                .read<MemoryDetailProvider>()
+                                .updateMemory(idx);
                             await Navigator.of(context).push(
                               MaterialPageRoute(
                                 builder: (c) => MemoryDetailPage(
@@ -190,10 +208,17 @@ class _AIMessageState extends State<AIMessage> {
                               ),
                             );
                             //TODO: Not needed anymore I guess because memories are stored in provider and read from there only
-                            if (SharedPreferencesUtil().modifiedMemoryDetails?.id == m.id) {
-                              ServerMemory modifiedDetails = SharedPreferencesUtil().modifiedMemoryDetails!;
-                              widget.updateMemory(SharedPreferencesUtil().modifiedMemoryDetails!);
-                              var copy = List<MessageMemory>.from(widget.message.memories);
+                            if (SharedPreferencesUtil()
+                                    .modifiedMemoryDetails
+                                    ?.id ==
+                                m.id) {
+                              ServerMemory modifiedDetails =
+                                  SharedPreferencesUtil()
+                                      .modifiedMemoryDetails!;
+                              widget.updateMemory(SharedPreferencesUtil()
+                                  .modifiedMemoryDetails!);
+                              var copy = List<MessageMemory>.from(
+                                  widget.message.memories);
                               copy[data.$1] = MessageMemory(
                                   modifiedDetails.id,
                                   modifiedDetails.createdAt,
@@ -203,21 +228,24 @@ class _AIMessageState extends State<AIMessage> {
                                   ));
                               widget.message.memories.clear();
                               widget.message.memories.addAll(copy);
-                              SharedPreferencesUtil().modifiedMemoryDetails = null;
+                              SharedPreferencesUtil().modifiedMemoryDetails =
+                                  null;
                               setState(() {});
                             }
                           }
                         } else {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
-                              content: Text(S.current.PleaseCheckInternetConnectionNote),
+                              content: Text(
+                                  S.current.PleaseCheckInternetConnectionNote),
                               duration: const Duration(seconds: 2),
                             ),
                           );
                         }
                       },
                       child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 12.0, vertical: 8),
                         width: double.maxFinite,
                         decoration: BoxDecoration(
                           color: Colors.grey.shade900,
@@ -239,7 +267,8 @@ class _AIMessageState extends State<AIMessage> {
                                     height: 24,
                                     width: 24,
                                     child: CircularProgressIndicator(
-                                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                                      valueColor: AlwaysStoppedAnimation<Color>(
+                                          Colors.white),
                                     ))
                                 : const Icon(Icons.arrow_right_alt)
                           ],

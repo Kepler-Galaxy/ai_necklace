@@ -2,24 +2,25 @@ import 'dart:convert';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:friend_private/backend/auth.dart';
-import 'package:friend_private/backend/preferences.dart';
-import 'package:friend_private/env/env.dart';
-import 'package:friend_private/utils/logger.dart';
-import 'package:friend_private/main.dart';
+import 'package:foxxy_package/backend/auth.dart';
+import 'package:foxxy_package/backend/preferences.dart';
+import 'package:foxxy_package/env/env.dart';
+import 'package:foxxy_package/utils/logger.dart';
+import 'package:foxxy_package/main.dart';
 import 'package:http/http.dart' as http;
 import 'package:instabug_flutter/instabug_flutter.dart';
-import 'package:friend_private/utils/alerts/app_snackbar.dart';
+import 'package:foxxy_package/utils/alerts/app_snackbar.dart';
 import 'package:instabug_http_client/instabug_http_client.dart';
 import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
 
-
 Future<String> getAuthHeader() async {
-  DateTime? expiry = DateTime.fromMillisecondsSinceEpoch(SharedPreferencesUtil().tokenExpirationTime);
+  DateTime? expiry = DateTime.fromMillisecondsSinceEpoch(
+      SharedPreferencesUtil().tokenExpirationTime);
   if (SharedPreferencesUtil().authToken == '' ||
       expiry.isBefore(DateTime.now()) ||
       expiry.isAtSameMomentAs(DateTime.fromMillisecondsSinceEpoch(0)) ||
-      (expiry.isBefore(DateTime.now().add(const Duration(minutes: 5))) && expiry.isAfter(DateTime.now()))) {
+      (expiry.isBefore(DateTime.now().add(const Duration(minutes: 5))) &&
+          expiry.isAfter(DateTime.now()))) {
     SharedPreferencesUtil().authToken = await getIdToken() ?? '';
   }
   return 'Bearer ${SharedPreferencesUtil().authToken}';
@@ -52,27 +53,32 @@ Future<http.Response?> makeApiCall({
     debugPrint('Url $url');
     final client = InstabugHttpClient();
 
-    http.Response? response = await _performRequest(client, url, headers, body, method);
+    http.Response? response =
+        await _performRequest(client, url, headers, body, method);
     if (response.statusCode == 401) {
       Logger.log('Token expired on 1st attempt');
       // Refresh the token
       SharedPreferencesUtil().authToken = await getIdToken() ?? '';
       if (SharedPreferencesUtil().authToken.isNotEmpty) {
         // Update the header with the new token
-        headers['Authorization'] = 'Bearer ${SharedPreferencesUtil().authToken}';
+        headers['Authorization'] =
+            'Bearer ${SharedPreferencesUtil().authToken}';
         // Retry the request with the new token
         response = await _performRequest(client, url, headers, body, method);
         Logger.log('Token refreshed and request retried');
         if (response.statusCode == 401) {
           // Force user to sign in again
           await signOut();
-          Logger.handle(Exception('Authentication failed. Please sign in again.'), StackTrace.current,
+          Logger.handle(
+              Exception('Authentication failed. Please sign in again.'),
+              StackTrace.current,
               message: 'Authentication failed. Please sign in again.');
         }
       } else {
         // Force user to sign in again
         await signOut();
-        Logger.handle(Exception('Authentication failed. Please sign in again.'), StackTrace.current,
+        Logger.handle(Exception('Authentication failed. Please sign in again.'),
+            StackTrace.current,
             message: 'Authentication failed. Please sign in again.');
       }
     }
@@ -135,7 +141,8 @@ dynamic extractContentFromResponse(
     return data['choices'][0]['message']['content'];
   } else {
     debugPrint('Error fetching data: ${response?.statusCode}');
-    AppSnackbar.showSnackbarError('Error fetching data: ${response?.statusCode}');
+    AppSnackbar.showSnackbarError(
+        'Error fetching data: ${response?.statusCode}');
     // TODO: handle error, better specially for script migration
     CrashReporting.reportHandledCrash(
       Exception('Error fetching data: ${response?.statusCode}'),

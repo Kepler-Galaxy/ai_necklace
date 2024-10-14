@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:friend_private/backend/schema/plugin.dart';
-import 'package:friend_private/pages/plugins/list_item.dart';
-import 'package:friend_private/providers/connectivity_provider.dart';
-import 'package:friend_private/providers/plugin_provider.dart';
+import 'package:foxxy_package/backend/schema/plugin.dart';
+import 'package:foxxy_package/pages/plugins/list_item.dart';
+import 'package:foxxy_package/providers/connectivity_provider.dart';
+import 'package:foxxy_package/providers/plugin_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:friend_private/generated/l10n.dart';
+import 'package:foxxy_package/generated/l10n.dart';
 
 class PluginsPage extends StatefulWidget {
   final bool filterChatOnly;
@@ -28,9 +28,12 @@ class _PluginsPageState extends State<PluginsPage> {
   @override
   Widget build(BuildContext context) {
     return Consumer<PluginProvider>(builder: (context, provider, child) {
-      List<Plugin> memoryPromptPlugins = provider.plugins.where((p) => p.worksWithMemories()).toList();
-      List<Plugin> memoryIntegrationPlugins = provider.plugins.where((p) => p.worksExternally()).toList();
-      List<Plugin> chatPromptPlugins = provider.plugins.where((p) => p.worksWithChat()).toList();
+      List<Plugin> memoryPromptPlugins =
+          provider.plugins.where((p) => p.worksWithMemories()).toList();
+      List<Plugin> memoryIntegrationPlugins =
+          provider.plugins.where((p) => p.worksExternally()).toList();
+      List<Plugin> chatPromptPlugins =
+          provider.plugins.where((p) => p.worksWithChat()).toList();
 
       return Scaffold(
         backgroundColor: Theme.of(context).colorScheme.primary,
@@ -53,16 +56,23 @@ class _PluginsPageState extends State<PluginsPage> {
                     isScrollable: false,
                     padding: EdgeInsets.zero,
                     indicatorPadding: EdgeInsets.zero,
-                    labelStyle: Theme.of(context).textTheme.titleLarge!.copyWith(fontSize: 18),
+                    labelStyle: Theme.of(context)
+                        .textTheme
+                        .titleLarge!
+                        .copyWith(fontSize: 18),
                     indicatorColor: Colors.transparent,
-                    tabs: [Tab(text: S.current.Memories), Tab(text: S.current.Chat)],
+                    tabs: [
+                      Tab(text: S.current.Memories),
+                      Tab(text: S.current.Chat)
+                    ],
                   ),
                   Expanded(
                     child: TabBarView(children: [
                       CustomScrollView(
                         slivers: [
                           _emptyPluginsWidget(provider),
-                          _getSectionTitle(context, provider, S.current.ExternalApps, '🚀'),
+                          _getSectionTitle(
+                              context, provider, S.current.ExternalApps, '🚀'),
                           SliverList(
                             delegate: SliverChildBuilderDelegate(
                               (context, index) {
@@ -76,9 +86,14 @@ class _PluginsPageState extends State<PluginsPage> {
                             ),
                           ),
                           provider.plugins.isNotEmpty
-                              ? SliverToBoxAdapter(child: Divider(color: Colors.grey.shade800, thickness: 1))
-                              : const SliverToBoxAdapter(child: SizedBox.shrink()),
-                          _getSectionTitle(context, provider, S.current.Prompts, '📝'),
+                              ? SliverToBoxAdapter(
+                                  child: Divider(
+                                      color: Colors.grey.shade800,
+                                      thickness: 1))
+                              : const SliverToBoxAdapter(
+                                  child: SizedBox.shrink()),
+                          _getSectionTitle(
+                              context, provider, S.current.Prompts, '📝'),
                           SliverList(
                             delegate: SliverChildBuilderDelegate(
                               (context, index) {
@@ -96,7 +111,8 @@ class _PluginsPageState extends State<PluginsPage> {
                       CustomScrollView(
                         slivers: [
                           _emptyPluginsWidget(provider),
-                          _getSectionTitle(context, provider, S.current.Personalities, '🤖'),
+                          _getSectionTitle(
+                              context, provider, S.current.Personalities, '🤖'),
                           SliverList(
                             delegate: SliverChildBuilderDelegate(
                               (context, index) {
@@ -120,7 +136,8 @@ class _PluginsPageState extends State<PluginsPage> {
     });
   }
 
-  _getSectionTitle(BuildContext context, PluginProvider provider, String title, String emoji) {
+  _getSectionTitle(BuildContext context, PluginProvider provider, String title,
+      String emoji) {
     return provider.plugins.isNotEmpty
         ? SliverToBoxAdapter(
             child: Padding(
@@ -144,7 +161,9 @@ class _PluginsPageState extends State<PluginsPage> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text(title, style: const TextStyle(color: Colors.white, fontSize: 18)),
+                      Text(title,
+                          style: const TextStyle(
+                              color: Colors.white, fontSize: 18)),
                       const SizedBox(width: 12),
                       Text(emoji, style: const TextStyle(fontSize: 18)),
                     ],

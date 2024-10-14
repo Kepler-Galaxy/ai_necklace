@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:friend_private/backend/preferences.dart';
-import 'package:friend_private/backend/schema/bt_device.dart';
-import 'package:friend_private/providers/device_provider.dart';
-import 'package:friend_private/services/services.dart';
-import 'package:friend_private/utils/analytics/mixpanel.dart';
-import 'package:friend_private/widgets/device_widget.dart';
+import 'package:foxxy_package/backend/preferences.dart';
+import 'package:foxxy_package/backend/schema/bt_device.dart';
+import 'package:foxxy_package/providers/device_provider.dart';
+import 'package:foxxy_package/services/services.dart';
+import 'package:foxxy_package/utils/analytics/mixpanel.dart';
+import 'package:foxxy_package/widgets/device_widget.dart';
 import 'package:gradient_borders/box_borders/gradient_box_border.dart';
 import 'package:intercom_flutter/intercom_flutter.dart';
 import 'package:provider/provider.dart';
@@ -14,7 +14,8 @@ class ConnectedDevice extends StatefulWidget {
   final BTDeviceStruct? device;
   final int batteryLevel;
 
-  const ConnectedDevice({super.key, required this.device, required this.batteryLevel});
+  const ConnectedDevice(
+      {super.key, required this.device, required this.batteryLevel});
 
   @override
   State<ConnectedDevice> createState() => _ConnectedDeviceState();
@@ -23,7 +24,8 @@ class ConnectedDevice extends StatefulWidget {
 class _ConnectedDeviceState extends State<ConnectedDevice> {
   // TODO: thinh, use connection directly
   Future _bleDisconnectDevice(BTDeviceStruct btDevice) async {
-    var connection = await ServiceManager.instance().device.ensureConnection(btDevice.id);
+    var connection =
+        await ServiceManager.instance().device.ensureConnection(btDevice.id);
     if (connection == null) {
       return Future.value(null);
     }
@@ -128,7 +130,8 @@ class _ConnectedDeviceState extends State<ConnectedDevice> {
               ),
               const SizedBox(height: 32),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 0),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 0),
                 decoration: BoxDecoration(
                   border: const GradientBoxBorder(
                     gradient: LinearGradient(colors: [
@@ -143,14 +146,17 @@ class _ConnectedDeviceState extends State<ConnectedDevice> {
                 ),
                 child: TextButton(
                   onPressed: () async {
-                    await SharedPreferencesUtil().btDeviceStructSet(BTDeviceStruct(id: '', name: ''));
+                    await SharedPreferencesUtil()
+                        .btDeviceStructSet(BTDeviceStruct(id: '', name: ''));
                     SharedPreferencesUtil().deviceName = '';
                     if (widget.device != null) {
                       await _bleDisconnectDevice(widget.device!);
                     }
                     context.read<DeviceProvider>().setIsConnected(false);
                     context.read<DeviceProvider>().setConnectedDevice(null);
-                    context.read<DeviceProvider>().updateConnectingStatus(false);
+                    context
+                        .read<DeviceProvider>()
+                        .updateConnectingStatus(false);
                     Navigator.of(context).pop();
                     MixpanelManager().disconnectFriendClicked();
                   },

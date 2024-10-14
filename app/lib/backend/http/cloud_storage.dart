@@ -2,8 +2,8 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:friend_private/backend/preferences.dart';
-import 'package:friend_private/utils/logger.dart';
+import 'package:foxxy_package/backend/preferences.dart';
+import 'package:foxxy_package/utils/logger.dart';
 import 'package:googleapis_auth/auth_io.dart';
 import 'package:http/http.dart' as http;
 
@@ -18,13 +18,15 @@ Future<void> authenticateGCP({String? base64}) async {
     }
     final credentialsBytes = base64Decode(credentialsBase64);
     String decodedString = utf8.decode(credentialsBytes);
-    final credentials = ServiceAccountCredentials.fromJson(jsonDecode(decodedString));
+    final credentials =
+        ServiceAccountCredentials.fromJson(jsonDecode(decodedString));
     var scopes = ['https://www.googleapis.com/auth/devstorage.full_control'];
     authClient = await clientViaServiceAccount(credentials, scopes);
     debugPrint('Authenticated');
   } catch (e, s) {
     Logger.handle(e, s,
-        message: 'Error authenticating with GCP credentials provided. Please check the credentials and try again.');
+        message:
+            'Error authenticating with GCP credentials provided. Please check the credentials and try again.');
   }
 }
 
@@ -38,7 +40,8 @@ Future<String?> uploadFile(File file, {bool prefixTimestamp = false}) async {
   if (prefixTimestamp) {
     fileName = '${DateTime.now().millisecondsSinceEpoch}_$fileName';
   }
-  String url = 'https://storage.googleapis.com/upload/storage/v1/b/$bucketName/o?uploadType=media&name=$fileName';
+  String url =
+      'https://storage.googleapis.com/upload/storage/v1/b/$bucketName/o?uploadType=media&name=$fileName';
 
   try {
     var response = await http.post(
