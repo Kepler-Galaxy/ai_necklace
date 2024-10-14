@@ -178,8 +178,7 @@ class _OnboardingWrapperState extends State<OnboardingWrapper>
                         ? const SizedBox()
                         : Center(
                             child: Text(
-                              //S.current.AppName,
-                              'Shorebird works',
+                              S.current.AppName,
                               style: TextStyle(
                                   color: Colors.grey.shade200,
                                   fontSize: _controller!.index ==
