@@ -2,17 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_foreground_task/flutter_foreground_task.dart';
 import 'package:flutter_provider_utilities/flutter_provider_utilities.dart';
-import 'package:friend_private/backend/schema/bt_device.dart';
-import 'package:friend_private/backend/schema/geolocation.dart';
-import 'package:friend_private/pages/capture/widgets/widgets.dart';
-import 'package:friend_private/providers/capture_provider.dart';
-import 'package:friend_private/providers/connectivity_provider.dart';
-import 'package:friend_private/providers/device_provider.dart';
-import 'package:friend_private/providers/onboarding_provider.dart';
-import 'package:friend_private/providers/websocket_provider.dart';
-import 'package:friend_private/services/services.dart';
-import 'package:friend_private/utils/audio/wav_bytes.dart';
-import 'package:friend_private/widgets/dialog.dart';
+import 'package:foxxy_package/backend/schema/bt_device.dart';
+import 'package:foxxy_package/backend/schema/geolocation.dart';
+import 'package:foxxy_package/pages/capture/widgets/widgets.dart';
+import 'package:foxxy_package/providers/capture_provider.dart';
+import 'package:foxxy_package/providers/connectivity_provider.dart';
+import 'package:foxxy_package/providers/device_provider.dart';
+import 'package:foxxy_package/providers/onboarding_provider.dart';
+import 'package:foxxy_package/providers/websocket_provider.dart';
+import 'package:foxxy_package/services/services.dart';
+import 'package:foxxy_package/utils/audio/wav_bytes.dart';
+import 'package:foxxy_package/widgets/dialog.dart';
 import 'package:provider/provider.dart';
 
 class LiteCaptureWidget extends StatefulWidget {
@@ -62,7 +62,8 @@ class LiteCaptureWidgetState extends State<LiteCaptureWidget>
         context.read<OnboardingProvider>().stopFindDeviceTimer();
       }
       if (mounted) {
-        final connectivityProvider = Provider.of<ConnectivityProvider>(context, listen: false);
+        final connectivityProvider =
+            Provider.of<ConnectivityProvider>(context, listen: false);
         if (!connectivityProvider.isConnected) {
           context.read<CaptureProvider>().cancelMemoryCreationTimer();
         }
@@ -80,7 +81,8 @@ class LiteCaptureWidgetState extends State<LiteCaptureWidget>
 
   // TODO: use connection directly
   Future<BleAudioCodec> _getAudioCodec(String deviceId) async {
-    var connection = await ServiceManager.instance().device.ensureConnection(deviceId);
+    var connection =
+        await ServiceManager.instance().device.ensureConnection(deviceId);
     if (connection == null) {
       return BleAudioCodec.pcm8;
     }
@@ -126,7 +128,8 @@ class LiteCaptureWidgetState extends State<LiteCaptureWidget>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    return Consumer2<CaptureProvider, DeviceProvider>(builder: (context, provider, deviceProvider, child) {
+    return Consumer2<CaptureProvider, DeviceProvider>(
+        builder: (context, provider, deviceProvider, child) {
       return MessageListener<CaptureProvider>(
         showInfo: (info) {
           // This probably will never be called because this has been handled even before we start the audio stream. But it's here just in case.
@@ -139,7 +142,9 @@ class LiteCaptureWidgetState extends State<LiteCaptureWidget>
                 () async {
                   var connectedDevice = deviceProvider.connectedDevice;
                   var codec = await _getAudioCodec(connectedDevice!.id);
-                  await context.read<CaptureProvider>().changeAudioRecordProfile(codec);
+                  await context
+                      .read<CaptureProvider>()
+                      .changeAudioRecordProfile(codec);
                   if (Navigator.canPop(context)) {
                     Navigator.pop(context);
                   }

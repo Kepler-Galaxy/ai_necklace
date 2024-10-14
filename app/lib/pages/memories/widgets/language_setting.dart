@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:friend_private/backend/preferences.dart';
-import 'package:friend_private/utils/analytics/mixpanel.dart';
-import 'package:friend_private/widgets/dialog.dart';
-import 'package:friend_private/generated/l10n.dart';
-
+import 'package:foxxy_package/backend/preferences.dart';
+import 'package:foxxy_package/utils/analytics/mixpanel.dart';
+import 'package:foxxy_package/widgets/dialog.dart';
+import 'package:foxxy_package/generated/l10n.dart';
 
 final Map<String, String> availableLanguages = {
   'Chinese': 'zh',
@@ -11,10 +10,13 @@ final Map<String, String> availableLanguages = {
 };
 
 getLanguageName(String code) {
-  return availableLanguages.entries.firstWhere((element) => element.value == code).key;
+  return availableLanguages.entries
+      .firstWhere((element) => element.value == code)
+      .key;
 }
 
-getRecordingSettings(Function(String?) onLanguageChanged, String selectedLanguage) {
+getRecordingSettings(
+    Function(String?) onLanguageChanged, String selectedLanguage) {
   return Row(
     mainAxisAlignment: MainAxisAlignment.spaceBetween,
     children: [
@@ -36,7 +38,8 @@ getRecordingSettings(Function(String?) onLanguageChanged, String selectedLanguag
           style: TextStyle(color: Colors.white, fontSize: 14),
           underline: SizedBox(),
           icon: Icon(Icons.arrow_drop_down, color: Colors.white),
-          items: availableLanguages.keys.map<DropdownMenuItem<String>>((String key) {
+          items: availableLanguages.keys
+              .map<DropdownMenuItem<String>>((String key) {
             return DropdownMenuItem<String>(
               value: availableLanguages[key],
               child: Text(

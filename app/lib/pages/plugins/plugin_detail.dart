@@ -1,17 +1,17 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
-import 'package:friend_private/backend/http/api/plugins.dart';
-import 'package:friend_private/backend/preferences.dart';
-import 'package:friend_private/pages/plugins/instructions.dart';
-import 'package:friend_private/providers/connectivity_provider.dart';
-import 'package:friend_private/utils/analytics/mixpanel.dart';
-import 'package:friend_private/utils/other/temp.dart';
-import 'package:friend_private/widgets/dialog.dart';
-import 'package:friend_private/widgets/extensions/string.dart';
+import 'package:foxxy_package/backend/http/api/plugins.dart';
+import 'package:foxxy_package/backend/preferences.dart';
+import 'package:foxxy_package/pages/plugins/instructions.dart';
+import 'package:foxxy_package/providers/connectivity_provider.dart';
+import 'package:foxxy_package/utils/analytics/mixpanel.dart';
+import 'package:foxxy_package/utils/other/temp.dart';
+import 'package:foxxy_package/widgets/dialog.dart';
+import 'package:foxxy_package/widgets/extensions/string.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:friend_private/generated/l10n.dart';
+import 'package:foxxy_package/generated/l10n.dart';
 
 import '../../backend/schema/plugin.dart';
 
@@ -31,7 +31,8 @@ class _PluginDetailPageState extends State<PluginDetailPage> {
 
   checkSetupCompleted() {
     // TODO: move check to backend
-    isPluginSetupCompleted(widget.plugin.externalIntegration!.setupCompletedUrl).then((value) {
+    isPluginSetupCompleted(widget.plugin.externalIntegration!.setupCompletedUrl)
+        .then((value) {
       if (mounted) {
         setState(() => setupCompleted = value);
       }
@@ -41,7 +42,9 @@ class _PluginDetailPageState extends State<PluginDetailPage> {
   @override
   void initState() {
     if (widget.plugin.worksExternally()) {
-      getPluginMarkdown(widget.plugin.externalIntegration!.setupInstructionsFilePath).then((value) {
+      getPluginMarkdown(
+              widget.plugin.externalIntegration!.setupInstructionsFilePath)
+          .then((value) {
         value = value.replaceAll(
           '](assets/',
           '](https://raw.githubusercontent.com/BasedHardware/Omi/main/plugins/instructions/${widget.plugin.id}/assets/',
@@ -79,10 +82,12 @@ class _PluginDetailPageState extends State<PluginDetailPage> {
                   decoration: BoxDecoration(
                     shape: BoxShape.rectangle,
                     borderRadius: BorderRadius.circular(8),
-                    image: DecorationImage(image: imageProvider, fit: BoxFit.cover),
+                    image: DecorationImage(
+                        image: imageProvider, fit: BoxFit.cover),
                   ),
                 ),
-                placeholder: (context, url) => const CircularProgressIndicator(),
+                placeholder: (context, url) =>
+                    const CircularProgressIndicator(),
                 errorWidget: (context, url, error) => const Icon(Icons.error),
               ),
               title: Column(
@@ -109,8 +114,11 @@ class _PluginDetailPageState extends State<PluginDetailPage> {
                               itemCount: 5,
                               itemSize: 16,
                               tapOnlyMode: false,
-                              itemPadding: const EdgeInsets.symmetric(horizontal: 0),
-                              itemBuilder: (context, _) => const Icon(Icons.star, color: Colors.deepPurple),
+                              itemPadding:
+                                  const EdgeInsets.symmetric(horizontal: 0),
+                              itemBuilder: (context, _) => const Icon(
+                                  Icons.star,
+                                  color: Colors.deepPurple),
                               maxRating: 5.0,
                               onRatingUpdate: (rating) {},
                             ),
@@ -131,18 +139,26 @@ class _PluginDetailPageState extends State<PluginDetailPage> {
                     )
                   : IconButton(
                       icon: Icon(
-                        widget.plugin.enabled ? Icons.check : Icons.arrow_downward_rounded,
-                        color: widget.plugin.enabled ? Colors.white : Colors.grey,
+                        widget.plugin.enabled
+                            ? Icons.check
+                            : Icons.arrow_downward_rounded,
+                        color:
+                            widget.plugin.enabled ? Colors.white : Colors.grey,
                       ),
                       onPressed: () {
-                        final connectivityProvider = Provider.of<ConnectivityProvider>(context, listen: false);
+                        final connectivityProvider =
+                            Provider.of<ConnectivityProvider>(context,
+                                listen: false);
                         if (!connectivityProvider.isConnected) {
-                          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                            content: Text("Can't enable plugin without internet connection."),
+                          ScaffoldMessenger.of(context)
+                              .showSnackBar(const SnackBar(
+                            content: Text(
+                                "Can't enable plugin without internet connection."),
                           ));
                           return;
                         }
-                        if (widget.plugin.worksExternally() && !widget.plugin.enabled) {
+                        if (widget.plugin.worksExternally() &&
+                            !widget.plugin.enabled) {
                           showDialog(
                             context: context,
                             builder: (c) => getDialog(
@@ -150,7 +166,8 @@ class _PluginDetailPageState extends State<PluginDetailPage> {
                               () => Navigator.pop(context),
                               () {
                                 Navigator.pop(context);
-                                _togglePlugin(widget.plugin.id.toString(), !widget.plugin.enabled);
+                                _togglePlugin(widget.plugin.id.toString(),
+                                    !widget.plugin.enabled);
                               },
                               'Authorize External Plugin',
                               'Do you allow this plugin to access your memories, transcripts, and recordings? Your data will be sent to the plugin\'s server for processing.',
@@ -158,7 +175,8 @@ class _PluginDetailPageState extends State<PluginDetailPage> {
                             ),
                           );
                         } else {
-                          _togglePlugin(widget.plugin.id.toString(), !widget.plugin.enabled);
+                          _togglePlugin(widget.plugin.id.toString(),
+                              !widget.plugin.enabled);
                         }
                       },
                     ),
@@ -169,7 +187,8 @@ class _PluginDetailPageState extends State<PluginDetailPage> {
                     padding: EdgeInsets.all(16),
                     child: Text(
                       'Memories Prompt',
-                      style: TextStyle(fontWeight: FontWeight.w600, fontSize: 18),
+                      style:
+                          TextStyle(fontWeight: FontWeight.w600, fontSize: 18),
                     ),
                   )
                 : const SizedBox.shrink(),
@@ -178,7 +197,8 @@ class _PluginDetailPageState extends State<PluginDetailPage> {
                     padding: const EdgeInsets.symmetric(horizontal: 16),
                     child: Text(
                       (widget.plugin.memoryPrompt ?? '').decodeSting,
-                      style: const TextStyle(color: Colors.grey, fontSize: 15, height: 1.4),
+                      style: const TextStyle(
+                          color: Colors.grey, fontSize: 15, height: 1.4),
                     ),
                   )
                 : const SizedBox.shrink(),
@@ -188,7 +208,8 @@ class _PluginDetailPageState extends State<PluginDetailPage> {
                     padding: EdgeInsets.all(16),
                     child: Text(
                       'Chat Personality',
-                      style: TextStyle(fontWeight: FontWeight.w600, fontSize: 18),
+                      style:
+                          TextStyle(fontWeight: FontWeight.w600, fontSize: 18),
                     ),
                   )
                 : const SizedBox.shrink(),
@@ -197,36 +218,47 @@ class _PluginDetailPageState extends State<PluginDetailPage> {
                     padding: const EdgeInsets.symmetric(horizontal: 16),
                     child: Text(
                       widget.plugin.chatPrompt ?? '',
-                      style: const TextStyle(color: Colors.grey, fontSize: 15, height: 1.4),
+                      style: const TextStyle(
+                          color: Colors.grey, fontSize: 15, height: 1.4),
                     ),
                   )
                 : const SizedBox.shrink(),
-            isIntegration ? const SizedBox(height: 16) : const SizedBox.shrink(),
-            isIntegration && widget.plugin.externalIntegration?.setupInstructionsFilePath.isNotEmpty == true
+            isIntegration
+                ? const SizedBox(height: 16)
+                : const SizedBox.shrink(),
+            isIntegration &&
+                    widget.plugin.externalIntegration?.setupInstructionsFilePath
+                            .isNotEmpty ==
+                        true
                 ? ListTile(
                     onTap: () async {
                       await routeToPage(
                         context,
-                        PluginSetupInstructions(markdown: instructionsMarkdown ?? ''),
+                        PluginSetupInstructions(
+                            markdown: instructionsMarkdown ?? ''),
                       );
                       checkSetupCompleted();
                     },
                     trailing: const Padding(
                       padding: EdgeInsets.only(right: 12.0),
-                      child: Icon(Icons.arrow_forward_ios, size: 20, color: Colors.grey),
+                      child: Icon(Icons.arrow_forward_ios,
+                          size: 20, color: Colors.grey),
                     ),
                     title: const Text(
                       'Integration Instructions',
-                      style: TextStyle(fontWeight: FontWeight.w600, fontSize: 18),
+                      style:
+                          TextStyle(fontWeight: FontWeight.w600, fontSize: 18),
                     ),
                   )
                 : const SizedBox.shrink(),
-            isIntegration && widget.plugin.externalIntegration?.setupCompletedUrl != null
+            isIntegration &&
+                    widget.plugin.externalIntegration?.setupCompletedUrl != null
                 ? CheckboxListTile(
                     title: const Text('Setup Completed ?'),
                     contentPadding: const EdgeInsets.only(left: 16, right: 18),
                     value: setupCompleted,
-                    checkboxShape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                    checkboxShape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16)),
                     onChanged: (s) {},
                     enabled: false,
                   )
@@ -240,8 +272,11 @@ class _PluginDetailPageState extends State<PluginDetailPage> {
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16),
                   child: Text(
-                    widget.plugin.userReview?.score == null ? 'Rate it:' : 'Your rating:',
-                    style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 18),
+                    widget.plugin.userReview?.score == null
+                        ? 'Rate it:'
+                        : 'Your rating:',
+                    style: const TextStyle(
+                        fontWeight: FontWeight.w600, fontSize: 18),
                   ),
                 ),
                 Padding(
@@ -254,10 +289,13 @@ class _PluginDetailPageState extends State<PluginDetailPage> {
                     itemCount: 5,
                     itemSize: 24,
                     itemPadding: const EdgeInsets.symmetric(horizontal: 2),
-                    itemBuilder: (context, _) => const Icon(Icons.star, color: Colors.deepPurple),
+                    itemBuilder: (context, _) =>
+                        const Icon(Icons.star, color: Colors.deepPurple),
                     maxRating: 5.0,
                     onRatingUpdate: (rating) {
-                      final connectivityProvider = Provider.of<ConnectivityProvider>(context, listen: false);
+                      final connectivityProvider =
+                          Provider.of<ConnectivityProvider>(context,
+                              listen: false);
                       if (connectivityProvider.isConnected) {
                         reviewPlugin(widget.plugin.id, rating);
                         bool hadReview = widget.plugin.userReview != null;
@@ -269,16 +307,20 @@ class _PluginDetailPageState extends State<PluginDetailPage> {
                           score: rating,
                         );
                         var pluginsList = SharedPreferencesUtil().pluginsList;
-                        var index = pluginsList.indexWhere((element) => element.id == widget.plugin.id);
+                        var index = pluginsList.indexWhere(
+                            (element) => element.id == widget.plugin.id);
                         pluginsList[index] = widget.plugin;
                         SharedPreferencesUtil().pluginsList = pluginsList;
-                        MixpanelManager().pluginRated(widget.plugin.id.toString(), rating);
+                        MixpanelManager()
+                            .pluginRated(widget.plugin.id.toString(), rating);
                         debugPrint('Refreshed plugins list.');
                         // TODO: refresh ratings on plugin
                         setState(() {});
                       } else {
-                        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                          content: Text("Can't rate plugin without internet connection."),
+                        ScaffoldMessenger.of(context)
+                            .showSnackBar(const SnackBar(
+                          content: Text(
+                              "Can't rate plugin without internet connection."),
                         ));
                       }
                     },
@@ -295,7 +337,10 @@ class _PluginDetailPageState extends State<PluginDetailPage> {
                 const TextSpan(text: 'By: ', style: TextStyle(fontSize: 16)),
                 TextSpan(
                   text: '${widget.plugin.author}.',
-                  style: const TextStyle(fontSize: 16, fontStyle: FontStyle.italic, color: Colors.grey),
+                  style: const TextStyle(
+                      fontSize: 16,
+                      fontStyle: FontStyle.italic,
+                      color: Colors.grey),
                 ),
               ])),
             ),
@@ -309,42 +354,58 @@ class _PluginDetailPageState extends State<PluginDetailPage> {
                   const SizedBox(width: 2),
                   isMemoryPrompt
                       ? Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 8, vertical: 2),
                           decoration: BoxDecoration(
                             color: Colors.grey,
                             borderRadius: BorderRadius.circular(6),
                           ),
                           child: const Text(
                             'Memories',
-                            style: TextStyle(color: Colors.deepPurple, fontSize: 14, fontWeight: FontWeight.w500),
+                            style: TextStyle(
+                                color: Colors.deepPurple,
+                                fontSize: 14,
+                                fontWeight: FontWeight.w500),
                           ),
                         )
                       : const SizedBox.shrink(),
                   SizedBox(width: isMemoryPrompt && isChatPrompt ? 8 : 0),
                   isChatPrompt
                       ? Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 8, vertical: 2),
                           decoration: BoxDecoration(
                             color: Colors.grey,
                             borderRadius: BorderRadius.circular(6),
                           ),
                           child: Text(
                             S.current.Chat,
-                            style: TextStyle(color: Colors.deepPurple, fontSize: 14, fontWeight: FontWeight.w500),
+                            style: TextStyle(
+                                color: Colors.deepPurple,
+                                fontSize: 14,
+                                fontWeight: FontWeight.w500),
                           ),
                         )
                       : const SizedBox.shrink(),
                   SizedBox(width: isChatPrompt ? 8 : 0),
-                  ([isMemoryPrompt, isChatPrompt, isIntegration].where((value) => value).length > 1) && isIntegration
+                  ([isMemoryPrompt, isChatPrompt, isIntegration]
+                                  .where((value) => value)
+                                  .length >
+                              1) &&
+                          isIntegration
                       ? Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 8, vertical: 2),
                           decoration: BoxDecoration(
                             color: Colors.grey,
                             borderRadius: BorderRadius.circular(6),
                           ),
                           child: const Text(
                             'Integration',
-                            style: TextStyle(color: Colors.deepPurple, fontSize: 14, fontWeight: FontWeight.w500),
+                            style: TextStyle(
+                                color: Colors.deepPurple,
+                                fontSize: 14,
+                                fontWeight: FontWeight.w500),
                           ),
                         )
                       : const SizedBox.shrink(),

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:friend_private/providers/memory_provider.dart';
+import 'package:foxxy_package/providers/memory_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:friend_private/generated/l10n.dart';
+import 'package:foxxy_package/generated/l10n.dart';
 
 class WebLinkArticleInputWidget extends StatefulWidget {
   @override

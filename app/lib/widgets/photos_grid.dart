@@ -1,8 +1,8 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:friend_private/pages/memory_detail/memory_detail_provider.dart';
-import 'package:friend_private/widgets/dialog.dart';
+import 'package:foxxy_package/pages/memory_detail/memory_detail_provider.dart';
+import 'package:foxxy_package/widgets/dialog.dart';
 import 'package:provider/provider.dart';
 import 'package:tuple/tuple.dart';
 
@@ -37,8 +37,11 @@ class PhotosGridComponent extends StatelessWidget {
                       });
                 },
                 child: Container(
-                  decoration: BoxDecoration(border: Border.all(color: Colors.grey.shade600, width: 0.5)),
-                  child: Image.memory(base64Decode(photos[idx].item1), fit: BoxFit.cover),
+                  decoration: BoxDecoration(
+                      border:
+                          Border.all(color: Colors.grey.shade600, width: 0.5)),
+                  child: Image.memory(base64Decode(photos[idx].item1),
+                      fit: BoxFit.cover),
                 ),
               );
             },

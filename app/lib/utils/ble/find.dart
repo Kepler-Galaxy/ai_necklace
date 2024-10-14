@@ -2,8 +2,8 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
-import 'package:friend_private/backend/schema/bt_device.dart';
-import 'package:friend_private/utils/ble/gatt_utils.dart';
+import 'package:foxxy_package/backend/schema/bt_device.dart';
+import 'package:foxxy_package/utils/ble/gatt_utils.dart';
 
 Future<List<BTDeviceStruct>> bleFindDevices() async {
   List<BTDeviceStruct> devices = [];

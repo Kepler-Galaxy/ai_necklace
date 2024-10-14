@@ -1,9 +1,9 @@
 // import 'package:device_calendar/device_calendar.dart';
 import 'package:flutter/material.dart';
-import 'package:friend_private/backend/preferences.dart';
-import 'package:friend_private/utils/alerts/app_snackbar.dart';
-import 'package:friend_private/utils/analytics/mixpanel.dart';
-import 'package:friend_private/utils/features/calendar.dart';
+import 'package:foxxy_package/backend/preferences.dart';
+import 'package:foxxy_package/utils/alerts/app_snackbar.dart';
+import 'package:foxxy_package/utils/analytics/mixpanel.dart';
+import 'package:foxxy_package/utils/features/calendar.dart';
 import 'package:manage_calendar_events/manage_calendar_events.dart';
 import 'package:permission_handler/permission_handler.dart';
 

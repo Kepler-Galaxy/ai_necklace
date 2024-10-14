@@ -2,9 +2,9 @@ import 'dart:convert';
 
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
-import 'package:friend_private/backend/http/shared.dart';
-import 'package:friend_private/backend/schema/person.dart';
-import 'package:friend_private/env/env.dart';
+import 'package:foxxy_package/backend/http/shared.dart';
+import 'package:foxxy_package/backend/schema/person.dart';
+import 'package:foxxy_package/env/env.dart';
 
 Future<bool> deleteAccount() async {
   var response = await makeApiCall(
@@ -75,9 +75,11 @@ Future<Person?> createPerson(String name) async {
   return null;
 }
 
-Future<Person?> getSinglePerson(String personId, {bool includeSpeechSamples = false}) async {
+Future<Person?> getSinglePerson(String personId,
+    {bool includeSpeechSamples = false}) async {
   var response = await makeApiCall(
-    url: '${Env.apiBaseUrl}v1/users/people/$personId?include_speech_samples=$includeSpeechSamples',
+    url:
+        '${Env.apiBaseUrl}v1/users/people/$personId?include_speech_samples=$includeSpeechSamples',
     headers: {},
     method: 'GET',
     body: '',
@@ -92,7 +94,8 @@ Future<Person?> getSinglePerson(String personId, {bool includeSpeechSamples = fa
 
 Future<List<Person>> getAllPeople({bool includeSpeechSamples = true}) async {
   var response = await makeApiCall(
-    url: '${Env.apiBaseUrl}v1/users/people?include_speech_samples=$includeSpeechSamples',
+    url:
+        '${Env.apiBaseUrl}v1/users/people?include_speech_samples=$includeSpeechSamples',
     headers: {},
     method: 'GET',
     body: '',

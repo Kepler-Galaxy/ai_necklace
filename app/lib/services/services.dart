@@ -5,8 +5,8 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_background_service/flutter_background_service.dart';
 import 'package:flutter_sound/flutter_sound.dart';
-import 'package:friend_private/services/devices.dart';
-import 'package:friend_private/services/sockets.dart';
+import 'package:foxxy_package/services/devices.dart';
+import 'package:foxxy_package/services/sockets.dart';
 
 class ServiceManager {
   late IMicRecorderService _mic;
@@ -286,7 +286,8 @@ class MicRecorderService implements IMicRecorderService {
     Function()? onInitializing,
   }) async {
     if (_status == RecorderServiceStatus.recording) {
-      throw Exception("Recorder is recording, please stop it before start new recording.");
+      throw Exception(
+          "Recorder is recording, please stop it before start new recording.");
     }
     if (_status == RecorderServiceStatus.initialising) {
       throw Exception("Recorder is initialising");

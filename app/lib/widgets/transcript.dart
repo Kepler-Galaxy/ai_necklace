@@ -2,9 +2,9 @@ import 'dart:convert';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:friend_private/backend/preferences.dart';
-import 'package:friend_private/backend/schema/person.dart';
-import 'package:friend_private/backend/schema/transcript_segment.dart';
+import 'package:foxxy_package/backend/preferences.dart';
+import 'package:foxxy_package/backend/schema/person.dart';
+import 'package:foxxy_package/backend/schema/transcript_segment.dart';
 
 class TranscriptWidget extends StatefulWidget {
   final List<TranscriptSegment> segments;
@@ -39,20 +39,27 @@ class _TranscriptWidgetState extends State<TranscriptWidget> {
       scrollDirection: Axis.vertical,
       itemCount: widget.segments.length + 2,
       physics: const NeverScrollableScrollPhysics(),
-      separatorBuilder: (_, __) => SizedBox(height: widget.separator ? 16.0 : 0),
+      separatorBuilder: (_, __) =>
+          SizedBox(height: widget.separator ? 16.0 : 0),
       itemBuilder: (context, idx) {
         if (idx == 0) return SizedBox(height: widget.topMargin ? 32 : 0);
-        if (idx == widget.segments.length + 1) return const SizedBox(height: 64);
+        if (idx == widget.segments.length + 1)
+          return const SizedBox(height: 64);
         final data = widget.segments[idx - 1];
 
         var text = data.text;
         try {
           text = utf8.decode(data.text.toString().codeUnits);
         } catch (e) {}
-        Person? person = data.personId != null ? SharedPreferencesUtil().getPersonById(data.personId!) : null;
+        Person? person = data.personId != null
+            ? SharedPreferencesUtil().getPersonById(data.personId!)
+            : null;
         return Padding(
           padding: EdgeInsetsDirectional.fromSTEB(
-              widget.horizontalMargin ? 16 : 0, 0.0, widget.horizontalMargin ? 16 : 0, 0.0),
+              widget.horizontalMargin ? 16 : 0,
+              0.0,
+              widget.horizontalMargin ? 16 : 0,
+              0.0),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -88,12 +95,15 @@ class _TranscriptWidgetState extends State<TranscriptWidget> {
                           color: Colors.white,
                           fontSize: 18),
                     ),
-                    widget.canDisplaySeconds ? const SizedBox(width: 12) : const SizedBox(),
+                    widget.canDisplaySeconds
+                        ? const SizedBox(width: 12)
+                        : const SizedBox(),
                     // pad as start-end as hours:minutes:seconds e.g. 01:23:45
                     widget.canDisplaySeconds
                         ? Text(
                             data.getTimestampString(),
-                            style: const TextStyle(color: Colors.grey, fontSize: 14),
+                            style: const TextStyle(
+                                color: Colors.grey, fontSize: 14),
                           )
                         : const SizedBox(),
                   ],
@@ -105,7 +115,8 @@ class _TranscriptWidgetState extends State<TranscriptWidget> {
                 child: SelectionArea(
                   child: Text(
                     tryDecodingText(text),
-                    style: const TextStyle(letterSpacing: 0.0, color: Colors.grey),
+                    style:
+                        const TextStyle(letterSpacing: 0.0, color: Colors.grey),
                     textAlign: TextAlign.left,
                   ),
                 ),
@@ -137,13 +148,18 @@ class _LiteTranscriptWidgetState extends State<LiteTranscriptWidget> {
       return const SizedBox.shrink();
     }
 
-    var text = getLastTranscript(widget.segments, maxCount: 70, includeTimestamps: false);
-    text = text.replaceAll(RegExp(r"\s+|\n+"), " "); // trim before pushing to 1 line text view
+    var text = getLastTranscript(widget.segments,
+        maxCount: 70, includeTimestamps: false);
+    text = text.replaceAll(
+        RegExp(r"\s+|\n+"), " "); // trim before pushing to 1 line text view
     return Text(
       text,
       maxLines: 1,
       overflow: TextOverflow.ellipsis,
-      style: Theme.of(context).textTheme.bodyMedium!.copyWith(color: Colors.grey.shade300, height: 1.3),
+      style: Theme.of(context)
+          .textTheme
+          .bodyMedium!
+          .copyWith(color: Colors.grey.shade300, height: 1.3),
       textAlign: TextAlign.right,
     );
   }
@@ -151,8 +167,10 @@ class _LiteTranscriptWidgetState extends State<LiteTranscriptWidget> {
 
 String getLastTranscript(List<TranscriptSegment> transcriptSegments,
     {int? maxCount, bool generate = false, bool includeTimestamps = true}) {
-  var transcript = TranscriptSegment.segmentsAsString(transcriptSegments, includeTimestamps: includeTimestamps);
-  if (maxCount != null) transcript = transcript.substring(max(transcript.length - maxCount, 0));
+  var transcript = TranscriptSegment.segmentsAsString(transcriptSegments,
+      includeTimestamps: includeTimestamps);
+  if (maxCount != null)
+    transcript = transcript.substring(max(transcript.length - maxCount, 0));
   try {
     return utf8.decode(transcript.codeUnits);
   } catch (e) {

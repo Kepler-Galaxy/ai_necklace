@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:friend_private/backend/schema/diary.dart';
-import 'package:friend_private/backend/http/api/diaries.dart';
+import 'package:foxxy_package/backend/schema/diary.dart';
+import 'package:foxxy_package/backend/http/api/diaries.dart';
 
 class DiaryProvider extends ChangeNotifier {
   List<ServerDiary> _diaries = [];

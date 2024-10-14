@@ -1,4 +1,4 @@
-import 'package:friend_private/backend/schema/memory.dart';
+import 'package:foxxy_package/backend/schema/memory.dart';
 
 class MemoryConnectionNode {
   final String memoryId;
@@ -17,7 +17,8 @@ class MemoryConnectionNode {
     ServerMemory? parsedMemory;
     if (json['memory'] != null) {
       try {
-        parsedMemory = ServerMemory.fromJson(json['memory'] as Map<String, dynamic>);
+        parsedMemory =
+            ServerMemory.fromJson(json['memory'] as Map<String, dynamic>);
       } catch (e) {
         // some old memory's format maybe inconsistent
         print('Error parsing memory: $e');
@@ -42,7 +43,8 @@ class MemoryConnectionNode {
     }
     return childrenJson
         .where((child) => child is Map<String, dynamic>)
-        .map((child) => MemoryConnectionNode.fromJson(child as Map<String, dynamic>))
+        .map((child) =>
+            MemoryConnectionNode.fromJson(child as Map<String, dynamic>))
         .toList();
   }
 

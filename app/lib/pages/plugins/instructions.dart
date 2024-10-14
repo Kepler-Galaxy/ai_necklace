@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
-import 'package:friend_private/backend/preferences.dart';
+import 'package:foxxy_package/backend/preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class PluginSetupInstructions extends StatefulWidget {
@@ -9,7 +9,8 @@ class PluginSetupInstructions extends StatefulWidget {
   const PluginSetupInstructions({super.key, required this.markdown});
 
   @override
-  State<PluginSetupInstructions> createState() => _PluginSetupInstructionsState();
+  State<PluginSetupInstructions> createState() =>
+      _PluginSetupInstructionsState();
 }
 
 class _PluginSetupInstructionsState extends State<PluginSetupInstructions> {
@@ -28,7 +29,8 @@ class _PluginSetupInstructionsState extends State<PluginSetupInstructions> {
             padding: const EdgeInsets.only(left: 16.0, right: 24),
             child: MarkdownBody(
               shrinkWrap: true,
-              styleSheet: MarkdownStyleSheet.fromTheme(Theme.of(context)).copyWith(
+              styleSheet:
+                  MarkdownStyleSheet.fromTheme(Theme.of(context)).copyWith(
                 a: const TextStyle(fontSize: 18, height: 1.2),
                 p: const TextStyle(fontSize: 16, height: 1.2),
                 blockquote: const TextStyle(

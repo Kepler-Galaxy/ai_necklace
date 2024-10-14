@@ -1,8 +1,8 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:friend_private/providers/auth_provider.dart';
+import 'package:foxxy_package/providers/auth_provider.dart';
 import 'package:provider/provider.dart';
-import 'package:friend_private/generated/l10n.dart';
+import 'package:foxxy_package/generated/l10n.dart';
 import 'package:gradient_borders/gradient_borders.dart';
 import 'package:flutter/services.dart';
 
@@ -41,14 +41,15 @@ class _AuthComponentState extends State<AuthComponent> {
                 controller: provider.phoneController,
                 keyboardType: TextInputType.number,
                 inputFormatters: [
-                  FilteringTextInputFormatter.digitsOnly,      // 只允许输入数字
-                  LengthLimitingTextInputFormatter(11),        // 限制为 11 位
+                  FilteringTextInputFormatter.digitsOnly, // 只允许输入数字
+                  LengthLimitingTextInputFormatter(11), // 限制为 11 位
                 ],
                 decoration: InputDecoration(
                   labelText: S.current.PhoneNumber,
                   prefixIcon: Padding(
                     padding: const EdgeInsets.only(left: 12, right: 8),
-                    child: Icon(Icons.phone, size: 20, color: Theme.of(context).iconTheme.color),
+                    child: Icon(Icons.phone,
+                        size: 20, color: Theme.of(context).iconTheme.color),
                   ),
                 ),
               ),
@@ -56,11 +57,12 @@ class _AuthComponentState extends State<AuthComponent> {
               // Add verification code input
               TextField(
                 controller: provider.codeController,
-                decoration:  InputDecoration(
+                decoration: InputDecoration(
                   labelText: S.current.VerificationCode,
                   prefixIcon: Padding(
                     padding: const EdgeInsets.only(left: 12, right: 8),
-                    child: Icon(Icons.sms, size: 20, color: Theme.of(context).iconTheme.color),
+                    child: Icon(Icons.sms,
+                        size: 20, color: Theme.of(context).iconTheme.color),
                   ),
                 ),
                 keyboardType: TextInputType.number,
@@ -80,7 +82,8 @@ class _AuthComponentState extends State<AuthComponent> {
                 ),
                 child: ElevatedButton(
                   onPressed: provider.isCodeSent
-                      ? () => provider.onVerificationCodeSignIn(context, widget.onSignIn)
+                      ? () => provider.onVerificationCodeSignIn(
+                          context, widget.onSignIn)
                       : () => provider.sendVerificationCode(context),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.transparent,
@@ -90,12 +93,15 @@ class _AuthComponentState extends State<AuthComponent> {
                     ),
                     padding: EdgeInsets.zero,
                     minimumSize: Size.zero,
-                    tapTargetSize: MaterialTapTargetSize.shrinkWrap, 
+                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                   ),
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                     child: Text(
-                      provider.isCodeSent ? S.current.SignIn : S.current.SendVerificationCode,
+                      provider.isCodeSent
+                          ? S.current.SignIn
+                          : S.current.SendVerificationCode,
                       style: const TextStyle(
                         fontSize: 16,
                         color: Colors.white,
@@ -113,8 +119,10 @@ class _AuthComponentState extends State<AuthComponent> {
                     const TextSpan(text: 'By Signing in, you agree to our\n'),
                     TextSpan(
                       text: 'Terms of Service and Privacy Policy',
-                      style: const TextStyle(fontSize: 12, decoration: TextDecoration.underline),
-                      recognizer: TapGestureRecognizer()..onTap = provider.openPrivacyPolicy,
+                      style: const TextStyle(
+                          fontSize: 12, decoration: TextDecoration.underline),
+                      recognizer: TapGestureRecognizer()
+                        ..onTap = provider.openPrivacyPolicy,
                     ),
                   ],
                 ),

@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:friend_private/providers/auth_provider.dart';
-import 'package:friend_private/providers/message_provider.dart';
-import 'package:friend_private/backend/preferences.dart';
-import 'package:friend_private/main.dart';
-import 'package:friend_private/pages/settings/profile.dart';
-import 'package:friend_private/pages/settings/widgets.dart';
-import 'package:friend_private/utils/other/temp.dart';
-import 'package:friend_private/widgets/dialog.dart';
+import 'package:foxxy_package/providers/auth_provider.dart';
+import 'package:foxxy_package/providers/message_provider.dart';
+import 'package:foxxy_package/backend/preferences.dart';
+import 'package:foxxy_package/main.dart';
+import 'package:foxxy_package/pages/settings/profile.dart';
+import 'package:foxxy_package/pages/settings/widgets.dart';
+import 'package:foxxy_package/utils/other/temp.dart';
+import 'package:foxxy_package/widgets/dialog.dart';
 import 'package:package_info_plus/package_info_plus.dart';
-import 'package:friend_private/generated/l10n.dart';
+import 'package:foxxy_package/generated/l10n.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:friend_private/pages/facts/page.dart';
-import 'package:friend_private/utils/analytics/mixpanel.dart';
+import 'package:foxxy_package/pages/facts/page.dart';
+import 'package:foxxy_package/utils/analytics/mixpanel.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
@@ -83,7 +83,8 @@ class _SettingsPageState extends State<SettingsPage> {
                 const SizedBox(height: 32),
                 getItemAddOn2(
                   'Privacy Policy',
-                  () => launchUrl(Uri.parse('https://keplergalaxy.com/privacy')),
+                  () =>
+                      launchUrl(Uri.parse('https://keplergalaxy.com/privacy')),
                   icon: Icons.privacy_tip,
                 ),
                 getItemAddOn2(
@@ -99,9 +100,12 @@ class _SettingsPageState extends State<SettingsPage> {
                       return getDialog(context, () {
                         Navigator.of(context).pop();
                       }, () async {
-                        await context.read<AuthenticationProvider>().logout(context);
+                        await context
+                            .read<AuthenticationProvider>()
+                            .logout(context);
                         Navigator.of(context).pop();
-                        await routeToPage(context, const DeciderWidget(), replace: true);
+                        await routeToPage(context, const DeciderWidget(),
+                            replace: true);
                       }, S.current.SignOut, S.current.AreYouSureSignOut);
                     },
                   );
@@ -114,7 +118,9 @@ class _SettingsPageState extends State<SettingsPage> {
                     child: Text(
                       //'Version: $version+$buildVersion',
                       'Version: $version',
-                      style: const TextStyle(color: Color.fromARGB(255, 150, 150, 150), fontSize: 16),
+                      style: const TextStyle(
+                          color: Color.fromARGB(255, 150, 150, 150),
+                          fontSize: 16),
                     ),
                   ),
                 ),

@@ -3,11 +3,11 @@ import 'dart:io';
 import 'package:collection/collection.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:friend_private/backend/schema/person.dart';
-import 'package:friend_private/providers/people_provider.dart';
-import 'package:friend_private/providers/connectivity_provider.dart';
-import 'package:friend_private/widgets/dialog.dart';
-import 'package:friend_private/widgets/extensions/functions.dart';
+import 'package:foxxy_package/backend/schema/person.dart';
+import 'package:foxxy_package/providers/people_provider.dart';
+import 'package:foxxy_package/providers/connectivity_provider.dart';
+import 'package:foxxy_package/widgets/dialog.dart';
+import 'package:foxxy_package/widgets/extensions/functions.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:provider/provider.dart';
 
@@ -76,7 +76,8 @@ class _UserPeoplePageState extends State<_UserPeoplePage> {
                 labelText: 'Name',
                 labelStyle: const TextStyle(color: Colors.white),
                 focusColor: Colors.white,
-                focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.grey.shade300)),
+                focusedBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(color: Colors.grey.shade300)),
               ),
               validator: _nameValidator,
             ),
@@ -111,11 +112,13 @@ class _UserPeoplePageState extends State<_UserPeoplePage> {
         ? [
             CupertinoDialogAction(
               onPressed: () => Navigator.pop(context),
-              child: const Text('Cancel', style: TextStyle(color: Colors.white)),
+              child:
+                  const Text('Cancel', style: TextStyle(color: Colors.white)),
             ),
             CupertinoDialogAction(
               onPressed: onPressed,
-              child: Text(person == null ? 'Add' : 'Update', style: const TextStyle(color: Colors.white)),
+              child: Text(person == null ? 'Add' : 'Update',
+                  style: const TextStyle(color: Colors.white)),
             ),
           ]
         : [
@@ -125,13 +128,16 @@ class _UserPeoplePageState extends State<_UserPeoplePage> {
             ),
             TextButton(
               onPressed: onPressed,
-              child: Text(person == null ? 'Add' : 'Update', style: const TextStyle(color: Colors.white)),
+              child: Text(person == null ? 'Add' : 'Update',
+                  style: const TextStyle(color: Colors.white)),
             ),
           ];
   }
 
-  Future<void> _showPersonDialog(BuildContext context, PeopleProvider provider, {Person? person}) async {
-    final connectivityProvider = Provider.of<ConnectivityProvider>(context, listen: false);
+  Future<void> _showPersonDialog(BuildContext context, PeopleProvider provider,
+      {Person? person}) async {
+    final connectivityProvider =
+        Provider.of<ConnectivityProvider>(context, listen: false);
     if (!connectivityProvider.isConnected) {
       ConnectivityProvider.showNoInternetDialog(context);
       return;
@@ -146,18 +152,24 @@ class _UserPeoplePageState extends State<_UserPeoplePage> {
           ? CupertinoAlertDialog(
               title: Text(person == null ? 'Add New Person' : 'Edit Person'),
               content: _showPersonDialogForm(formKey, nameController),
-              actions: _showPersonDialogActions(context, formKey, nameController, provider, person: person),
+              actions: _showPersonDialogActions(
+                  context, formKey, nameController, provider,
+                  person: person),
             )
           : AlertDialog(
               title: Text(person == null ? 'Add New Person' : 'Edit Person'),
               content: _showPersonDialogForm(formKey, nameController),
-              actions: _showPersonDialogActions(context, formKey, nameController, provider, person: person),
+              actions: _showPersonDialogActions(
+                  context, formKey, nameController, provider,
+                  person: person),
             ),
     );
   }
 
-  Future<void> _confirmDeleteSample(int peopleIdx, Person person, String url, PeopleProvider provider) async {
-    final connectivityProvider = Provider.of<ConnectivityProvider>(context, listen: false);
+  Future<void> _confirmDeleteSample(
+      int peopleIdx, Person person, String url, PeopleProvider provider) async {
+    final connectivityProvider =
+        Provider.of<ConnectivityProvider>(context, listen: false);
     if (!connectivityProvider.isConnected) {
       ConnectivityProvider.showNoInternetDialog(context);
       return;
@@ -179,7 +191,8 @@ class _UserPeoplePageState extends State<_UserPeoplePage> {
     }
   }
 
-  Future<void> _confirmDeletePerson(Person person, PeopleProvider provider) async {
+  Future<void> _confirmDeletePerson(
+      Person person, PeopleProvider provider) async {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (c) => getDialog(
@@ -246,8 +259,11 @@ class _UserPeoplePageState extends State<_UserPeoplePage> {
                           SizedBox(height: 24),
                           Padding(
                             padding: EdgeInsets.symmetric(horizontal: 32),
-                            child: Text('Create a new person and train Omi to recognize their speech too!',
-                                style: TextStyle(color: Colors.white, fontSize: 24), textAlign: TextAlign.center),
+                            child: Text(
+                                'Create a new person and train Omi to recognize their speech too!',
+                                style: TextStyle(
+                                    color: Colors.white, fontSize: 24),
+                                textAlign: TextAlign.center),
                           ),
                           SizedBox(height: 64),
                         ],
@@ -255,7 +271,8 @@ class _UserPeoplePageState extends State<_UserPeoplePage> {
                     )
                   : ListView.separated(
                       itemCount: provider.people.length,
-                      separatorBuilder: (context, index) => const Divider(height: 1),
+                      separatorBuilder: (context, index) =>
+                          const Divider(height: 1),
                       itemBuilder: (context, index) {
                         final person = provider.people[index];
                         return Column(
@@ -264,43 +281,59 @@ class _UserPeoplePageState extends State<_UserPeoplePage> {
                             ListTile(
                               title: Text(
                                 person.name,
-                                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+                                style: const TextStyle(
+                                    fontSize: 18, fontWeight: FontWeight.w600),
                               ),
-                              onTap: () => _showPersonDialog(context, provider, person: person),
+                              onTap: () => _showPersonDialog(context, provider,
+                                  person: person),
                               trailing: IconButton(
                                 icon: const Icon(Icons.delete, size: 20),
-                                onPressed: () => _confirmDeletePerson(person, provider),
+                                onPressed: () =>
+                                    _confirmDeletePerson(person, provider),
                               ),
                             ),
-                            if (person.speechSamples != null && person.speechSamples!.isNotEmpty)
+                            if (person.speechSamples != null &&
+                                person.speechSamples!.isNotEmpty)
                               Padding(
-                                padding: const EdgeInsets.only(left: 8, right: 16, bottom: 8),
+                                padding: const EdgeInsets.only(
+                                    left: 8, right: 16, bottom: 8),
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     const SizedBox(height: 4),
-                                    ...person.speechSamples!.mapIndexed((j, sample) => ListTile(
+                                    ...person.speechSamples!.mapIndexed((j,
+                                            sample) =>
+                                        ListTile(
                                           contentPadding: EdgeInsets.zero,
                                           leading: IconButton(
                                             padding: const EdgeInsets.all(0),
                                             icon: Icon(
-                                              provider.currentPlayingPersonIndex == index &&
-                                                      provider.currentPlayingIndex == j &&
+                                              provider.currentPlayingPersonIndex ==
+                                                          index &&
+                                                      provider.currentPlayingIndex ==
+                                                          j &&
                                                       provider.isPlaying
                                                   ? Icons.pause
                                                   : Icons.play_arrow,
                                             ),
-                                            onPressed: () => provider.playPause(index, j, sample),
+                                            onPressed: () => provider.playPause(
+                                                index, j, sample),
                                           ),
-                                          title: Text(index == 0 ? 'Speech Profile' : 'Sample $index'),
-                                          onTap: () => _confirmDeleteSample(index, person, sample, provider),
+                                          title: Text(index == 0
+                                              ? 'Speech Profile'
+                                              : 'Sample $index'),
+                                          onTap: () => _confirmDeleteSample(
+                                              index, person, sample, provider),
                                           subtitle: FutureBuilder<Duration?>(
-                                            future: AudioPlayer().setUrl(sample),
+                                            future:
+                                                AudioPlayer().setUrl(sample),
                                             builder: (context, snapshot) {
                                               if (snapshot.hasData) {
-                                                return Text('${snapshot.data!.inSeconds} seconds');
+                                                return Text(
+                                                    '${snapshot.data!.inSeconds} seconds');
                                               } else {
-                                                return const Text('Loading duration...');
+                                                return const Text(
+                                                    'Loading duration...');
                                               }
                                             },
                                           ),

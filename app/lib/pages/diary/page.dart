@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:friend_private/providers/diary_provider.dart';
-import 'package:friend_private/backend/http/api/memories.dart';
-import 'package:friend_private/backend/schema/memory_connection.dart';
+import 'package:foxxy_package/providers/diary_provider.dart';
+import 'package:foxxy_package/backend/http/api/memories.dart';
+import 'package:foxxy_package/backend/schema/memory_connection.dart';
 import 'package:table_calendar/table_calendar.dart';
-import 'package:friend_private/pages/diary/calandar_widget.dart';
-import 'package:friend_private/generated/l10n.dart';
-import 'package:friend_private/pages/diary/diary_tab_widget.dart';
-import 'package:friend_private/backend/schema/diary.dart';
-import 'package:friend_private/utils/analytics/mixpanel.dart';
+import 'package:foxxy_package/pages/diary/calandar_widget.dart';
+import 'package:foxxy_package/generated/l10n.dart';
+import 'package:foxxy_package/pages/diary/diary_tab_widget.dart';
+import 'package:foxxy_package/backend/schema/diary.dart';
+import 'package:foxxy_package/utils/analytics/mixpanel.dart';
 
 class DiaryPage extends StatefulWidget {
   const DiaryPage({Key? key}) : super(key: key);
@@ -129,7 +129,8 @@ class _DiaryPageState extends State<DiaryPage> {
                 });
                 _updateSelectedDayMemoryIds();
                 _loadMemoryChainData();
-                MixpanelManager().viewDiaryForDay(selectedDay, _currentDateDiary());
+                MixpanelManager()
+                    .viewDiaryForDay(selectedDay, _currentDateDiary());
               }
             },
           ),

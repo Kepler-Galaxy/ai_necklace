@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:mixpanel_flutter/mixpanel_flutter.dart';
 import 'package:table_calendar/table_calendar.dart';
-import 'package:friend_private/utils/other/temp.dart';
+import 'package:foxxy_package/utils/other/temp.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:friend_private/generated/l10n.dart';
+import 'package:foxxy_package/generated/l10n.dart';
 
 class CalendarWidget extends StatefulWidget {
   final DateTime selectedDay;
@@ -104,7 +104,9 @@ class _CalendarWidgetState extends State<CalendarWidget> {
             rowHeight: 25,
             daysOfWeekHeight: 20,
             eventLoader: (day) {
-              return widget.diaryDates.contains(_normalizeDate(day)) ? [Object()] : [];
+              return widget.diaryDates.contains(_normalizeDate(day))
+                  ? [Object()]
+                  : [];
             },
             calendarBuilders: CalendarBuilders(
               markerBuilder: (context, date, events) {

@@ -2,7 +2,7 @@
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:friend_private/utils/analytics/mixpanel.dart';
+import 'package:foxxy_package/utils/analytics/mixpanel.dart';
 import 'package:upgrader/upgrader.dart';
 
 class MyUpgrader extends Upgrader {
@@ -53,17 +53,21 @@ class MyUpgradeAlertState extends UpgradeAlertState {
                 'New Version Available  🎉',
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
               ),
-              content: SingleChildScrollView(child: ListBody(children: <Widget>[Text(message)])),
+              content: SingleChildScrollView(
+                  child: ListBody(children: <Widget>[Text(message)])),
               actions: <Widget>[
                 TextButton(
-                  child: Text('No', style: TextStyle(color: Colors.grey.shade200, fontSize: 16)),
+                  child: Text('No',
+                      style:
+                          TextStyle(color: Colors.grey.shade200, fontSize: 16)),
                   onPressed: () {
                     onUserIgnored(context, true);
                     MixpanelManager().upgradeModalDismissed();
                   },
                 ),
                 TextButton(
-                  child: const Text('Upgrade', style: TextStyle(color: Colors.white, fontSize: 16)),
+                  child: const Text('Upgrade',
+                      style: TextStyle(color: Colors.white, fontSize: 16)),
                   onPressed: () {
                     onUserUpdated(context, !widget.upgrader.blocked());
                     MixpanelManager().upgradeModalClicked();
@@ -78,16 +82,20 @@ class MyUpgradeAlertState extends UpgradeAlertState {
               'New Version Available  🎉',
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
             ),
-            content: SingleChildScrollView(child: ListBody(children: <Widget>[Text(message)])),
+            content: SingleChildScrollView(
+                child: ListBody(children: <Widget>[Text(message)])),
             actions: <Widget>[
               TextButton(
-                child: Text('No', style: TextStyle(color: Colors.grey.shade200, fontSize: 16)),
+                child: Text('No',
+                    style:
+                        TextStyle(color: Colors.grey.shade200, fontSize: 16)),
                 onPressed: () {
                   onUserIgnored(context, true);
                 },
               ),
               TextButton(
-                child: const Text('Upgrade', style: TextStyle(color: Colors.white, fontSize: 16)),
+                child: const Text('Upgrade',
+                    style: TextStyle(color: Colors.white, fontSize: 16)),
                 onPressed: () {
                   onUserUpdated(context, !widget.upgrader.blocked());
                 },

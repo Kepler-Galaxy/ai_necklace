@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:friend_private/backend/http/api/memories.dart';
-import 'package:friend_private/backend/schema/memory.dart';
-import 'package:friend_private/widgets/transcript.dart';
+import 'package:foxxy_package/backend/http/api/memories.dart';
+import 'package:foxxy_package/backend/schema/memory.dart';
+import 'package:foxxy_package/widgets/transcript.dart';
 
 class CompareTranscriptsPage extends StatefulWidget {
   final ServerMemory memory;
@@ -49,14 +49,19 @@ class _CompareTranscriptsPageState extends State<CompareTranscriptsPage> {
               },
               padding: EdgeInsets.zero,
               indicatorPadding: EdgeInsets.zero,
-              labelStyle: Theme.of(context).textTheme.titleLarge!.copyWith(fontSize: 18),
+              labelStyle: Theme.of(context)
+                  .textTheme
+                  .titleLarge!
+                  .copyWith(fontSize: 18),
               tabs: const [
                 Tab(text: 'Deepgram'),
                 Tab(text: 'Soniox'),
                 Tab(text: 'SpeechMatics'),
                 Tab(text: 'Whisper-x'),
               ],
-              indicator: BoxDecoration(color: Colors.transparent, borderRadius: BorderRadius.circular(16)),
+              indicator: BoxDecoration(
+                  color: Colors.transparent,
+                  borderRadius: BorderRadius.circular(16)),
             ),
             Expanded(
               child: Padding(

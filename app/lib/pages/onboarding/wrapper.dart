@@ -1,26 +1,27 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:friend_private/backend/auth.dart';
-import 'package:friend_private/backend/preferences.dart';
-import 'package:friend_private/backend/schema/bt_device.dart';
-import 'package:friend_private/pages/home/page.dart';
-import 'package:friend_private/pages/onboarding/auth.dart';
-import 'package:friend_private/pages/onboarding/find_device/page.dart';
-import 'package:friend_private/pages/onboarding/memory_created_widget.dart';
-import 'package:friend_private/pages/onboarding/name/name_widget.dart';
-import 'package:friend_private/pages/onboarding/permissions/permissions_widget.dart';
-import 'package:friend_private/pages/onboarding/speech_profile_widget.dart';
-import 'package:friend_private/pages/onboarding/welcome/page.dart';
-import 'package:friend_private/providers/home_provider.dart';
-import 'package:friend_private/providers/onboarding_provider.dart';
-import 'package:friend_private/providers/speech_profile_provider.dart';
-import 'package:friend_private/services/services.dart';
-import 'package:friend_private/utils/analytics/mixpanel.dart';
-import 'package:friend_private/utils/other/temp.dart';
+import 'package:foxxy_package/backend/auth.dart';
+import 'package:foxxy_package/backend/preferences.dart';
+import 'package:foxxy_package/backend/schema/bt_device.dart';
+import 'package:foxxy_package/pages/home/page.dart';
+import 'package:foxxy_package/pages/onboarding/auth.dart';
+import 'package:foxxy_package/pages/onboarding/find_device/page.dart';
+import 'package:foxxy_package/pages/onboarding/memory_created_widget.dart';
+import 'package:foxxy_package/pages/onboarding/name/name_widget.dart';
+import 'package:foxxy_package/pages/onboarding/permissions/permissions_widget.dart';
+import 'package:foxxy_package/pages/onboarding/speech_profile_widget.dart';
+import 'package:foxxy_package/pages/onboarding/welcome/page.dart';
+import 'package:foxxy_package/providers/home_provider.dart';
+import 'package:foxxy_package/providers/onboarding_provider.dart';
+import 'package:foxxy_package/providers/speech_profile_provider.dart';
+import 'package:foxxy_package/services/services.dart';
+import 'package:foxxy_package/utils/analytics/mixpanel.dart';
+import 'package:foxxy_package/utils/other/temp.dart';
 import 'package:provider/provider.dart';
-import 'package:friend_private/generated/l10n.dart';
-import 'package:friend_private/widgets/auth_image_widget.dart';
+import 'package:foxxy_package/generated/l10n.dart';
+import 'package:foxxy_package/widgets/auth_image_widget.dart';
+
 class OnboardingWrapper extends StatefulWidget {
   const OnboardingWrapper({super.key});
 
@@ -28,7 +29,8 @@ class OnboardingWrapper extends StatefulWidget {
   State<OnboardingWrapper> createState() => _OnboardingWrapperState();
 }
 
-class _OnboardingWrapperState extends State<OnboardingWrapper> with TickerProviderStateMixin {
+class _OnboardingWrapperState extends State<OnboardingWrapper>
+    with TickerProviderStateMixin {
   TabController? _controller;
   bool hasSpeechProfile = SharedPreferencesUtil().hasSpeakerProfile;
 
@@ -65,7 +67,8 @@ class _OnboardingWrapperState extends State<OnboardingWrapper> with TickerProvid
 
   // TODO: use connection directly
   Future<BleAudioCodec> _getAudioCodec(String deviceId) async {
-    var connection = await ServiceManager.instance().device.ensureConnection(deviceId);
+    var connection =
+        await ServiceManager.instance().device.ensureConnection(deviceId);
     if (connection == null) {
       return BleAudioCodec.pcm8;
     }
@@ -178,7 +181,10 @@ class _OnboardingWrapperState extends State<OnboardingWrapper> with TickerProvid
                               S.current.AppName,
                               style: TextStyle(
                                   color: Colors.grey.shade200,
-                                  fontSize: _controller!.index == _controller!.length - 1 ? 28 : 40,
+                                  fontSize: _controller!.index ==
+                                          _controller!.length - 1
+                                      ? 28
+                                      : 40,
                                   fontWeight: FontWeight.w500),
                             ),
                           ),
@@ -191,16 +197,24 @@ class _OnboardingWrapperState extends State<OnboardingWrapper> with TickerProvid
                             padding: const EdgeInsets.symmetric(horizontal: 16),
                             child: Text(
                               S.current.OneWordIntro,
-                              style: TextStyle(color: Colors.grey.shade300, fontSize: 16),
+                              style: TextStyle(
+                                  color: Colors.grey.shade300, fontSize: 16),
                               textAlign: TextAlign.center,
                             ),
                           ),
                     SizedBox(
-                      height: (_controller!.index == 5 || _controller!.index == 6 || _controller!.index == 7)
-                          ? max(MediaQuery.of(context).size.height - 500 - 10, maxHeightWithTextScale(context))
-                          : max(MediaQuery.of(context).size.height - 500 - 60, maxHeightWithTextScale(context)),
+                      height: (_controller!.index == 5 ||
+                              _controller!.index == 6 ||
+                              _controller!.index == 7)
+                          ? max(MediaQuery.of(context).size.height - 500 - 10,
+                              maxHeightWithTextScale(context))
+                          : max(MediaQuery.of(context).size.height - 500 - 60,
+                              maxHeightWithTextScale(context)),
                       child: Padding(
-                        padding: EdgeInsets.only(bottom: MediaQuery.sizeOf(context).height <= 700 ? 10 : 64),
+                        padding: EdgeInsets.only(
+                            bottom: MediaQuery.sizeOf(context).height <= 700
+                                ? 10
+                                : 64),
                         child: TabBarView(
                           controller: _controller,
                           physics: const NeverScrollableScrollPhysics(),
@@ -221,7 +235,8 @@ class _OnboardingWrapperState extends State<OnboardingWrapper> with TickerProvid
                         if (_controller!.index == 2) {
                           _controller!.animateTo(_controller!.index + 1);
                         } else {
-                          routeToPage(context, const HomePageWrapper(), replace: true);
+                          routeToPage(context, const HomePageWrapper(),
+                              replace: true);
                         }
                       },
                       child: Text(
@@ -253,14 +268,17 @@ class _OnboardingWrapperState extends State<OnboardingWrapper> with TickerProvid
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: List.generate(
-                      _controller!.length - 1, // Exclude the Auth page from the count
+                      _controller!.length -
+                          1, // Exclude the Auth page from the count
                       (index) {
                         // Calculate the adjusted index
                         int adjustedIndex = index + 1;
                         return Container(
                           margin: const EdgeInsets.symmetric(horizontal: 4.0),
-                          width: adjustedIndex == _controller!.index ? 12.0 : 8.0,
-                          height: adjustedIndex == _controller!.index ? 12.0 : 8.0,
+                          width:
+                              adjustedIndex == _controller!.index ? 12.0 : 8.0,
+                          height:
+                              adjustedIndex == _controller!.index ? 12.0 : 8.0,
                           decoration: BoxDecoration(
                             color: adjustedIndex <= _controller!.index
                                 ? Theme.of(context).colorScheme.secondary

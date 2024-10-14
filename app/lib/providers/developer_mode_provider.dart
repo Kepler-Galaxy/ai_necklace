@@ -1,15 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:friend_private/backend/http/cloud_storage.dart';
-import 'package:friend_private/backend/preferences.dart';
-import 'package:friend_private/providers/base_provider.dart';
-import 'package:friend_private/utils/alerts/app_snackbar.dart';
-import 'package:friend_private/utils/analytics/mixpanel.dart';
+import 'package:foxxy_package/backend/http/cloud_storage.dart';
+import 'package:foxxy_package/backend/preferences.dart';
+import 'package:foxxy_package/providers/base_provider.dart';
+import 'package:foxxy_package/utils/alerts/app_snackbar.dart';
+import 'package:foxxy_package/utils/analytics/mixpanel.dart';
 
 class DeveloperModeProvider extends BaseProvider {
-  final TextEditingController gcpCredentialsController = TextEditingController();
+  final TextEditingController gcpCredentialsController =
+      TextEditingController();
   final TextEditingController gcpBucketNameController = TextEditingController();
   final TextEditingController webhookOnMemoryCreated = TextEditingController();
-  final TextEditingController webhookOnTranscriptReceived = TextEditingController();
+  final TextEditingController webhookOnTranscriptReceived =
+      TextEditingController();
 
   bool savingSettingsLoading = false;
 
@@ -19,8 +21,10 @@ class DeveloperModeProvider extends BaseProvider {
   void initialize() {
     gcpCredentialsController.text = SharedPreferencesUtil().gcpCredentials;
     gcpBucketNameController.text = SharedPreferencesUtil().gcpBucketName;
-    webhookOnMemoryCreated.text = SharedPreferencesUtil().webhookOnMemoryCreated;
-    webhookOnTranscriptReceived.text = SharedPreferencesUtil().webhookOnTranscriptReceived;
+    webhookOnMemoryCreated.text =
+        SharedPreferencesUtil().webhookOnMemoryCreated;
+    webhookOnTranscriptReceived.text =
+        SharedPreferencesUtil().webhookOnTranscriptReceived;
   }
 
   void saveSettings() async {
@@ -28,7 +32,8 @@ class DeveloperModeProvider extends BaseProvider {
     savingSettingsLoading = true;
     notifyListeners();
     final prefs = SharedPreferencesUtil();
-    if (gcpCredentialsController.text.isNotEmpty && gcpBucketNameController.text.isNotEmpty) {
+    if (gcpCredentialsController.text.isNotEmpty &&
+        gcpBucketNameController.text.isNotEmpty) {
       try {
         await authenticateGCP(base64: gcpCredentialsController.text.trim());
       } catch (e) {
@@ -54,7 +59,8 @@ class DeveloperModeProvider extends BaseProvider {
       hasGCPCredentials: prefs.gcpCredentials.isNotEmpty,
       hasGCPBucketName: prefs.gcpBucketName.isNotEmpty,
       hasWebhookMemoryCreated: prefs.webhookOnMemoryCreated.isNotEmpty,
-      hasWebhookTranscriptReceived: prefs.webhookOnTranscriptReceived.isNotEmpty,
+      hasWebhookTranscriptReceived:
+          prefs.webhookOnTranscriptReceived.isNotEmpty,
     );
     savingSettingsLoading = false;
     notifyListeners();

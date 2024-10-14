@@ -1,18 +1,22 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:friend_private/backend/schema/plugin.dart';
-import 'package:friend_private/pages/plugins/plugin_detail.dart';
-import 'package:friend_private/providers/plugin_provider.dart';
-import 'package:friend_private/utils/analytics/mixpanel.dart';
-import 'package:friend_private/utils/other/temp.dart';
-import 'package:friend_private/widgets/dialog.dart';
+import 'package:foxxy_package/backend/schema/plugin.dart';
+import 'package:foxxy_package/pages/plugins/plugin_detail.dart';
+import 'package:foxxy_package/providers/plugin_provider.dart';
+import 'package:foxxy_package/utils/analytics/mixpanel.dart';
+import 'package:foxxy_package/utils/other/temp.dart';
+import 'package:foxxy_package/widgets/dialog.dart';
 
 class PluginListItem extends StatelessWidget {
   final Plugin plugin;
   final int index;
   final PluginProvider provider;
 
-  const PluginListItem({super.key, required this.plugin, required this.index, required this.provider});
+  const PluginListItem(
+      {super.key,
+      required this.plugin,
+      required this.index,
+      required this.provider});
 
   @override
   Widget build(BuildContext context) {
@@ -36,7 +40,8 @@ class PluginListItem extends StatelessWidget {
                 decoration: BoxDecoration(
                   shape: BoxShape.rectangle,
                   borderRadius: BorderRadius.circular(8),
-                  image: DecorationImage(image: imageProvider, fit: BoxFit.cover),
+                  image:
+                      DecorationImage(image: imageProvider, fit: BoxFit.cover),
                 ),
               ),
               placeholder: (context, url) => const CircularProgressIndicator(),
@@ -51,7 +56,10 @@ class PluginListItem extends StatelessWidget {
                   Text(
                     plugin.name,
                     maxLines: 1,
-                    style: const TextStyle(fontWeight: FontWeight.w600, color: Colors.white, fontSize: 16),
+                    style: const TextStyle(
+                        fontWeight: FontWeight.w600,
+                        color: Colors.white,
+                        fontSize: 16),
                   ),
                   SizedBox(height: plugin.ratingAvg != null ? 4 : 0),
                   Padding(
@@ -69,7 +77,8 @@ class PluginListItem extends StatelessWidget {
                             children: [
                               Text(plugin.getRatingAvg()!),
                               const SizedBox(width: 4),
-                              const Icon(Icons.star, color: Colors.deepPurple, size: 16),
+                              const Icon(Icons.star,
+                                  color: Colors.deepPurple, size: 16),
                               const SizedBox(width: 4),
                               Text('(${plugin.ratingCount})'),
                             ],
@@ -90,7 +99,9 @@ class PluginListItem extends StatelessWidget {
                   )
                 : IconButton(
                     icon: Icon(
-                      plugin.enabled ? Icons.check : Icons.arrow_downward_rounded,
+                      plugin.enabled
+                          ? Icons.check
+                          : Icons.arrow_downward_rounded,
                       color: plugin.enabled ? Colors.white : Colors.grey,
                     ),
                     onPressed: () {
@@ -102,7 +113,8 @@ class PluginListItem extends StatelessWidget {
                             () => Navigator.pop(context),
                             () async {
                               Navigator.pop(context);
-                              await routeToPage(context, PluginDetailPage(plugin: plugin));
+                              await routeToPage(
+                                  context, PluginDetailPage(plugin: plugin));
                               provider.setPlugins();
                             },
                             'Authorize External Plugin',
@@ -111,7 +123,8 @@ class PluginListItem extends StatelessWidget {
                           ),
                         );
                       } else {
-                        provider.togglePlugin(plugin.id.toString(), !plugin.enabled, index);
+                        provider.togglePlugin(
+                            plugin.id.toString(), !plugin.enabled, index);
                       }
                     },
                   ),

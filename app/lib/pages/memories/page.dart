@@ -1,19 +1,19 @@
 import 'package:flutter/material.dart';
-import 'package:friend_private/backend/schema/memory.dart';
-import 'package:friend_private/pages/capture/widgets/widgets.dart';
-import 'package:friend_private/pages/memories/widgets/date_list_item.dart';
-import 'package:friend_private/pages/memories/widgets/processing_capture.dart';
-import 'package:friend_private/providers/memory_provider.dart';
+import 'package:foxxy_package/backend/schema/memory.dart';
+import 'package:foxxy_package/pages/capture/widgets/widgets.dart';
+import 'package:foxxy_package/pages/memories/widgets/date_list_item.dart';
+import 'package:foxxy_package/pages/memories/widgets/processing_capture.dart';
+import 'package:foxxy_package/providers/memory_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:visibility_detector/visibility_detector.dart';
-import 'package:friend_private/widgets/web_link_input.dart';
-import 'package:friend_private/generated/l10n.dart';
-import 'package:friend_private/backend/preferences.dart';
+import 'package:foxxy_package/widgets/web_link_input.dart';
+import 'package:foxxy_package/generated/l10n.dart';
+import 'package:foxxy_package/backend/preferences.dart';
 import 'widgets/empty_memories.dart';
 import 'widgets/memory_list_item.dart';
-import 'package:friend_private/utils/analytics/mixpanel.dart';
-import 'package:friend_private/pages/settings/widgets.dart';
-import 'package:friend_private/widgets/dialog.dart';
+import 'package:foxxy_package/utils/analytics/mixpanel.dart';
+import 'package:foxxy_package/pages/settings/widgets.dart';
+import 'package:foxxy_package/widgets/dialog.dart';
 
 class MemoriesPage extends StatefulWidget {
   const MemoriesPage({super.key});
@@ -64,27 +64,32 @@ class _MemoriesPageState extends State<MemoriesPage>
             const SliverToBoxAdapter(child: SizedBox(height: 12)),
             SliverToBoxAdapter(
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     GestureDetector(
-                      onTap: memoryProvider.isCreatingWeChatMemory ? null : () {
-                        _showWebLinkArticleInput(context);
-                      },
-                      child: Row(
-                        children: [
-                          Text(
-                            memoryProvider.isCreatingWeChatMemory ? S.current.CreatingMemory : S.current.ImportArticle,
-                            style: TextStyle(color: Colors.white, fontSize: 16),
-                          ),
-                          const SizedBox(width: 4),
+                      onTap: memoryProvider.isCreatingWeChatMemory
+                          ? null
+                          : () {
+                              _showWebLinkArticleInput(context);
+                            },
+                      child: Row(children: [
+                        Text(
                           memoryProvider.isCreatingWeChatMemory
+                              ? S.current.CreatingMemory
+                              : S.current.ImportArticle,
+                          style: TextStyle(color: Colors.white, fontSize: 16),
+                        ),
+                        const SizedBox(width: 4),
+                        memoryProvider.isCreatingWeChatMemory
                             ? SizedBox(
                                 width: 12,
                                 height: 12,
                                 child: CircularProgressIndicator(
-                                  valueColor: AlwaysStoppedAnimation<Color>(Colors.green),
+                                  valueColor: AlwaysStoppedAnimation<Color>(
+                                      Colors.green),
                                   strokeWidth: 2,
                                 ),
                               )
@@ -92,8 +97,7 @@ class _MemoriesPageState extends State<MemoriesPage>
                                 Icons.add,
                                 color: Colors.white,
                               ),
-                        ]
-                      ),
+                      ]),
                     ),
                     GestureDetector(
                       onTap: memoryProvider.toggleDiscardMemories,
@@ -101,15 +105,15 @@ class _MemoriesPageState extends State<MemoriesPage>
                         children: [
                           Text(
                             SharedPreferencesUtil().showDiscardedMemories
-                            ? S.current.HideDiscarded
-                              : S.current.ShowDiscarded,
+                                ? S.current.HideDiscarded
+                                : S.current.ShowDiscarded,
                             style: TextStyle(color: Colors.white, fontSize: 16),
                           ),
                           const SizedBox(width: 4),
                           Icon(
                             SharedPreferencesUtil().showDiscardedMemories
-                              ? Icons.filter_list_off_sharp
-                              : Icons.filter_list,
+                                ? Icons.filter_list_off_sharp
+                                : Icons.filter_list,
                             color: Colors.white,
                             size: 24,
                           ),

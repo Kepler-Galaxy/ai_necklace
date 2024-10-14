@@ -1,7 +1,7 @@
 import 'dart:convert';
-import 'package:friend_private/backend/schema/diary.dart';
-import 'package:friend_private/backend/http/shared.dart';
-import 'package:friend_private/env/env.dart';
+import 'package:foxxy_package/backend/schema/diary.dart';
+import 'package:foxxy_package/backend/http/shared.dart';
+import 'package:foxxy_package/env/env.dart';
 
 class DiariesApi {
   static Future<List<ServerDiary>> getAllDiaries() async {
@@ -14,13 +14,17 @@ class DiariesApi {
 
     if (response != null && response.statusCode == 200) {
       final List<dynamic> jsonList = json.decode(response.body);
-      return jsonList.map((json) { 
-        try {
-          return ServerDiary.fromJson(json);
-        } catch (e) {
-          return null;
-        }
-      }).where((diary) => diary != null).cast<ServerDiary>().toList();
+      return jsonList
+          .map((json) {
+            try {
+              return ServerDiary.fromJson(json);
+            } catch (e) {
+              return null;
+            }
+          })
+          .where((diary) => diary != null)
+          .cast<ServerDiary>()
+          .toList();
     } else {
       throw Exception('Failed to load all diaries');
     }

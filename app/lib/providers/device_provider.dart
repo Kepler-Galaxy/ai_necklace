@@ -1,16 +1,17 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:friend_private/backend/preferences.dart';
-import 'package:friend_private/backend/schema/bt_device.dart';
-import 'package:friend_private/providers/capture_provider.dart';
-import 'package:friend_private/services/devices.dart';
-import 'package:friend_private/services/notification_service.dart';
-import 'package:friend_private/services/services.dart';
-import 'package:friend_private/utils/analytics/mixpanel.dart';
+import 'package:foxxy_package/backend/preferences.dart';
+import 'package:foxxy_package/backend/schema/bt_device.dart';
+import 'package:foxxy_package/providers/capture_provider.dart';
+import 'package:foxxy_package/services/devices.dart';
+import 'package:foxxy_package/services/notification_service.dart';
+import 'package:foxxy_package/services/services.dart';
+import 'package:foxxy_package/utils/analytics/mixpanel.dart';
 import 'package:instabug_flutter/instabug_flutter.dart';
 
-class DeviceProvider extends ChangeNotifier implements IDeviceServiceSubsciption {
+class DeviceProvider extends ChangeNotifier
+    implements IDeviceServiceSubsciption {
   CaptureProvider? captureProvider;
 
   bool isConnecting = false;
@@ -43,7 +44,9 @@ class DeviceProvider extends ChangeNotifier implements IDeviceServiceSubsciption
     if (connectedDevice == null) {
       return DeviceInfo.getDeviceInfo(null, null);
     }
-    var connection = await ServiceManager.instance().device.ensureConnection(connectedDevice!.id);
+    var connection = await ServiceManager.instance()
+        .device
+        .ensureConnection(connectedDevice!.id);
     if (connection == null) {
       return DeviceInfo.getDeviceInfo(null, null);
     }
@@ -58,11 +61,13 @@ class DeviceProvider extends ChangeNotifier implements IDeviceServiceSubsciption
     void Function(int)? onBatteryLevelChange,
   }) async {
     {
-      var connection = await ServiceManager.instance().device.ensureConnection(deviceId);
+      var connection =
+          await ServiceManager.instance().device.ensureConnection(deviceId);
       if (connection == null) {
         return Future.value(null);
       }
-      return connection.getBleBatteryLevelListener(onBatteryLevelChange: onBatteryLevelChange);
+      return connection.getBleBatteryLevelListener(
+          onBatteryLevelChange: onBatteryLevelChange);
     }
   }
 
@@ -71,7 +76,8 @@ class DeviceProvider extends ChangeNotifier implements IDeviceServiceSubsciption
     if (deviceId.isEmpty) {
       return null;
     }
-    var connection = await ServiceManager.instance().device.ensureConnection(deviceId);
+    var connection =
+        await ServiceManager.instance().device.ensureConnection(deviceId);
     return connection?.device;
   }
 
@@ -90,7 +96,8 @@ class DeviceProvider extends ChangeNotifier implements IDeviceServiceSubsciption
   Future periodicConnect(String printer) async {
     debugPrint("period connect");
     _reconnectionTimer?.cancel();
-    _reconnectionTimer = Timer.periodic(Duration(seconds: connectionCheckSeconds), (t) async {
+    _reconnectionTimer =
+        Timer.periodic(Duration(seconds: connectionCheckSeconds), (t) async {
       debugPrint("period connect...");
       print(printer);
       print('seconds: $connectionCheckSeconds');
@@ -99,7 +106,8 @@ class DeviceProvider extends ChangeNotifier implements IDeviceServiceSubsciption
       if (SharedPreferencesUtil().btDeviceStruct.id.isEmpty) {
         return;
       }
-      print("isConnected: $isConnected, isConnecting: $isConnecting, connectedDevice: $connectedDevice");
+      print(
+          "isConnected: $isConnected, isConnecting: $isConnecting, connectedDevice: $connectedDevice");
       if ((!isConnected && connectedDevice == null)) {
         if (isConnecting) {
           return;
@@ -111,7 +119,8 @@ class DeviceProvider extends ChangeNotifier implements IDeviceServiceSubsciption
     });
   }
 
-  Future<BTDeviceStruct?> _scanAndConnectDevice({bool autoConnect = true, bool timeout = false}) async {
+  Future<BTDeviceStruct?> _scanAndConnectDevice(
+      {bool autoConnect = true, bool timeout = false}) async {
     var device = await _getConnectedDevice();
     if (device != null) {
       return device;
@@ -222,7 +231,8 @@ class DeviceProvider extends ChangeNotifier implements IDeviceServiceSubsciption
     setConnectedDevice(device);
     setIsConnected(true);
     updateConnectingStatus(false);
-    await captureProvider?.streamDeviceRecording(restartBytesProcessing: true, device: device);
+    await captureProvider?.streamDeviceRecording(
+        restartBytesProcessing: true, device: device);
     //  initiateBleBatteryListener();
     // The device is still disconnected for some reason
     if (connectedDevice != null) {
@@ -234,11 +244,14 @@ class DeviceProvider extends ChangeNotifier implements IDeviceServiceSubsciption
   }
 
   @override
-  void onDeviceConnectionStateChanged(String deviceId, DeviceConnectionState state) async {
-    debugPrint("provider > device connection state changed...${deviceId}...${state}...${connectedDevice?.id}");
+  void onDeviceConnectionStateChanged(
+      String deviceId, DeviceConnectionState state) async {
+    debugPrint(
+        "provider > device connection state changed...${deviceId}...${state}...${connectedDevice?.id}");
     switch (state) {
       case DeviceConnectionState.connected:
-        var connection = await ServiceManager.instance().device.ensureConnection(deviceId);
+        var connection =
+            await ServiceManager.instance().device.ensureConnection(deviceId);
         if (connection == null) {
           return;
         }
@@ -265,7 +278,9 @@ class DeviceProvider extends ChangeNotifier implements IDeviceServiceSubsciption
 
     // Connect to first founded device
     var force = devices.first.id == SharedPreferencesUtil().btDeviceStruct.id;
-    var connection = await ServiceManager.instance().device.ensureConnection(devices.first.id, force: force);
+    var connection = await ServiceManager.instance()
+        .device
+        .ensureConnection(devices.first.id, force: force);
     if (connection == null) {
       return;
     }

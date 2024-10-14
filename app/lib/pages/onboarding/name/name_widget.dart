@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:friend_private/backend/auth.dart';
-import 'package:friend_private/backend/preferences.dart';
+import 'package:foxxy_package/backend/auth.dart';
+import 'package:foxxy_package/backend/preferences.dart';
 import 'package:gradient_borders/gradient_borders.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:friend_private/generated/l10n.dart';
+import 'package:foxxy_package/generated/l10n.dart';
 
 class NameWidget extends StatefulWidget {
   final Function goNext;
@@ -20,7 +20,8 @@ class _NameWidgetState extends State<NameWidget> {
 
   @override
   void initState() {
-    nameController = TextEditingController(text: SharedPreferencesUtil().givenName);
+    nameController =
+        TextEditingController(text: SharedPreferencesUtil().givenName);
     // focusNode.requestFocus();
     super.initState();
   }
@@ -86,11 +87,14 @@ class _NameWidgetState extends State<NameWidget> {
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: MaterialButton(
-                    padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 32, vertical: 16),
                     onPressed: () async {
-                      if (nameController.text.isEmpty || nameController.text.trim().isEmpty) {
+                      if (nameController.text.isEmpty ||
+                          nameController.text.trim().isEmpty) {
                         ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Please enter a valid name')),
+                          const SnackBar(
+                              content: Text('Please enter a valid name')),
                         );
                       } else {
                         FocusManager.instance.primaryFocus?.unfocus();

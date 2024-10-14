@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:friend_private/backend/schema/memory.dart';
-import 'package:friend_private/backend/schema/structured.dart';
-import 'package:friend_private/pages/memory_detail/memory_detail_provider.dart';
-import 'package:friend_private/pages/memory_detail/page.dart';
-import 'package:friend_private/providers/memory_provider.dart';
-import 'package:friend_private/utils/analytics/mixpanel.dart';
-import 'package:friend_private/utils/other/temp.dart';
+import 'package:foxxy_package/backend/schema/memory.dart';
+import 'package:foxxy_package/backend/schema/structured.dart';
+import 'package:foxxy_package/pages/memory_detail/memory_detail_provider.dart';
+import 'package:foxxy_package/pages/memory_detail/page.dart';
+import 'package:foxxy_package/providers/memory_provider.dart';
+import 'package:foxxy_package/utils/analytics/mixpanel.dart';
+import 'package:foxxy_package/utils/other/temp.dart';
 import 'package:provider/provider.dart';
 
 class MemoryListItem extends StatefulWidget {
@@ -30,18 +30,22 @@ class _MemoryListItemState extends State<MemoryListItem> {
     Structured structured = widget.memory.structured;
     return GestureDetector(
       onTap: () async {
-        MixpanelManager().memoryListItemClicked(widget.memory, widget.memoryIdx);
+        MixpanelManager()
+            .memoryListItemClicked(widget.memory, widget.memoryIdx);
         context.read<MemoryDetailProvider>().updateMemory(widget.memoryIdx);
         routeToPage(
           context,
-          MemoryDetailPage(memory: widget.memory, isFromOnboarding: widget.isFromOnboarding),
+          MemoryDetailPage(
+              memory: widget.memory, isFromOnboarding: widget.isFromOnboarding),
         );
         // if (result != null && result['deleted'] == true) widget.deleteMemory(widget.memory, widget.memoryIdx);
       },
       child: Consumer<MemoryProvider>(builder: (context, provider, child) {
         return Padding(
-          padding:
-              EdgeInsets.only(top: 12, left: widget.isFromOnboarding ? 0 : 16, right: widget.isFromOnboarding ? 0 : 16),
+          padding: EdgeInsets.only(
+              top: 12,
+              left: widget.isFromOnboarding ? 0 : 16,
+              right: widget.isFromOnboarding ? 0 : 16),
           child: Container(
             width: double.maxFinite,
             decoration: BoxDecoration(
@@ -66,8 +70,10 @@ class _MemoryListItemState extends State<MemoryListItem> {
                   ScaffoldMessenger.of(context)
                       .showSnackBar(
                         SnackBar(
-                          content: const Text('Memory deleted successfully 🗑️'),
-                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                          content:
+                              const Text('Memory deleted successfully 🗑️'),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 16, vertical: 16),
                           action: SnackBarAction(
                             label: 'Undo',
                             textColor: Colors.white,
@@ -101,7 +107,9 @@ class _MemoryListItemState extends State<MemoryListItem> {
                               style: Theme.of(context).textTheme.titleLarge,
                               maxLines: 1,
                             ),
-                      widget.memory.discarded ? const SizedBox.shrink() : const SizedBox(height: 8),
+                      widget.memory.discarded
+                          ? const SizedBox.shrink()
+                          : const SizedBox(height: 8),
                       widget.memory.discarded
                           ? const SizedBox.shrink()
                           : Text(
@@ -109,7 +117,8 @@ class _MemoryListItemState extends State<MemoryListItem> {
                               style: Theme.of(context)
                                   .textTheme
                                   .bodyMedium!
-                                  .copyWith(color: Colors.grey.shade300, height: 1.3),
+                                  .copyWith(
+                                      color: Colors.grey.shade300, height: 1.3),
                               maxLines: 2,
                             ),
                       widget.memory.discarded
@@ -118,7 +127,8 @@ class _MemoryListItemState extends State<MemoryListItem> {
                               style: Theme.of(context)
                                   .textTheme
                                   .bodyMedium!
-                                  .copyWith(color: Colors.grey.shade300, height: 1.3),
+                                  .copyWith(
+                                      color: Colors.grey.shade300, height: 1.3),
                             )
                           : const SizedBox(height: 8),
                     ],
@@ -141,8 +151,12 @@ class _MemoryListItemState extends State<MemoryListItem> {
           widget.memory.discarded
               ? const SizedBox.shrink()
               : Text(widget.memory.structured.getEmoji(),
-                  style: const TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.w600)),
-          widget.memory.structured.category.isNotEmpty && !widget.memory.discarded
+                  style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 22,
+                      fontWeight: FontWeight.w600)),
+          widget.memory.structured.category.isNotEmpty &&
+                  !widget.memory.discarded
               ? const SizedBox(width: 12)
               : const SizedBox.shrink(),
           widget.memory.structured.category.isNotEmpty
@@ -151,10 +165,14 @@ class _MemoryListItemState extends State<MemoryListItem> {
                     color: widget.memory.getTagColor(),
                     borderRadius: BorderRadius.circular(16),
                   ),
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                   child: Text(
                     widget.memory.getTag(),
-                    style: Theme.of(context).textTheme.bodyMedium!.copyWith(color: widget.memory.getTagTextColor()),
+                    style: Theme.of(context)
+                        .textTheme
+                        .bodyMedium!
+                        .copyWith(color: widget.memory.getTagTextColor()),
                     maxLines: 1,
                   ),
                 )
@@ -164,7 +182,8 @@ class _MemoryListItemState extends State<MemoryListItem> {
           ),
           Expanded(
             child: Text(
-              dateTimeFormat('MMM d, h:mm a', widget.memory.startedAt ?? widget.memory.createdAt),
+              dateTimeFormat('MMM d, h:mm a',
+                  widget.memory.startedAt ?? widget.memory.createdAt),
               style: TextStyle(color: Colors.grey.shade400, fontSize: 14),
               maxLines: 1,
               textAlign: TextAlign.end,

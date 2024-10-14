@@ -10,18 +10,19 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_timezone/flutter_timezone.dart';
-import 'package:friend_private/backend/http/api/notifications.dart';
-import 'package:friend_private/backend/preferences.dart';
-import 'package:friend_private/backend/schema/message.dart';
-import 'package:friend_private/main.dart';
-import 'package:friend_private/pages/home/page.dart';
+import 'package:foxxy_package/backend/http/api/notifications.dart';
+import 'package:foxxy_package/backend/preferences.dart';
+import 'package:foxxy_package/backend/schema/message.dart';
+import 'package:foxxy_package/main.dart';
+import 'package:foxxy_package/pages/home/page.dart';
 import 'package:intercom_flutter/intercom_flutter.dart';
 
 class NotificationService {
   NotificationService._();
 
   static NotificationService instance = NotificationService._();
-  MethodChannel platform = const MethodChannel('com.keplergalaxy.necklace/notifyOnKill');
+  MethodChannel platform =
+      const MethodChannel('com.keplergalaxy.necklace/notifyOnKill');
   final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
 
   final channel = NotificationChannel(
@@ -96,7 +97,8 @@ class NotificationService {
   Future<bool> requestNotificationPermissions() async {
     bool isAllowed = await _awesomeNotifications.isNotificationAllowed();
     if (!isAllowed) {
-      isAllowed = await _awesomeNotifications.requestPermissionToSendNotifications();
+      isAllowed =
+          await _awesomeNotifications.requestPermissionToSendNotifications();
       _register();
     }
     return isAllowed;
@@ -108,7 +110,8 @@ class NotificationService {
         'setNotificationOnKillService',
         {
           'title': "Foxxy Device Disconnected",
-          'description': "Please keep your app opened to continue using your Friend.",
+          'description':
+              "Please keep your app opened to continue using your Friend.",
         },
       );
     } catch (e) {
@@ -153,7 +156,12 @@ class NotificationService {
     debugPrint('createNotification: $allowed');
     if (!allowed) return;
     debugPrint('createNotification ~ Creating notification: $title');
-    showNotification(id: notificationId, title: title, body: body, wakeUpScreen: true, payload: payload);
+    showNotification(
+        id: notificationId,
+        title: title,
+        body: body,
+        wakeUpScreen: true,
+        payload: payload);
   }
 
   clearNotification(int id) => _awesomeNotifications.cancel(id);
@@ -170,8 +178,8 @@ class NotificationService {
     if (data.isNotEmpty) {
       if (message.data['notification_type'] == 'daily_summary') {
         SharedPreferencesUtil().pageToShowFromNotification = 1;
-        MyApp.navigatorKey.currentState
-            ?.pushReplacement(MaterialPageRoute(builder: (context) => const HomePageWrapper()));
+        MyApp.navigatorKey.currentState?.pushReplacement(
+            MaterialPageRoute(builder: (context) => const HomePageWrapper()));
       }
     }
   }
@@ -189,7 +197,8 @@ class NotificationService {
           _showForegroundNotification(noti: noti);
         }
         final notificationType = data['notification_type'];
-        if (notificationType == 'plugin' || notificationType == 'daily_summary') {
+        if (notificationType == 'plugin' ||
+            notificationType == 'daily_summary') {
           data['from_integration'] = data['from_integration'] == 'true';
           _serverMessageStreamController.add(ServerMessage.fromJson(data));
         }
@@ -197,19 +206,24 @@ class NotificationService {
 
       // Announcement likes
       if (noti != null) {
-        _showForegroundNotification(noti: noti, layout: NotificationLayout.BigText);
+        _showForegroundNotification(
+            noti: noti, layout: NotificationLayout.BigText);
       }
     });
   }
 
-  final _serverMessageStreamController = StreamController<ServerMessage>.broadcast();
+  final _serverMessageStreamController =
+      StreamController<ServerMessage>.broadcast();
 
-  Stream<ServerMessage> get listenForServerMessages => _serverMessageStreamController.stream;
+  Stream<ServerMessage> get listenForServerMessages =>
+      _serverMessageStreamController.stream;
 
   Future<void> _showForegroundNotification(
-      {required RemoteNotification noti, NotificationLayout layout = NotificationLayout.Default}) async {
+      {required RemoteNotification noti,
+      NotificationLayout layout = NotificationLayout.Default}) async {
     final id = Random().nextInt(10000);
-    showNotification(id: id, title: noti.title!, body: noti.body!, layout: layout);
+    showNotification(
+        id: id, title: noti.title!, body: noti.body!, layout: layout);
   }
 }
 
@@ -218,7 +232,8 @@ class NotificationUtil {
 
   static Future<void> initializeNotificationsEventListeners() async {
     // Only after at least the action method is set, the notification events are delivered
-    AwesomeNotifications().setListeners(onActionReceivedMethod: NotificationUtil.onActionReceivedMethod);
+    AwesomeNotifications().setListeners(
+        onActionReceivedMethod: NotificationUtil.onActionReceivedMethod);
   }
 
   static Future<void> initializeIsolateReceivePort() async {
@@ -229,34 +244,40 @@ class NotificationUtil {
     });
 
     // This initialization only happens on main isolate
-    IsolateNameServer.registerPortWithName(receivePort!.sendPort, 'notification_action_port');
+    IsolateNameServer.registerPortWithName(
+        receivePort!.sendPort, 'notification_action_port');
   }
 
   /// Use this method to detect when the user taps on a notification or action button
   @pragma("vm:entry-point")
-  static Future<void> onActionReceivedMethod(ReceivedAction receivedAction) async {
+  static Future<void> onActionReceivedMethod(
+      ReceivedAction receivedAction) async {
     if (receivePort != null) {
       await onActionReceivedMethodImpl(receivedAction);
     } else {
       print(
           'onActionReceivedMethod was called inside a parallel dart isolate, where receivePort was never initialized.');
-      SendPort? sendPort = IsolateNameServer.lookupPortByName('notification_action_port');
+      SendPort? sendPort =
+          IsolateNameServer.lookupPortByName('notification_action_port');
 
       if (sendPort != null) {
-        print('Redirecting the execution to main isolate process in listening...');
+        print(
+            'Redirecting the execution to main isolate process in listening...');
         dynamic serializedData = receivedAction.toMap();
         sendPort.send(serializedData);
       }
     }
   }
 
-  static Future<void> onActionReceivedMethodImpl(ReceivedAction receivedAction) async {
+  static Future<void> onActionReceivedMethodImpl(
+      ReceivedAction receivedAction) async {
     final Map<String, int> screensWithRespectToPath = {
       '/chat': 2,
       '/capture': 1,
       '/memories': 0,
     };
-    var message = 'Action ${receivedAction.actionType?.name} received on ${receivedAction.actionLifeCycle?.name}';
+    var message =
+        'Action ${receivedAction.actionType?.name} received on ${receivedAction.actionLifeCycle?.name}';
     debugPrint(message);
     debugPrint(receivedAction.toMap().toString());
 
@@ -264,9 +285,12 @@ class NotificationUtil {
     WidgetsFlutterBinding.ensureInitialized();
     final payload = receivedAction.payload;
     if (payload?.containsKey('navigateTo') ?? false) {
-      SharedPreferencesUtil().subPageToShowFromNotification = payload?['navigateTo'] ?? '';
+      SharedPreferencesUtil().subPageToShowFromNotification =
+          payload?['navigateTo'] ?? '';
     }
-    SharedPreferencesUtil().pageToShowFromNotification = screensWithRespectToPath[payload?['path']] ?? 1;
-    MyApp.navigatorKey.currentState?.pushReplacement(MaterialPageRoute(builder: (context) => const HomePageWrapper()));
+    SharedPreferencesUtil().pageToShowFromNotification =
+        screensWithRespectToPath[payload?['path']] ?? 1;
+    MyApp.navigatorKey.currentState?.pushReplacement(
+        MaterialPageRoute(builder: (context) => const HomePageWrapper()));
   }
 }

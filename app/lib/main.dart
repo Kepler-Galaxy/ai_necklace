@@ -9,35 +9,35 @@ import 'package:flutter/services.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart' as ble;
 import 'package:flutter_foreground_task/flutter_foreground_task.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:friend_private/backend/auth.dart';
-import 'package:friend_private/backend/preferences.dart';
-import 'package:friend_private/env/dev_env.dart';
-import 'package:friend_private/env/env.dart';
-import 'package:friend_private/env/prod_env.dart';
-import 'package:friend_private/firebase_options_dev.dart' as dev;
-import 'package:friend_private/firebase_options_prod.dart' as prod;
-import 'package:friend_private/flavors.dart';
-import 'package:friend_private/pages/home/page.dart';
-import 'package:friend_private/pages/memory_detail/memory_detail_provider.dart';
-import 'package:friend_private/pages/onboarding/wrapper.dart';
-import 'package:friend_private/providers/auth_provider.dart';
-import 'package:friend_private/providers/calendar_provider.dart';
-import 'package:friend_private/providers/capture_provider.dart';
-import 'package:friend_private/providers/connectivity_provider.dart';
-import 'package:friend_private/providers/device_provider.dart';
-import 'package:friend_private/providers/home_provider.dart';
-import 'package:friend_private/providers/memory_provider.dart';
-import 'package:friend_private/providers/message_provider.dart';
-import 'package:friend_private/providers/onboarding_provider.dart';
-import 'package:friend_private/providers/plugin_provider.dart';
-import 'package:friend_private/providers/speech_profile_provider.dart';
-import 'package:friend_private/services/notification_service.dart';
-import 'package:friend_private/services/services.dart';
-import 'package:friend_private/utils/analytics/gleap.dart';
-import 'package:friend_private/utils/analytics/growthbook.dart';
-import 'package:friend_private/utils/analytics/mixpanel.dart';
-import 'package:friend_private/utils/features/calendar.dart';
-import 'package:friend_private/utils/logger.dart';
+import 'package:foxxy_package/backend/auth.dart';
+import 'package:foxxy_package/backend/preferences.dart';
+import 'package:foxxy_package/env/dev_env.dart';
+import 'package:foxxy_package/env/env.dart';
+import 'package:foxxy_package/env/prod_env.dart';
+import 'package:foxxy_package/firebase_options_dev.dart' as dev;
+import 'package:foxxy_package/firebase_options_prod.dart' as prod;
+import 'package:foxxy_package/flavors.dart';
+import 'package:foxxy_package/pages/home/page.dart';
+import 'package:foxxy_package/pages/memory_detail/memory_detail_provider.dart';
+import 'package:foxxy_package/pages/onboarding/wrapper.dart';
+import 'package:foxxy_package/providers/auth_provider.dart';
+import 'package:foxxy_package/providers/calendar_provider.dart';
+import 'package:foxxy_package/providers/capture_provider.dart';
+import 'package:foxxy_package/providers/connectivity_provider.dart';
+import 'package:foxxy_package/providers/device_provider.dart';
+import 'package:foxxy_package/providers/home_provider.dart';
+import 'package:foxxy_package/providers/memory_provider.dart';
+import 'package:foxxy_package/providers/message_provider.dart';
+import 'package:foxxy_package/providers/onboarding_provider.dart';
+import 'package:foxxy_package/providers/plugin_provider.dart';
+import 'package:foxxy_package/providers/speech_profile_provider.dart';
+import 'package:foxxy_package/services/notification_service.dart';
+import 'package:foxxy_package/services/services.dart';
+import 'package:foxxy_package/utils/analytics/gleap.dart';
+import 'package:foxxy_package/utils/analytics/growthbook.dart';
+import 'package:foxxy_package/utils/analytics/mixpanel.dart';
+import 'package:foxxy_package/utils/features/calendar.dart';
+import 'package:foxxy_package/utils/logger.dart';
 import 'package:gleap_sdk/gleap_sdk.dart';
 import 'package:instabug_flutter/instabug_flutter.dart';
 import 'package:intercom_flutter/intercom_flutter.dart';
@@ -45,10 +45,9 @@ import 'package:opus_dart/opus_dart.dart';
 import 'package:opus_flutter/opus_flutter.dart' as opus_flutter;
 import 'package:provider/provider.dart';
 import 'package:talker_flutter/talker_flutter.dart';
-import 'package:friend_private/providers/diary_provider.dart';
+import 'package:foxxy_package/providers/diary_provider.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'generated/l10n.dart';
-
 
 Future<bool> _init() async {
   // Service manager
@@ -62,9 +61,11 @@ Future<bool> _init() async {
 
   await Authing.init(Env.authingUserPoolId!, Env.authingAppId!);
   if (F.env == Environment.prod) {
-    await Firebase.initializeApp(options: prod.DefaultFirebaseOptions.currentPlatform, name: 'prod');
+    await Firebase.initializeApp(
+        options: prod.DefaultFirebaseOptions.currentPlatform, name: 'prod');
   } else {
-    await Firebase.initializeApp(options: dev.DefaultFirebaseOptions.currentPlatform, name: 'dev');
+    await Firebase.initializeApp(
+        options: dev.DefaultFirebaseOptions.currentPlatform, name: 'dev');
   }
 
   if (Env.intercomAppId != null) {
@@ -123,7 +124,8 @@ void main() async {
           );
         }
         FlutterError.onError = (FlutterErrorDetails details) {
-          Zone.current.handleUncaughtError(details.exception, details.stack ?? StackTrace.empty);
+          Zone.current.handleUncaughtError(
+              details.exception, details.stack ?? StackTrace.empty);
         };
         Instabug.setColorTheme(ColorTheme.dark);
         runApp(const MyApp());
@@ -141,10 +143,12 @@ class MyApp extends StatefulWidget {
   @override
   State<MyApp> createState() => _MyAppState();
 
-  static _MyAppState of(BuildContext context) => context.findAncestorStateOfType<_MyAppState>()!;
+  static _MyAppState of(BuildContext context) =>
+      context.findAncestorStateOfType<_MyAppState>()!;
 
   // The navigator key is necessary to navigate using static methods
-  static final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+  static final GlobalKey<NavigatorState> navigatorKey =
+      GlobalKey<NavigatorState>();
 }
 
 class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
@@ -183,31 +187,40 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
             update: (BuildContext context, value, MessageProvider? previous) =>
                 (previous?..updatePluginProvider(value)) ?? MessageProvider(),
           ),
-          ChangeNotifierProxyProvider2<MemoryProvider, MessageProvider, CaptureProvider>(
+          ChangeNotifierProxyProvider2<MemoryProvider, MessageProvider,
+              CaptureProvider>(
             create: (context) => CaptureProvider(),
-            update: (BuildContext context, memory, message, CaptureProvider? previous) =>
-                (previous?..updateProviderInstances(memory, message)) ?? CaptureProvider(),
+            update: (BuildContext context, memory, message,
+                    CaptureProvider? previous) =>
+                (previous?..updateProviderInstances(memory, message)) ??
+                CaptureProvider(),
           ),
           ChangeNotifierProxyProvider<CaptureProvider, DeviceProvider>(
             create: (context) => DeviceProvider(),
-            update: (BuildContext context, captureProvider, DeviceProvider? previous) =>
+            update: (BuildContext context, captureProvider,
+                    DeviceProvider? previous) =>
                 (previous?..setProviders(captureProvider)) ?? DeviceProvider(),
           ),
           ChangeNotifierProxyProvider<DeviceProvider, OnboardingProvider>(
             create: (context) => OnboardingProvider(),
-            update: (BuildContext context, value, OnboardingProvider? previous) =>
+            update: (BuildContext context, value,
+                    OnboardingProvider? previous) =>
                 (previous?..setDeviceProvider(value)) ?? OnboardingProvider(),
           ),
           ListenableProvider(create: (context) => HomeProvider()),
           ChangeNotifierProxyProvider<DeviceProvider, SpeechProfileProvider>(
             create: (context) => SpeechProfileProvider(),
-            update: (BuildContext context, device, SpeechProfileProvider? previous) =>
+            update: (BuildContext context, device,
+                    SpeechProfileProvider? previous) =>
                 (previous?..setProviders(device)) ?? SpeechProfileProvider(),
           ),
-          ChangeNotifierProxyProvider2<PluginProvider, MemoryProvider, MemoryDetailProvider>(
+          ChangeNotifierProxyProvider2<PluginProvider, MemoryProvider,
+              MemoryDetailProvider>(
             create: (context) => MemoryDetailProvider(),
-            update: (BuildContext context, plugin, memory, MemoryDetailProvider? previous) =>
-                (previous?..setProviders(plugin, memory)) ?? MemoryDetailProvider(),
+            update: (BuildContext context, plugin, memory,
+                    MemoryDetailProvider? previous) =>
+                (previous?..setProviders(plugin, memory)) ??
+                MemoryDetailProvider(),
           ),
           ChangeNotifierProvider(create: (context) => CalenderProvider()),
           ChangeNotifierProvider(create: (context) => DiaryProvider()),
@@ -219,7 +232,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
                 if (Env.instabugApiKey != null) InstabugNavigatorObserver(),
               ],
               debugShowCheckedModeBanner: F.env == Environment.dev,
-              
+
               title: F.title,
               navigatorKey: MyApp.navigatorKey,
               localizationsDelegates: const [
@@ -239,13 +252,20 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
                   ),
                   snackBarTheme: SnackBarThemeData(
                     backgroundColor: Colors.grey.shade900,
-                    contentTextStyle: const TextStyle(fontSize: 16, color: Colors.white, fontWeight: FontWeight.w500),
+                    contentTextStyle: const TextStyle(
+                        fontSize: 16,
+                        color: Colors.white,
+                        fontWeight: FontWeight.w500),
                   ),
                   textTheme: TextTheme(
-                    titleLarge: const TextStyle(fontSize: 18, color: Colors.white),
-                    titleMedium: const TextStyle(fontSize: 16, color: Colors.white),
-                    bodyMedium: const TextStyle(fontSize: 14, color: Colors.white),
-                    labelMedium: TextStyle(fontSize: 12, color: Colors.grey.shade200),
+                    titleLarge:
+                        const TextStyle(fontSize: 18, color: Colors.white),
+                    titleMedium:
+                        const TextStyle(fontSize: 16, color: Colors.white),
+                    bodyMedium:
+                        const TextStyle(fontSize: 14, color: Colors.white),
+                    labelMedium:
+                        TextStyle(fontSize: 12, color: Colors.grey.shade200),
                   ),
                   textSelectionTheme: const TextSelectionThemeData(
                     cursorColor: Colors.white,
@@ -255,11 +275,13 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
               builder: (context, child) {
                 FlutterError.onError = (FlutterErrorDetails details) {
                   WidgetsBinding.instance.addPostFrameCallback((_) {
-                    Logger.instance.talker.handle(details.exception, details.stack);
+                    Logger.instance.talker
+                        .handle(details.exception, details.stack);
                   });
                 };
                 ErrorWidget.builder = (errorDetails) {
-                  return CustomErrorWidget(errorMessage: errorDetails.exceptionAsString());
+                  return CustomErrorWidget(
+                      errorMessage: errorDetails.exceptionAsString());
                 };
                 return child!;
               },
@@ -308,18 +330,17 @@ class _DeciderWidgetState extends State<DeciderWidget> {
         context.read<PluginProvider>().setPluginsFromCache();
         context.read<MessageProvider>().refreshMessages();
       } else {
-        
         await Intercom.instance.loginUnidentifiedUser();
       }
     });
-    
   }
 
   @override
   Widget build(BuildContext context) {
     return Consumer<AuthenticationProvider>(
       builder: (context, authProvider, child) {
-        if (SharedPreferencesUtil().onboardingCompleted && authProvider.isSignedIn()) {
+        if (SharedPreferencesUtil().onboardingCompleted &&
+            authProvider.isSignedIn()) {
           return const HomePageWrapper();
         } else {
           return const OnboardingWrapper();

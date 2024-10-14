@@ -3,10 +3,10 @@ import 'dart:typed_data';
 
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 
-import 'package:friend_private/backend/schema/bt_device.dart';
-import 'package:friend_private/utils/ble/device_base.dart';
-import 'package:friend_private/utils/ble/frame_communication.dart';
-import 'package:friend_private/utils/ble/friend_communication.dart';
+import 'package:foxxy_package/backend/schema/bt_device.dart';
+import 'package:foxxy_package/utils/ble/device_base.dart';
+import 'package:foxxy_package/utils/ble/frame_communication.dart';
+import 'package:foxxy_package/utils/ble/friend_communication.dart';
 
 Map<String, DeviceBase> deviceMap = {};
 Future<DeviceBase?> getDevice(String deviceId) async {

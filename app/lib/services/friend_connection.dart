@@ -5,13 +5,13 @@ import 'dart:math';
 import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
-import 'package:friend_private/backend/schema/bt_device.dart';
-import 'package:friend_private/services/device_connections.dart';
-import 'package:friend_private/services/devices.dart';
-import 'package:friend_private/utils/audio/wav_bytes.dart';
-import 'package:friend_private/utils/ble/errors.dart';
-import 'package:friend_private/utils/ble/gatt_utils.dart';
-import 'package:friend_private/utils/logger.dart';
+import 'package:foxxy_package/backend/schema/bt_device.dart';
+import 'package:foxxy_package/services/device_connections.dart';
+import 'package:foxxy_package/services/devices.dart';
+import 'package:foxxy_package/utils/audio/wav_bytes.dart';
+import 'package:foxxy_package/utils/ble/errors.dart';
+import 'package:foxxy_package/utils/ble/gatt_utils.dart';
+import 'package:foxxy_package/utils/logger.dart';
 
 class FriendDeviceConnection extends DeviceConnection {
   BluetoothService? _batteryService;
@@ -24,7 +24,9 @@ class FriendDeviceConnection extends DeviceConnection {
   get deviceId => device.id;
 
   @override
-  Future<void> connect({Function(String deviceId, DeviceConnectionState state)? onConnectionStateChanged}) async {
+  Future<void> connect(
+      {Function(String deviceId, DeviceConnectionState state)?
+          onConnectionStateChanged}) async {
     await super.connect(onConnectionStateChanged: onConnectionStateChanged);
 
     // Services
@@ -63,7 +65,8 @@ class FriendDeviceConnection extends DeviceConnection {
       return -1;
     }
 
-    var batteryLevelCharacteristic = getCharacteristic(_batteryService!, batteryLevelCharacteristicUuid);
+    var batteryLevelCharacteristic =
+        getCharacteristic(_batteryService!, batteryLevelCharacteristicUuid);
     if (batteryLevelCharacteristic == null) {
       logCharacteristicNotFoundError('Battery level', deviceId);
       return -1;
@@ -83,7 +86,8 @@ class FriendDeviceConnection extends DeviceConnection {
       return null;
     }
 
-    var batteryLevelCharacteristic = getCharacteristic(_batteryService!, batteryLevelCharacteristicUuid);
+    var batteryLevelCharacteristic =
+        getCharacteristic(_batteryService!, batteryLevelCharacteristicUuid);
     if (batteryLevelCharacteristic == null) {
       logCharacteristicNotFoundError('Battery level', deviceId);
       return null;
@@ -124,7 +128,8 @@ class FriendDeviceConnection extends DeviceConnection {
       return null;
     }
 
-    var audioDataStreamCharacteristic = getCharacteristic(_friendService!, audioDataStreamCharacteristicUuid);
+    var audioDataStreamCharacteristic =
+        getCharacteristic(_friendService!, audioDataStreamCharacteristicUuid);
     if (audioDataStreamCharacteristic == null) {
       logCharacteristicNotFoundError('Audio data stream', deviceId);
       return null;
@@ -140,10 +145,14 @@ class FriendDeviceConnection extends DeviceConnection {
           await device.requestMtu(512); // This might fix the code 133 error
         }
         if (device.isConnected) {
-          await audioDataStreamCharacteristic.setNotifyValue(true); // device could be disconnected here.
+          await audioDataStreamCharacteristic
+              .setNotifyValue(true); // device could be disconnected here.
         } else {
-          Logger.handle(Exception('Device disconnected before setting notify value'), StackTrace.current,
-              message: 'Device is disconnected. Please reconnect and try again');
+          Logger.handle(
+              Exception('Device disconnected before setting notify value'),
+              StackTrace.current,
+              message:
+                  'Device is disconnected. Please reconnect and try again');
         }
       }
     } catch (e, stackTrace) {
@@ -152,7 +161,8 @@ class FriendDeviceConnection extends DeviceConnection {
     }
 
     debugPrint('Subscribed to audioBytes stream from Foxxy Device');
-    var listener = audioDataStreamCharacteristic.lastValueStream.listen((value) {
+    var listener =
+        audioDataStreamCharacteristic.lastValueStream.listen((value) {
       if (value.isNotEmpty) onAudioBytesReceived(value);
     });
 
@@ -174,7 +184,8 @@ class FriendDeviceConnection extends DeviceConnection {
       return BleAudioCodec.pcm8;
     }
 
-    var audioCodecCharacteristic = getCharacteristic(_friendService!, audioCodecCharacteristicUuid);
+    var audioCodecCharacteristic =
+        getCharacteristic(_friendService!, audioCodecCharacteristicUuid);
     if (audioCodecCharacteristic == null) {
       logCharacteristicNotFoundError('Audio codec', deviceId);
       return BleAudioCodec.pcm8;
@@ -226,7 +237,8 @@ class FriendDeviceConnection extends DeviceConnection {
       return Future.value(<int>[]);
     }
 
-    var storageListCharacteristic = getCharacteristic(_storageService!, storageReadControlCharacteristicUuid);
+    var storageListCharacteristic = getCharacteristic(
+        _storageService!, storageReadControlCharacteristicUuid);
     if (storageListCharacteristic == null) {
       logCharacteristicNotFoundError('Storage List', deviceId);
       return Future.value(<int>[]);
@@ -250,7 +262,8 @@ class FriendDeviceConnection extends DeviceConnection {
       }
     }
     debugPrint('storage list finished');
-    debugPrint('Storage lengths: ${storageLengths.length} items: ${storageLengths.join(', ')}');
+    debugPrint(
+        'Storage lengths: ${storageLengths.length} items: ${storageLengths.join(', ')}');
     return storageLengths;
   }
 
@@ -263,21 +276,24 @@ class FriendDeviceConnection extends DeviceConnection {
       return null;
     }
 
-    var storageDataStreamCharacteristic = getCharacteristic(_storageService!, storageDataStreamCharacteristicUuid);
+    var storageDataStreamCharacteristic = getCharacteristic(
+        _storageService!, storageDataStreamCharacteristicUuid);
     if (storageDataStreamCharacteristic == null) {
       logCharacteristicNotFoundError('Storage data stream', deviceId);
       return null;
     }
 
     try {
-      await storageDataStreamCharacteristic.setNotifyValue(true); // device could be disconnected here.
+      await storageDataStreamCharacteristic
+          .setNotifyValue(true); // device could be disconnected here.
     } catch (e, stackTrace) {
       logSubscribeError('Storage data stream', deviceId, e, stackTrace);
       return null;
     }
 
     debugPrint('Subscribed to StorageBytes stream from Foxxy Device');
-    var listener = storageDataStreamCharacteristic.lastValueStream.listen((value) {
+    var listener =
+        storageDataStreamCharacteristic.lastValueStream.listen((value) {
       if (value.isNotEmpty) onStorageBytesReceived(value);
     });
 
@@ -300,7 +316,8 @@ class FriendDeviceConnection extends DeviceConnection {
       return false;
     }
 
-    var storageDataStreamCharacteristic = getCharacteristic(_storageService!, storageDataStreamCharacteristicUuid);
+    var storageDataStreamCharacteristic = getCharacteristic(
+        _storageService!, storageDataStreamCharacteristicUuid);
     if (storageDataStreamCharacteristic == null) {
       logCharacteristicNotFoundError('Storage data stream', deviceId);
       return false;
@@ -320,7 +337,8 @@ class FriendDeviceConnection extends DeviceConnection {
       return;
     }
 
-    var imageCaptureControlCharacteristic = getCharacteristic(_friendService!, imageCaptureControlCharacteristicUuid);
+    var imageCaptureControlCharacteristic = getCharacteristic(
+        _friendService!, imageCaptureControlCharacteristicUuid);
     if (imageCaptureControlCharacteristic == null) {
       logCharacteristicNotFoundError('Image capture control', deviceId);
       return;
@@ -339,7 +357,8 @@ class FriendDeviceConnection extends DeviceConnection {
       return;
     }
 
-    var imageCaptureControlCharacteristic = getCharacteristic(_friendService!, imageCaptureControlCharacteristicUuid);
+    var imageCaptureControlCharacteristic = getCharacteristic(
+        _friendService!, imageCaptureControlCharacteristicUuid);
     if (imageCaptureControlCharacteristic == null) {
       logCharacteristicNotFoundError('Image capture control', deviceId);
       return;
@@ -356,7 +375,8 @@ class FriendDeviceConnection extends DeviceConnection {
       logServiceNotFoundError('Friend', deviceId);
       return false;
     }
-    var imageCaptureControlCharacteristic = getCharacteristic(_friendService!, imageDataStreamCharacteristicUuid);
+    var imageCaptureControlCharacteristic =
+        getCharacteristic(_friendService!, imageDataStreamCharacteristicUuid);
     return imageCaptureControlCharacteristic != null;
   }
 
@@ -368,14 +388,16 @@ class FriendDeviceConnection extends DeviceConnection {
       return null;
     }
 
-    var imageStreamCharacteristic = getCharacteristic(_friendService!, imageDataStreamCharacteristicUuid);
+    var imageStreamCharacteristic =
+        getCharacteristic(_friendService!, imageDataStreamCharacteristicUuid);
     if (imageStreamCharacteristic == null) {
       logCharacteristicNotFoundError('Image data stream', deviceId);
       return null;
     }
 
     try {
-      await imageStreamCharacteristic.setNotifyValue(true); // device could be disconnected here.
+      await imageStreamCharacteristic
+          .setNotifyValue(true); // device could be disconnected here.
     } catch (e, stackTrace) {
       logSubscribeError('Image data stream', deviceId, e, stackTrace);
       return null;
@@ -434,7 +456,8 @@ class FriendDeviceConnection extends DeviceConnection {
       return null;
     }
 
-    var accelCharacteristic = getCharacteristic(_accelService!, accelDataStreamCharacteristicUuid);
+    var accelCharacteristic =
+        getCharacteristic(_accelService!, accelDataStreamCharacteristicUuid);
     if (accelCharacteristic == null) {
       logCharacteristicNotFoundError('Accelerometer', deviceId);
       return null;
@@ -489,8 +512,9 @@ class FriendDeviceConnection extends DeviceConnection {
           debugPrint('Accelerometer z direction: ${accelerometerData[2]}');
           debugPrint('Gyroscope z direction: ${accelerometerData[5]}\n');
           //simple threshold fall calcaultor
-          var fall_number =
-              sqrt(pow(accelerometerData[0], 2) + pow(accelerometerData[1], 2) + pow(accelerometerData[2], 2));
+          var fall_number = sqrt(pow(accelerometerData[0], 2) +
+              pow(accelerometerData[1], 2) +
+              pow(accelerometerData[2], 2));
           if (fall_number > 30.0) {
             AwesomeNotifications().createNotification(
               content: NotificationContent(

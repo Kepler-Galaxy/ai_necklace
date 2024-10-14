@@ -2,24 +2,24 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_provider_utilities/flutter_provider_utilities.dart';
-import 'package:friend_private/backend/http/api/memories.dart';
-import 'package:friend_private/backend/preferences.dart';
-import 'package:friend_private/backend/schema/memory.dart';
-import 'package:friend_private/backend/schema/person.dart';
-import 'package:friend_private/pages/home/page.dart';
-import 'package:friend_private/pages/memory_detail/widgets.dart';
-import 'package:friend_private/pages/settings/people.dart';
-import 'package:friend_private/pages/settings/recordings_storage_permission.dart';
-import 'package:friend_private/utils/analytics/mixpanel.dart';
-import 'package:friend_private/utils/other/temp.dart';
-import 'package:friend_private/widgets/dialog.dart';
-import 'package:friend_private/widgets/expandable_text.dart';
-import 'package:friend_private/widgets/extensions/string.dart';
-import 'package:friend_private/widgets/photos_grid.dart';
-import 'package:friend_private/widgets/transcript.dart';
+import 'package:foxxy_package/backend/http/api/memories.dart';
+import 'package:foxxy_package/backend/preferences.dart';
+import 'package:foxxy_package/backend/schema/memory.dart';
+import 'package:foxxy_package/backend/schema/person.dart';
+import 'package:foxxy_package/pages/home/page.dart';
+import 'package:foxxy_package/pages/memory_detail/widgets.dart';
+import 'package:foxxy_package/pages/settings/people.dart';
+import 'package:foxxy_package/pages/settings/recordings_storage_permission.dart';
+import 'package:foxxy_package/utils/analytics/mixpanel.dart';
+import 'package:foxxy_package/utils/other/temp.dart';
+import 'package:foxxy_package/widgets/dialog.dart';
+import 'package:foxxy_package/widgets/expandable_text.dart';
+import 'package:foxxy_package/widgets/extensions/string.dart';
+import 'package:foxxy_package/widgets/photos_grid.dart';
+import 'package:foxxy_package/widgets/transcript.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:friend_private/generated/l10n.dart';
+import 'package:foxxy_package/generated/l10n.dart';
 
 import 'memory_detail_provider.dart';
 import 'package:tuple/tuple.dart';
@@ -42,7 +42,8 @@ class MemoryDetailPage extends StatefulWidget {
   State<MemoryDetailPage> createState() => _MemoryDetailPageState();
 }
 
-class _MemoryDetailPageState extends State<MemoryDetailPage> with TickerProviderStateMixin {
+class _MemoryDetailPageState extends State<MemoryDetailPage>
+    with TickerProviderStateMixin {
   final scaffoldKey = GlobalKey<ScaffoldState>();
   final focusTitleField = FocusNode();
   final focusOverviewField = FocusNode();
@@ -77,7 +78,7 @@ class _MemoryDetailPageState extends State<MemoryDetailPage> with TickerProvider
   @override
   Widget build(BuildContext context) {
     return PopScope(
-      canPop:  !widget.isPopup,
+      canPop: !widget.isPopup,
       onPopInvoked: (didPop) {
         if (didPop) {
           return;
@@ -90,14 +91,17 @@ class _MemoryDetailPageState extends State<MemoryDetailPage> with TickerProvider
         child: MessageListener<MemoryDetailProvider>(
           showError: (error) {
             if (error == 'REPROCESS_FAILED') {
-              ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Error while processing memory. Please try again later.')));
+              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                  content: Text(
+                      'Error while processing memory. Please try again later.')));
             }
           },
           showInfo: (info) {
             if (info == 'REPROCESS_SUCCESS') {
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Memory processed! 🚀', style: TextStyle(color: Colors.white))),
+                const SnackBar(
+                    content: Text('Memory processed! 🚀',
+                        style: TextStyle(color: Colors.white))),
               );
             }
           },
@@ -107,7 +111,8 @@ class _MemoryDetailPageState extends State<MemoryDetailPage> with TickerProvider
             appBar: AppBar(
               automaticallyImplyLeading: false,
               backgroundColor: Theme.of(context).colorScheme.primary,
-              title: Consumer<MemoryDetailProvider>(builder: (context, provider, child) {
+              title: Consumer<MemoryDetailProvider>(
+                  builder: (context, provider, child) {
                 return Row(
                   mainAxisSize: MainAxisSize.max,
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -117,8 +122,12 @@ class _MemoryDetailPageState extends State<MemoryDetailPage> with TickerProvider
                       onPressed: () {
                         if (widget.isFromOnboarding) {
                           SchedulerBinding.instance.addPostFrameCallback((_) {
-                            Navigator.pushAndRemoveUntil(context,
-                                MaterialPageRoute(builder: (context) => const HomePageWrapper()), (route) => false);
+                            Navigator.pushAndRemoveUntil(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        const HomePageWrapper()),
+                                (route) => false);
                           });
                         } else {
                           Navigator.pop(context);
@@ -176,18 +185,27 @@ class _MemoryDetailPageState extends State<MemoryDetailPage> with TickerProvider
                           backgroundColor: Colors.black,
                           elevation: 8,
                           shape: const RoundedRectangleBorder(
-                              borderRadius: BorderRadius.all(Radius.circular(32)),
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(32)),
                               side: BorderSide(color: Colors.grey, width: 1)),
                           onPressed: () {
-                            var provider = Provider.of<MemoryDetailProvider>(context, listen: false);
-                            Clipboard.setData(ClipboardData(text: provider.memory.getTranscript(generate: true)));
-                            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                            var provider = Provider.of<MemoryDetailProvider>(
+                                context,
+                                listen: false);
+                            Clipboard.setData(ClipboardData(
+                                text: provider.memory
+                                    .getTranscript(generate: true)));
+                            ScaffoldMessenger.of(context)
+                                .showSnackBar(const SnackBar(
                               content: Text('Transcript copied to clipboard'),
                               duration: Duration(seconds: 1),
                             ));
-                            MixpanelManager().copiedMemoryDetails(provider.memory, source: 'Transcript');
+                            MixpanelManager().copiedMemoryDetails(
+                                provider.memory,
+                                source: 'Transcript');
                           },
-                          child: const Icon(Icons.copy_rounded, color: Colors.white, size: 20),
+                          child: const Icon(Icons.copy_rounded,
+                              color: Colors.white, size: 20),
                         )
                       : const SizedBox.shrink();
                 }),
@@ -197,11 +215,16 @@ class _MemoryDetailPageState extends State<MemoryDetailPage> with TickerProvider
                   indicatorSize: TabBarIndicatorSize.label,
                   isScrollable: false,
                   onTap: (value) {
-                    context.read<MemoryDetailProvider>().updateSelectedTab(value);
+                    context
+                        .read<MemoryDetailProvider>()
+                        .updateSelectedTab(value);
                   },
                   padding: EdgeInsets.zero,
                   indicatorPadding: EdgeInsets.zero,
-                  labelStyle: Theme.of(context).textTheme.titleLarge!.copyWith(fontSize: 18),
+                  labelStyle: Theme.of(context)
+                      .textTheme
+                      .titleLarge!
+                      .copyWith(fontSize: 18),
                   tabs: [
                     Selector<MemoryDetailProvider, MemorySource?>(
                         selector: (context, provider) => provider.memory.source,
@@ -211,14 +234,17 @@ class _MemoryDetailPageState extends State<MemoryDetailPage> with TickerProvider
                                 ? 'Photos'
                                 : memorySource == MemorySource.screenpipe
                                     ? 'Raw Data'
-                                    : widget.memory.source == MemorySource.web_link
+                                    : widget.memory.source ==
+                                            MemorySource.web_link
                                         ? 'Web Content'
                                         : S.current.Transcript,
                           );
                         }),
                     Tab(text: S.current.Summary)
                   ],
-                  indicator: BoxDecoration(color: Colors.transparent, borderRadius: BorderRadius.circular(16)),
+                  indicator: BoxDecoration(
+                      color: Colors.transparent,
+                      borderRadius: BorderRadius.circular(16)),
                 ),
                 Expanded(
                   child: Padding(
@@ -228,13 +254,20 @@ class _MemoryDetailPageState extends State<MemoryDetailPage> with TickerProvider
                         physics: const NeverScrollableScrollPhysics(),
                         children: [
                           Selector<MemoryDetailProvider, MemorySource?>(
-                            selector: (context, provider) => provider.memory.source,
+                            selector: (context, provider) =>
+                                provider.memory.source,
                             builder: (context, source, child) {
                               return ListView(
                                 shrinkWrap: true,
                                 children: source == MemorySource.openglass
-                                    ? [const PhotosGridComponent(), const SizedBox(height: 32)]
-                                    : widget.memory.source == MemorySource.web_link ? [const WebContentWidgets()] : [const TranscriptWidgets()],
+                                    ? [
+                                        const PhotosGridComponent(),
+                                        const SizedBox(height: 32)
+                                      ]
+                                    : widget.memory.source ==
+                                            MemorySource.web_link
+                                        ? [const WebContentWidgets()]
+                                        : [const TranscriptWidgets()],
                               );
                             },
                           ),
@@ -266,7 +299,7 @@ class SummaryTab extends StatelessWidget {
           children: [
             const GetSummaryWidgets(),
             // isDiscaarded ? const ReprocessDiscardedWidget() : const GetPluginsWidgets(),
-            if(isDiscaarded) const ReprocessDiscardedWidget(),
+            if (isDiscaarded) const ReprocessDiscardedWidget(),
             const GetGeolocationWidgets(),
           ],
         );
@@ -284,7 +317,8 @@ class TranscriptWidgets extends StatelessWidget {
       builder: (context, provider, child) {
         return Column(
           children: [
-            SizedBox(height: provider.memory.transcriptSegments.isEmpty ? 16 : 0),
+            SizedBox(
+                height: provider.memory.transcriptSegments.isEmpty ? 16 : 0),
             // provider.memory.isPostprocessing()
             //     ? Container(
             //         padding: const EdgeInsets.all(16),
@@ -296,13 +330,16 @@ class TranscriptWidgets extends StatelessWidget {
             //             style: TextStyle(color: Colors.grey.shade300, fontSize: 15, height: 1.3)),
             //       )
             //     : const SizedBox(height: 0),
-            SizedBox(height: provider.memory.transcriptSegments.isEmpty ? 16 : 0),
+            SizedBox(
+                height: provider.memory.transcriptSegments.isEmpty ? 16 : 0),
             provider.memory.transcriptSegments.isEmpty
                 ? ExpandableTextWidget(
-                    text: (provider.memory.externalIntegration?.text ?? '').decodeSting,
+                    text: (provider.memory.externalIntegration?.text ?? '')
+                        .decodeSting,
                     maxLines: 10000,
                     linkColor: Colors.grey.shade300,
-                    style: TextStyle(color: Colors.grey.shade300, fontSize: 15, height: 1.3),
+                    style: TextStyle(
+                        color: Colors.grey.shade300, fontSize: 15, height: 1.3),
                     toggleExpand: () {
                       provider.toggleIsTranscriptExpanded();
                     },
@@ -360,50 +397,56 @@ class WebContentWidgets extends StatelessWidget {
   Widget build(BuildContext context) {
     return Consumer<MemoryDetailProvider>(
       builder: (context, provider, child) {
-        final webContentResponse = provider.memory.externalLink?.webContentResponse;
-        final String webContent = webContentResponse?.mainContent ?? 'No content available';
+        final webContentResponse =
+            provider.memory.externalLink?.webContentResponse;
+        final String webContent =
+            webContentResponse?.mainContent ?? 'No content available';
         final String title = webContentResponse?.title ?? 'No title available';
         final String url = webContentResponse?.url ?? '';
-        
+
         return Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const SizedBox(height: 16),
-              Text(
-                title,
-                style: Theme.of(context).textTheme.titleLarge?.copyWith(color: Colors.grey.shade300),
-              ),
-              const SizedBox(height: 8),
-              if (url.isNotEmpty)
-                InkWell(
-                  onTap: () async {
-                    final Uri uri = Uri.parse(url);
-                    if (await canLaunchUrl(uri)) {
-                      await launchUrl(uri);
-                    } else {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('Could not launch $url')),
-                      );
-                    }
-                  },
-                  child: Text(
-                    url,
-                    style: TextStyle(
-                      color: Colors.blue.shade300,
-                      decoration: TextDecoration.underline,
-                    ),
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const SizedBox(height: 16),
+            Text(
+              title,
+              style: Theme.of(context)
+                  .textTheme
+                  .titleLarge
+                  ?.copyWith(color: Colors.grey.shade300),
+            ),
+            const SizedBox(height: 8),
+            if (url.isNotEmpty)
+              InkWell(
+                onTap: () async {
+                  final Uri uri = Uri.parse(url);
+                  if (await canLaunchUrl(uri)) {
+                    await launchUrl(uri);
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Could not launch $url')),
+                    );
+                  }
+                },
+                child: Text(
+                  url,
+                  style: TextStyle(
+                    color: Colors.blue.shade300,
+                    decoration: TextDecoration.underline,
                   ),
                 ),
-              const SizedBox(height: 16),
-              ExpandableTextWidget(
-                text: webContent,
-                maxLines: 10000,
-                linkColor: Colors.grey.shade300,
-                style: TextStyle(color: Colors.grey.shade300, fontSize: 15, height: 1.3),
-                isExpanded: provider.isTranscriptExpanded,
-                toggleExpand: () => provider.toggleIsTranscriptExpanded(),
               ),
-              const SizedBox(height: 32),
+            const SizedBox(height: 16),
+            ExpandableTextWidget(
+              text: webContent,
+              maxLines: 10000,
+              linkColor: Colors.grey.shade300,
+              style: TextStyle(
+                  color: Colors.grey.shade300, fontSize: 15, height: 1.3),
+              isExpanded: provider.isTranscriptExpanded,
+              toggleExpand: () => provider.toggleIsTranscriptExpanded(),
+            ),
+            const SizedBox(height: 32),
           ],
         );
       },
@@ -415,7 +458,8 @@ class EditSegmentWidget extends StatelessWidget {
   final int segmentIdx;
   final List<Person> people;
 
-  const EditSegmentWidget({super.key, required this.segmentIdx, required this.people});
+  const EditSegmentWidget(
+      {super.key, required this.segmentIdx, required this.people});
 
   @override
   Widget build(BuildContext context) {
@@ -423,7 +467,8 @@ class EditSegmentWidget extends StatelessWidget {
       return Container(
         decoration: BoxDecoration(
           color: Theme.of(context).colorScheme.surface,
-          borderRadius: const BorderRadius.only(topLeft: Radius.circular(16), topRight: Radius.circular(16)),
+          borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(16), topRight: Radius.circular(16)),
         ),
         height: 320,
         child: Stack(
@@ -437,12 +482,14 @@ class EditSegmentWidget extends StatelessWidget {
                     padding: const EdgeInsets.symmetric(horizontal: 16.0),
                     child: Row(
                       children: [
-                        Text('Who\'s segment is this?', style: Theme.of(context).textTheme.titleLarge),
+                        Text('Who\'s segment is this?',
+                            style: Theme.of(context).textTheme.titleLarge),
                         const Spacer(),
                         TextButton(
                           onPressed: () {
                             MixpanelManager().unassignedSegment();
-                            provider.unassignMemoryTranscriptSegment(provider.memory.id, segmentIdx);
+                            provider.unassignMemoryTranscriptSegment(
+                                provider.memory.id, segmentIdx);
                             // setModalState(() {
                             //   personId = null;
                             //   isUserSegment = false;
@@ -461,7 +508,9 @@ class EditSegmentWidget extends StatelessWidget {
                       ],
                     ),
                   ),
-                  !provider.hasAudioRecording ? const SizedBox(height: 12) : const SizedBox(),
+                  !provider.hasAudioRecording
+                      ? const SizedBox(height: 12)
+                      : const SizedBox(),
                   !provider.hasAudioRecording
                       ? GestureDetector(
                           onTap: () {
@@ -472,7 +521,8 @@ class EditSegmentWidget extends StatelessWidget {
                                 () => Navigator.pop(context),
                                 () {
                                   Navigator.pop(context);
-                                  routeToPage(context, const RecordingsStoragePermission());
+                                  routeToPage(context,
+                                      const RecordingsStoragePermission());
                                 },
                                 'Can\'t be used for speech training',
                                 'This segment can\'t be used for speech training as there is no audio recording available. Check if you have the required permissions for future memories.',
@@ -481,7 +531,8 @@ class EditSegmentWidget extends StatelessWidget {
                             );
                           },
                           child: Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 16.0),
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               crossAxisAlignment: CrossAxisAlignment.center,
@@ -490,10 +541,13 @@ class EditSegmentWidget extends StatelessWidget {
                                     style: Theme.of(context)
                                         .textTheme
                                         .bodyMedium!
-                                        .copyWith(decoration: TextDecoration.underline)),
+                                        .copyWith(
+                                            decoration:
+                                                TextDecoration.underline)),
                                 const Padding(
                                   padding: EdgeInsets.only(right: 12),
-                                  child: Icon(Icons.info, color: Colors.grey, size: 20),
+                                  child: Icon(Icons.info,
+                                      color: Colors.grey, size: 20),
                                 ),
                               ],
                             ),
@@ -503,20 +557,25 @@ class EditSegmentWidget extends StatelessWidget {
                   const SizedBox(height: 12),
                   CheckboxListTile(
                     title: const Text('Yours'),
-                    value: provider.memory.transcriptSegments[segmentIdx].isUser,
-                    checkboxShape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(8))),
+                    value:
+                        provider.memory.transcriptSegments[segmentIdx].isUser,
+                    checkboxShape: const RoundedRectangleBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(8))),
                     onChanged: (bool? value) async {
                       if (provider.editSegmentLoading) return;
                       // setModalState(() => loading = true);
                       provider.toggleEditSegmentLoading(true);
                       MixpanelManager().assignedSegment('User');
-                      provider.memory.transcriptSegments[segmentIdx].isUser = true;
-                      provider.memory.transcriptSegments[segmentIdx].personId = null;
+                      provider.memory.transcriptSegments[segmentIdx].isUser =
+                          true;
+                      provider.memory.transcriptSegments[segmentIdx].personId =
+                          null;
                       bool result = await assignMemoryTranscriptSegment(
                         provider.memory.id,
                         segmentIdx,
                         isUser: true,
-                        useForSpeechTraining: SharedPreferencesUtil().hasSpeakerProfile,
+                        useForSpeechTraining:
+                            SharedPreferencesUtil().hasSpeakerProfile,
                       );
                       try {
                         provider.toggleEditSegmentLoading(false);
@@ -536,16 +595,22 @@ class EditSegmentWidget extends StatelessWidget {
                   for (var person in people)
                     CheckboxListTile(
                       title: Text('${person.name}\'s'),
-                      value: provider.memory.transcriptSegments[segmentIdx].personId == person.id,
-                      checkboxShape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(8))),
+                      value: provider
+                              .memory.transcriptSegments[segmentIdx].personId ==
+                          person.id,
+                      checkboxShape: const RoundedRectangleBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(8))),
                       onChanged: (bool? value) async {
                         if (provider.editSegmentLoading) return;
                         provider.toggleEditSegmentLoading(true);
                         MixpanelManager().assignedSegment('User Person');
-                        provider.memory.transcriptSegments[segmentIdx].isUser = false;
-                        provider.memory.transcriptSegments[segmentIdx].personId = person.id;
-                        bool result =
-                            await assignMemoryTranscriptSegment(provider.memory.id, segmentIdx, personId: person.id);
+                        provider.memory.transcriptSegments[segmentIdx].isUser =
+                            false;
+                        provider.memory.transcriptSegments[segmentIdx]
+                            .personId = person.id;
+                        bool result = await assignMemoryTranscriptSegment(
+                            provider.memory.id, segmentIdx,
+                            personId: person.id);
                         // TODO: make this un-closable or in a way that they receive the result
                         try {
                           provider.toggleEditSegmentLoading(false);

@@ -7,18 +7,20 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:flutter_foreground_task/flutter_foreground_task.dart';
 import 'package:flutter_provider_utilities/flutter_provider_utilities.dart';
-import 'package:friend_private/backend/preferences.dart';
-import 'package:friend_private/backend/schema/bt_device.dart';
-import 'package:friend_private/providers/base_provider.dart';
-import 'package:friend_private/providers/device_provider.dart';
-import 'package:friend_private/services/devices.dart';
-import 'package:friend_private/services/notification_service.dart';
-import 'package:friend_private/services/services.dart';
-import 'package:friend_private/utils/analytics/mixpanel.dart';
-import 'package:friend_private/utils/audio/foreground.dart';
+import 'package:foxxy_package/backend/preferences.dart';
+import 'package:foxxy_package/backend/schema/bt_device.dart';
+import 'package:foxxy_package/providers/base_provider.dart';
+import 'package:foxxy_package/providers/device_provider.dart';
+import 'package:foxxy_package/services/devices.dart';
+import 'package:foxxy_package/services/notification_service.dart';
+import 'package:foxxy_package/services/services.dart';
+import 'package:foxxy_package/utils/analytics/mixpanel.dart';
+import 'package:foxxy_package/utils/audio/foreground.dart';
 import 'package:permission_handler/permission_handler.dart';
 
-class OnboardingProvider extends BaseProvider with MessageNotifierMixin implements IDeviceServiceSubsciption {
+class OnboardingProvider extends BaseProvider
+    with MessageNotifierMixin
+    implements IDeviceServiceSubsciption {
   DeviceProvider? deviceProvider;
   bool isClicked = false;
   bool isConnected = false;
@@ -62,20 +64,23 @@ class OnboardingProvider extends BaseProvider with MessageNotifierMixin implemen
   void updateLocationPermission(bool value) {
     hasLocationPermission = value;
     SharedPreferencesUtil().locationEnabled = value;
-    MixpanelManager().setUserProperty('Location Enabled', SharedPreferencesUtil().locationEnabled);
+    MixpanelManager().setUserProperty(
+        'Location Enabled', SharedPreferencesUtil().locationEnabled);
     notifyListeners();
   }
 
   void updateNotificationPermission(bool value) {
     hasNotificationPermission = value;
     SharedPreferencesUtil().notificationsEnabled = value;
-    MixpanelManager().setUserProperty('Notifications Enabled', SharedPreferencesUtil().notificationsEnabled);
+    MixpanelManager().setUserProperty(
+        'Notifications Enabled', SharedPreferencesUtil().notificationsEnabled);
     notifyListeners();
   }
 
   void updateBackgroundPermission(bool value) {
     hasBackgroundPermission = value;
-    MixpanelManager().setUserProperty('Background Permission Enabled', hasBackgroundPermission);
+    MixpanelManager().setUserProperty(
+        'Background Permission Enabled', hasBackgroundPermission);
     notifyListeners();
   }
 
@@ -100,15 +105,18 @@ class OnboardingProvider extends BaseProvider with MessageNotifierMixin implemen
         }
       }
       PermissionStatus bleScanStatus = await Permission.bluetoothScan.request();
-      PermissionStatus bleConnectStatus = await Permission.bluetoothConnect.request();
+      PermissionStatus bleConnectStatus =
+          await Permission.bluetoothConnect.request();
       // PermissionStatus locationStatus = await Permission.location.request();
-      updateBluetoothPermission(bleConnectStatus.isGranted && bleScanStatus.isGranted);
+      updateBluetoothPermission(
+          bleConnectStatus.isGranted && bleScanStatus.isGranted);
     }
     notifyListeners();
   }
 
   Future askForNotificationPermissions() async {
-    var isAllowed = await NotificationService.instance.requestNotificationPermissions();
+    var isAllowed =
+        await NotificationService.instance.requestNotificationPermissions();
     updateNotificationPermission(isAllowed);
     notifyListeners();
   }
@@ -161,16 +169,20 @@ class OnboardingProvider extends BaseProvider with MessageNotifierMixin implemen
     required bool isFromOnboarding,
     VoidCallback? goNext,
   }) async {
-    if (device.name.toLowerCase() == 'openglass' || device.type == DeviceType.openglass) {
+    if (device.name.toLowerCase() == 'openglass' ||
+        device.type == DeviceType.openglass) {
       notifyInfo('OPENGLASS_NOT_SUPPORTED');
       return;
     }
     try {
       if (isClicked) return; // if any item is clicked, don't do anything
       isClicked = true; // Prevent further clicks
-      connectingToDeviceId = device.id; // Mark this device as being connected to
+      connectingToDeviceId =
+          device.id; // Mark this device as being connected to
       notifyListeners();
-      await ServiceManager.instance().device.ensureConnection(device.id, force: true);
+      await ServiceManager.instance()
+          .device
+          .ensureConnection(device.id, force: true);
       print('Connected to device: ${device.name}');
       deviceId = device.id;
       await SharedPreferencesUtil().btDeviceStructSet(device);
@@ -247,7 +259,8 @@ class OnboardingProvider extends BaseProvider with MessageNotifierMixin implemen
 
     ServiceManager.instance().device.subscribe(this, this);
 
-    _findDevicesTimer = Timer.periodic(const Duration(seconds: 4), (timer) async {
+    _findDevicesTimer =
+        Timer.periodic(const Duration(seconds: 4), (timer) async {
       ServiceManager.instance().device.discover();
     });
   }
@@ -257,12 +270,14 @@ class OnboardingProvider extends BaseProvider with MessageNotifierMixin implemen
     if (deviceId.isEmpty) {
       return null;
     }
-    var connection = await ServiceManager.instance().device.ensureConnection(deviceId);
+    var connection =
+        await ServiceManager.instance().device.ensureConnection(deviceId);
     return connection?.device;
   }
 
   Future<BleAudioCodec> _getAudioCodec(String deviceId) async {
-    var connection = await ServiceManager.instance().device.ensureConnection(deviceId);
+    var connection =
+        await ServiceManager.instance().device.ensureConnection(deviceId);
     if (connection == null) {
       return BleAudioCodec.pcm8;
     }
@@ -280,7 +295,8 @@ class OnboardingProvider extends BaseProvider with MessageNotifierMixin implemen
   }
 
   @override
-  void onDeviceConnectionStateChanged(String deviceId, DeviceConnectionState state) {
+  void onDeviceConnectionStateChanged(
+      String deviceId, DeviceConnectionState state) {
     // TODO: implement onDeviceConnectionStateChanged
   }
 
@@ -295,7 +311,10 @@ class OnboardingProvider extends BaseProvider with MessageNotifierMixin implemen
       updatedDevicesMap[device.id] = device;
     }
     // Remove devices that are no longer found
-    foundDevicesMap.keys.where((id) => !updatedDevicesMap.containsKey(id)).toList().forEach(foundDevicesMap.remove);
+    foundDevicesMap.keys
+        .where((id) => !updatedDevicesMap.containsKey(id))
+        .toList()
+        .forEach(foundDevicesMap.remove);
 
     // Merge the new devices into the current map to maintain order
     foundDevicesMap.addAll(updatedDevicesMap);

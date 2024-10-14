@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:friend_private/backend/schema/memory.dart';
-import 'package:friend_private/backend/schema/memory_connection.dart';
-import 'package:friend_private/pages/memory_detail/page.dart';
+import 'package:foxxy_package/backend/schema/memory.dart';
+import 'package:foxxy_package/backend/schema/memory_connection.dart';
+import 'package:foxxy_package/pages/memory_detail/page.dart';
 import 'package:provider/provider.dart';
-import 'package:friend_private/providers/memory_provider.dart';
-import 'package:friend_private/pages/memory_detail/memory_detail_provider.dart';
+import 'package:foxxy_package/providers/memory_provider.dart';
+import 'package:foxxy_package/pages/memory_detail/memory_detail_provider.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:friend_private/generated/l10n.dart';
+import 'package:foxxy_package/generated/l10n.dart';
 import 'package:collection/collection.dart';
-import 'package:friend_private/utils/analytics/mixpanel.dart';
+import 'package:foxxy_package/utils/analytics/mixpanel.dart';
 
 class FlashingBoltIcon extends StatefulWidget {
   const FlashingBoltIcon({Key? key}) : super(key: key);

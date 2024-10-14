@@ -1,9 +1,9 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
-import 'package:friend_private/backend/http/api/messages.dart';
-import 'package:friend_private/backend/preferences.dart';
-import 'package:friend_private/backend/schema/message.dart';
-import 'package:friend_private/providers/plugin_provider.dart';
+import 'package:foxxy_package/backend/http/api/messages.dart';
+import 'package:foxxy_package/backend/preferences.dart';
+import 'package:foxxy_package/backend/schema/message.dart';
+import 'package:foxxy_package/providers/plugin_provider.dart';
 
 class MessageProvider extends ChangeNotifier {
   PluginProvider? pluginProvider;
@@ -115,8 +115,10 @@ class MessageProvider extends ChangeNotifier {
   void checkSelectedPlugins() {
     var selectedChatPlugin = SharedPreferencesUtil().selectedChatPluginId;
     debugPrint('_edgeCasePluginNotAvailable $selectedChatPlugin');
-    var plugin = pluginProvider!.plugins.firstWhereOrNull((p) => selectedChatPlugin == p.id);
-    if (selectedChatPlugin != 'no_selected' && (plugin == null || !plugin.worksWithChat() || !plugin.enabled)) {
+    var plugin = pluginProvider!.plugins
+        .firstWhereOrNull((p) => selectedChatPlugin == p.id);
+    if (selectedChatPlugin != 'no_selected' &&
+        (plugin == null || !plugin.worksWithChat() || !plugin.enabled)) {
       SharedPreferencesUtil().selectedChatPluginId = 'no_selected';
     }
     notifyListeners();

@@ -8,8 +8,8 @@ import 'package:authing_sdk_v3/options/login_options.dart';
 import 'package:crypto/crypto.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:friend_private/backend/preferences.dart';
-import 'package:friend_private/utils/logger.dart';
+import 'package:foxxy_package/backend/preferences.dart';
+import 'package:foxxy_package/utils/logger.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
@@ -125,7 +125,8 @@ Future<UserCredential?> signInWithGoogle() async {
   try {
     print('Signing in with Google');
     // Trigger the authentication flow
-    final GoogleSignInAccount? googleUser = await GoogleSignIn(scopes: ['profile', 'email']).signIn();
+    final GoogleSignInAccount? googleUser =
+        await GoogleSignIn(scopes: ['profile', 'email']).signIn();
     print('Google User: $googleUser');
     // Obtain the auth details from the request
     final GoogleSignInAuthentication? googleAuth =
@@ -165,8 +166,9 @@ Future<String?> getIdToken() async {
   String refreshToken = SharedPreferencesUtil().refershToken;
   AuthResult result;
   if (refreshToken != "") {
-    try{
-      result = await OIDCClient.getNewAccessTokenByRefreshToken(refreshToken).timeout(Duration(seconds: 10));
+    try {
+      result = await OIDCClient.getNewAccessTokenByRefreshToken(refreshToken)
+          .timeout(Duration(seconds: 10));
     } catch (e) {
       debugPrint("Request timed out or failed: $e");
       return "";
@@ -184,7 +186,6 @@ Future<String?> getIdToken() async {
     SharedPreferencesUtil().email = userInfo.user!.email;
     AuthClient.currentUser = result.user;
     debugPrint(result.user!.accessToken);
-
   } else {
     debugPrint('No refresh token available');
     return "";

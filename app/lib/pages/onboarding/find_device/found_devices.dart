@@ -1,13 +1,13 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_provider_utilities/flutter_provider_utilities.dart';
-import 'package:friend_private/backend/schema/bt_device.dart';
-import 'package:friend_private/providers/onboarding_provider.dart';
-import 'package:friend_private/widgets/dialog.dart';
+import 'package:foxxy_package/backend/schema/bt_device.dart';
+import 'package:foxxy_package/providers/onboarding_provider.dart';
+import 'package:foxxy_package/widgets/dialog.dart';
 import 'package:gradient_borders/gradient_borders.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:friend_private/generated/l10n.dart';
+import 'package:foxxy_package/generated/l10n.dart';
 
 class FoundDevices extends StatefulWidget {
   final bool isFromOnboarding;
@@ -116,7 +116,8 @@ class _FoundDevicesState extends State<FoundDevices> {
                       fontSize: 18,
                       color: provider.batteryPercentage <= 25
                           ? Colors.red
-                          : provider.batteryPercentage > 25 && provider.batteryPercentage <= 50
+                          : provider.batteryPercentage > 25 &&
+                                  provider.batteryPercentage <= 50
                               ? Colors.orange
                               : Colors.green,
                     ),
@@ -184,10 +185,12 @@ class _FoundDevicesState extends State<FoundDevices> {
                                     width: 20,
                                     child: CircularProgressIndicator(
                                       strokeWidth: 2,
-                                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                                      valueColor: AlwaysStoppedAnimation<Color>(
+                                          Colors.white),
                                     ),
                                   )
-                                : const SizedBox.shrink(), // Show loading indicator if connecting
+                                : const SizedBox
+                                    .shrink(), // Show loading indicator if connecting
                           )
                         ],
                       ),

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:friend_private/pages/settings/webview.dart';
-import 'package:friend_private/utils/analytics/mixpanel.dart';
-import 'package:friend_private/utils/other/temp.dart';
+import 'package:foxxy_package/pages/settings/webview.dart';
+import 'package:foxxy_package/utils/analytics/mixpanel.dart';
+import 'package:foxxy_package/utils/other/temp.dart';
 import 'package:gleap_sdk/gleap_sdk.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -27,19 +27,23 @@ class _AboutOmiPageState extends State<AboutOmiPage> {
           children: [
             ListTile(
               contentPadding: const EdgeInsets.fromLTRB(4, 0, 24, 0),
-              title: const Text('Privacy Policy', style: TextStyle(color: Colors.white)),
+              title: const Text('Privacy Policy',
+                  style: TextStyle(color: Colors.white)),
               trailing: const Icon(Icons.privacy_tip_outlined, size: 20),
               onTap: () {
                 MixpanelManager().pageOpened('About Privacy Policy');
                 routeToPage(
                   context,
-                  const PageWebView(url: 'https://www.omi.me/pages/privacy', title: 'Privacy Policy'),
+                  const PageWebView(
+                      url: 'https://www.omi.me/pages/privacy',
+                      title: 'Privacy Policy'),
                 );
               },
             ),
             ListTile(
               contentPadding: const EdgeInsets.fromLTRB(4, 0, 24, 0),
-              title: const Text('Visit Website', style: TextStyle(color: Colors.white)),
+              title: const Text('Visit Website',
+                  style: TextStyle(color: Colors.white)),
               subtitle: const Text('https://omi.me'),
               trailing: const Icon(Icons.language_outlined, size: 20),
               onTap: () {
@@ -49,19 +53,23 @@ class _AboutOmiPageState extends State<AboutOmiPage> {
               },
             ),
             ListTile(
-              title: const Text('Help or Inquiries?', style: TextStyle(color: Colors.white)),
+              title: const Text('Help or Inquiries?',
+                  style: TextStyle(color: Colors.white)),
               subtitle: const Text('team@basedhardware.com'),
               contentPadding: const EdgeInsets.fromLTRB(4, 0, 24, 0),
-              trailing: const Icon(Icons.help_outline_outlined, color: Colors.white, size: 20),
+              trailing: const Icon(Icons.help_outline_outlined,
+                  color: Colors.white, size: 20),
               onTap: () {
                 Gleap.open();
               },
             ),
             ListTile(
               contentPadding: const EdgeInsets.fromLTRB(4, 0, 24, 0),
-              title: const Text('Join the community!', style: TextStyle(color: Colors.white)),
+              title: const Text('Join the community!',
+                  style: TextStyle(color: Colors.white)),
               subtitle: const Text('2300+ members and counting.'),
-              trailing: const Icon(Icons.discord, color: Colors.purple, size: 20),
+              trailing:
+                  const Icon(Icons.discord, color: Colors.purple, size: 20),
               onTap: () {
                 MixpanelManager().pageOpened('About Join Discord');
                 launchUrl(Uri.parse('https://discord.gg/ZutWMTJnwA'));

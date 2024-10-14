@@ -1,5 +1,5 @@
-import 'package:friend_private/backend/preferences.dart';
-import 'package:friend_private/utils/logger.dart';
+import 'package:foxxy_package/backend/preferences.dart';
+import 'package:foxxy_package/utils/logger.dart';
 import 'package:manage_calendar_events/manage_calendar_events.dart';
 import 'package:permission_handler/permission_handler.dart';
 
@@ -47,7 +47,8 @@ class CalendarUtil {
     }
   }
 
-  Future<bool> createEvent(String title, DateTime startsAt, int durationMinutes, {String? description}) async {
+  Future<bool> createEvent(String title, DateTime startsAt, int durationMinutes,
+      {String? description}) async {
     bool hasAccess = await checkCalendarPermission();
     if (!hasAccess) return false;
     DateTime startDate = startsAt.toLocal();
@@ -62,7 +63,8 @@ class CalendarUtil {
       startDate: startDate,
       endDate: endDate,
     );
-    var res = await _calendarPlugin!.createEvent(calendarId: calendarId, event: newEvent);
+    var res = await _calendarPlugin!
+        .createEvent(calendarId: calendarId, event: newEvent);
 
     if (res != null && res.isNotEmpty) {
       print('Event created successfully');

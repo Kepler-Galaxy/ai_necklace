@@ -2,28 +2,30 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_provider_utilities/flutter_provider_utilities.dart';
-import 'package:friend_private/backend/preferences.dart';
-import 'package:friend_private/backend/schema/bt_device.dart';
-import 'package:friend_private/providers/capture_provider.dart';
-import 'package:friend_private/providers/speech_profile_provider.dart';
-import 'package:friend_private/services/services.dart';
-import 'package:friend_private/widgets/dialog.dart';
+import 'package:foxxy_package/backend/preferences.dart';
+import 'package:foxxy_package/backend/schema/bt_device.dart';
+import 'package:foxxy_package/providers/capture_provider.dart';
+import 'package:foxxy_package/providers/speech_profile_provider.dart';
+import 'package:foxxy_package/services/services.dart';
+import 'package:foxxy_package/widgets/dialog.dart';
 import 'package:gradient_borders/box_borders/gradient_box_border.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:friend_private/generated/l10n.dart';
+import 'package:foxxy_package/generated/l10n.dart';
 
 class SpeechProfileWidget extends StatefulWidget {
   final VoidCallback goNext;
   final VoidCallback onSkip;
 
-  const SpeechProfileWidget({super.key, required this.goNext, required this.onSkip});
+  const SpeechProfileWidget(
+      {super.key, required this.goNext, required this.onSkip});
 
   @override
   State<SpeechProfileWidget> createState() => _SpeechProfileWidgetState();
 }
 
-class _SpeechProfileWidgetState extends State<SpeechProfileWidget> with TickerProviderStateMixin {
+class _SpeechProfileWidgetState extends State<SpeechProfileWidget>
+    with TickerProviderStateMixin {
   @override
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {});
@@ -60,8 +62,11 @@ class _SpeechProfileWidgetState extends State<SpeechProfileWidget> with TickerPr
       // Restart device recording, clear transcripts
       if (mounted) {
         Provider.of<CaptureProvider>(context, listen: false).clearTranscripts();
-        Provider.of<CaptureProvider>(context, listen: false).streamDeviceRecording(
-          device: Provider.of<SpeechProfileProvider>(context, listen: false).deviceProvider?.connectedDevice,
+        Provider.of<CaptureProvider>(context, listen: false)
+            .streamDeviceRecording(
+          device: Provider.of<SpeechProfileProvider>(context, listen: false)
+              .deviceProvider
+              ?.connectedDevice,
         );
       }
     }
@@ -71,7 +76,8 @@ class _SpeechProfileWidgetState extends State<SpeechProfileWidget> with TickerPr
 
       // Restart device recording, clear transcripts
       if (mounted) {
-        await Provider.of<CaptureProvider>(context, listen: false).stopStreamDeviceRecording();
+        await Provider.of<CaptureProvider>(context, listen: false)
+            .stopStreamDeviceRecording();
       }
     }
 
@@ -169,8 +175,10 @@ class _SpeechProfileWidgetState extends State<SpeechProfileWidget> with TickerPr
                               return ShaderMask(
                                 shaderCallback: (bounds) {
                                   if (provider.text.split(' ').length < 10) {
-                                    return const LinearGradient(colors: [Colors.white, Colors.white])
-                                        .createShader(bounds);
+                                    return const LinearGradient(colors: [
+                                      Colors.white,
+                                      Colors.white
+                                    ]).createShader(bounds);
                                   }
                                   return const LinearGradient(
                                     colors: [Colors.transparent, Colors.white],
@@ -185,7 +193,8 @@ class _SpeechProfileWidgetState extends State<SpeechProfileWidget> with TickerPr
                                   child: ListView(
                                     controller: _scrollController,
                                     shrinkWrap: true,
-                                    physics: const NeverScrollableScrollPhysics(),
+                                    physics:
+                                        const NeverScrollableScrollPhysics(),
                                     children: [
                                       Text(
                                         provider.text,
@@ -216,7 +225,8 @@ class _SpeechProfileWidgetState extends State<SpeechProfileWidget> with TickerPr
                                 children: [
                                   const SizedBox(height: 20),
                                   Container(
-                                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 0),
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 16, vertical: 0),
                                     decoration: BoxDecoration(
                                       border: const GradientBoxBorder(
                                         gradient: LinearGradient(colors: [
@@ -232,16 +242,21 @@ class _SpeechProfileWidgetState extends State<SpeechProfileWidget> with TickerPr
                                     child: TextButton(
                                       onPressed: () async {
                                         await stopDeviceRecording();
-                                        await provider.initialise(true, finalizedCallback: restartDeviceRecording);
-                                        provider.forceCompletionTimer =
-                                            Timer(Duration(seconds: provider.maxDuration), () async {
+                                        await provider.initialise(true,
+                                            finalizedCallback:
+                                                restartDeviceRecording);
+                                        provider.forceCompletionTimer = Timer(
+                                            Duration(
+                                                seconds: provider.maxDuration),
+                                            () async {
                                           provider.finalize();
                                         });
                                         provider.updateStartedRecording(true);
                                       },
                                       child: const Text(
                                         'Get Started',
-                                        style: TextStyle(color: Colors.white, fontSize: 16),
+                                        style: TextStyle(
+                                            color: Colors.white, fontSize: 16),
                                       ),
                                     ),
                                   ),
@@ -251,7 +266,8 @@ class _SpeechProfileWidgetState extends State<SpeechProfileWidget> with TickerPr
                         : provider.profileCompleted
                             ? Container(
                                 margin: const EdgeInsets.only(top: 40),
-                                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 0),
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 12, vertical: 0),
                                 decoration: BoxDecoration(
                                   border: const GradientBoxBorder(
                                     gradient: LinearGradient(colors: [
@@ -271,7 +287,8 @@ class _SpeechProfileWidgetState extends State<SpeechProfileWidget> with TickerPr
                                   },
                                   child: const Text(
                                     "All done!",
-                                    style: TextStyle(color: Colors.white, fontSize: 16),
+                                    style: TextStyle(
+                                        color: Colors.white, fontSize: 16),
                                   ),
                                 ),
                               )
@@ -279,20 +296,25 @@ class _SpeechProfileWidgetState extends State<SpeechProfileWidget> with TickerPr
                                 ? Padding(
                                     padding: const EdgeInsets.only(top: 40.0),
                                     child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
                                       children: [
                                         const SizedBox(
                                           height: 24,
                                           width: 24,
                                           child: Center(
                                             child: CircularProgressIndicator(
-                                              valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                                              valueColor:
+                                                  AlwaysStoppedAnimation<Color>(
+                                                      Colors.white),
                                             ),
                                           ),
                                         ),
                                         const SizedBox(width: 24),
                                         Text(provider.loadingText,
-                                            style: const TextStyle(color: Colors.white, fontSize: 18)),
+                                            style: const TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 18)),
                                       ],
                                     ),
                                   )
@@ -302,18 +324,26 @@ class _SpeechProfileWidgetState extends State<SpeechProfileWidget> with TickerPr
                                       const SizedBox(height: 30),
                                       Text(
                                         provider.message,
-                                        style: TextStyle(color: Colors.grey.shade300, fontSize: 14, height: 1.4),
+                                        style: TextStyle(
+                                            color: Colors.grey.shade300,
+                                            fontSize: 14,
+                                            height: 1.4),
                                         textAlign: TextAlign.center,
                                       ),
                                       const SizedBox(height: 18),
                                       Padding(
-                                        padding: const EdgeInsets.symmetric(horizontal: 32),
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 32),
                                         child: Stack(
                                           children: [
                                             LinearProgressIndicator(
-                                              value: provider.percentageCompleted,
-                                              backgroundColor: Colors.grey.shade300,
-                                              valueColor: const AlwaysStoppedAnimation<Color>(Colors.deepPurple),
+                                              value:
+                                                  provider.percentageCompleted,
+                                              backgroundColor:
+                                                  Colors.grey.shade300,
+                                              valueColor:
+                                                  const AlwaysStoppedAnimation<
+                                                      Color>(Colors.deepPurple),
                                             ),
                                           ],
                                         ),
@@ -321,7 +351,8 @@ class _SpeechProfileWidgetState extends State<SpeechProfileWidget> with TickerPr
                                       const SizedBox(height: 12),
                                       Text(
                                         '${(provider.percentageCompleted * 100).toInt()}%',
-                                        style: const TextStyle(color: Colors.white),
+                                        style: const TextStyle(
+                                            color: Colors.white),
                                       ),
                                     ],
                                   ),

@@ -2,8 +2,8 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:friend_private/backend/http/shared.dart';
-import 'package:friend_private/env/env.dart';
+import 'package:foxxy_package/backend/http/shared.dart';
+import 'package:foxxy_package/env/env.dart';
 import 'package:http/http.dart' as http;
 import 'package:path/path.dart';
 
@@ -54,11 +54,10 @@ Future<bool> uploadProfile(File file) async {
     'POST',
     Uri.parse('${Env.apiBaseUrl}v3/upload-audio'),
   );
-  request.files.add(await http.MultipartFile.fromPath('file', file.path, filename: basename(file.path)));
-  request.headers.addAll({
-    'Authorization': await getAuthHeader(),
-    'Provider': 'authing'
-  });
+  request.files.add(await http.MultipartFile.fromPath('file', file.path,
+      filename: basename(file.path)));
+  request.headers
+      .addAll({'Authorization': await getAuthHeader(), 'Provider': 'authing'});
 
   try {
     var streamedResponse = await request.send();
@@ -68,8 +67,10 @@ Future<bool> uploadProfile(File file) async {
       debugPrint('uploadProfile Response body: ${jsonDecode(response.body)}');
       return true;
     } else {
-      debugPrint('Failed to upload sample. Status code: ${response.statusCode}');
-      throw Exception('Failed to upload sample. Status code: ${response.statusCode}');
+      debugPrint(
+          'Failed to upload sample. Status code: ${response.statusCode}');
+      throw Exception(
+          'Failed to upload sample. Status code: ${response.statusCode}');
     }
   } catch (e) {
     debugPrint('An error occurred uploadSample: $e');
@@ -103,7 +104,8 @@ Future<bool> deleteProfileSample(
   String? personId,
 }) async {
   var response = await makeApiCall(
-    url: '${Env.apiBaseUrl}v3/speech-profile/expand?memory_id=$memoryId&segment_idx=$segmentIdx&person_id=$personId',
+    url:
+        '${Env.apiBaseUrl}v3/speech-profile/expand?memory_id=$memoryId&segment_idx=$segmentIdx&person_id=$personId',
     headers: {},
     method: 'DELETE',
     body: '',

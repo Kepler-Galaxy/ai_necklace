@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:friend_private/backend/http/openai.dart';
-import 'package:friend_private/backend/schema/memory.dart';
+import 'package:foxxy_package/backend/http/openai.dart';
+import 'package:foxxy_package/backend/schema/memory.dart';
 
 class TestPromptsPage extends StatefulWidget {
   final ServerMemory memory;

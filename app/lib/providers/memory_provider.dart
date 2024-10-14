@@ -1,15 +1,15 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:friend_private/backend/http/api/memories.dart';
-import 'package:friend_private/backend/preferences.dart';
-import 'package:friend_private/backend/schema/memory.dart';
-import 'package:friend_private/backend/schema/structured.dart';
-import 'package:friend_private/utils/analytics/mixpanel.dart';
-import 'package:friend_private/utils/features/calendar.dart';
-import 'package:friend_private/backend/http/shared.dart';
-import 'package:friend_private/env/env.dart';
-import 'package:friend_private/backend/schema/memory_connection.dart';
+import 'package:foxxy_package/backend/http/api/memories.dart';
+import 'package:foxxy_package/backend/preferences.dart';
+import 'package:foxxy_package/backend/schema/memory.dart';
+import 'package:foxxy_package/backend/schema/structured.dart';
+import 'package:foxxy_package/utils/analytics/mixpanel.dart';
+import 'package:foxxy_package/utils/features/calendar.dart';
+import 'package:foxxy_package/backend/http/shared.dart';
+import 'package:foxxy_package/env/env.dart';
+import 'package:foxxy_package/backend/schema/memory_connection.dart';
 import 'dart:convert';
 
 class MemoryProvider extends ChangeNotifier {

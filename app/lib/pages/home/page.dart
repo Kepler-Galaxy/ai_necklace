@@ -3,39 +3,39 @@ import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:friend_private/backend/http/cloud_storage.dart';
-import 'package:friend_private/backend/preferences.dart';
-import 'package:friend_private/backend/schema/plugin.dart';
-import 'package:friend_private/main.dart';
-import 'package:friend_private/pages/capture/connect.dart';
-import 'package:friend_private/pages/chat/page.dart';
-import 'package:friend_private/pages/home/device.dart';
-import 'package:friend_private/pages/memories/page.dart';
-import 'package:friend_private/pages/plugins/page.dart';
-import 'package:friend_private/pages/settings/page.dart';
-import 'package:friend_private/providers/capture_provider.dart';
-import 'package:friend_private/providers/connectivity_provider.dart';
-import 'package:friend_private/providers/device_provider.dart';
-import 'package:friend_private/providers/home_provider.dart';
-import 'package:friend_private/providers/memory_provider.dart' as mp;
-import 'package:friend_private/providers/memory_provider.dart';
-import 'package:friend_private/providers/message_provider.dart';
-import 'package:friend_private/providers/plugin_provider.dart';
-import 'package:friend_private/services/notification_service.dart';
-import 'package:friend_private/services/services.dart';
-import 'package:friend_private/utils/analytics/mixpanel.dart';
-import 'package:friend_private/utils/audio/foreground.dart';
-import 'package:friend_private/utils/other/temp.dart';
-import 'package:friend_private/widgets/upgrade_alert.dart';
+import 'package:foxxy_package/backend/http/cloud_storage.dart';
+import 'package:foxxy_package/backend/preferences.dart';
+import 'package:foxxy_package/backend/schema/plugin.dart';
+import 'package:foxxy_package/main.dart';
+import 'package:foxxy_package/pages/capture/connect.dart';
+import 'package:foxxy_package/pages/chat/page.dart';
+import 'package:foxxy_package/pages/home/device.dart';
+import 'package:foxxy_package/pages/memories/page.dart';
+import 'package:foxxy_package/pages/plugins/page.dart';
+import 'package:foxxy_package/pages/settings/page.dart';
+import 'package:foxxy_package/providers/capture_provider.dart';
+import 'package:foxxy_package/providers/connectivity_provider.dart';
+import 'package:foxxy_package/providers/device_provider.dart';
+import 'package:foxxy_package/providers/home_provider.dart';
+import 'package:foxxy_package/providers/memory_provider.dart' as mp;
+import 'package:foxxy_package/providers/memory_provider.dart';
+import 'package:foxxy_package/providers/message_provider.dart';
+import 'package:foxxy_package/providers/plugin_provider.dart';
+import 'package:foxxy_package/services/notification_service.dart';
+import 'package:foxxy_package/services/services.dart';
+import 'package:foxxy_package/utils/analytics/mixpanel.dart';
+import 'package:foxxy_package/utils/audio/foreground.dart';
+import 'package:foxxy_package/utils/other/temp.dart';
+import 'package:foxxy_package/widgets/upgrade_alert.dart';
 import 'package:gradient_borders/gradient_borders.dart';
 import 'package:instabug_flutter/instabug_flutter.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:upgrader/upgrader.dart';
-import 'package:friend_private/pages/diary/page.dart';
-import 'package:friend_private/widgets/web_link_input.dart';
+import 'package:foxxy_package/pages/diary/page.dart';
+import 'package:foxxy_package/widgets/web_link_input.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:friend_private/generated/l10n.dart';
+import 'package:foxxy_package/generated/l10n.dart';
 
 class HomePageWrapper extends StatefulWidget {
   const HomePageWrapper({super.key});
@@ -48,15 +48,23 @@ class _HomePageWrapperState extends State<HomePageWrapper> {
   @override
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      if (SharedPreferencesUtil().notificationsEnabled != await Permission.notification.isGranted) {
-        SharedPreferencesUtil().notificationsEnabled = await Permission.notification.isGranted;
-        MixpanelManager().setUserProperty('Notifications Enabled', SharedPreferencesUtil().notificationsEnabled);
+      if (SharedPreferencesUtil().notificationsEnabled !=
+          await Permission.notification.isGranted) {
+        SharedPreferencesUtil().notificationsEnabled =
+            await Permission.notification.isGranted;
+        MixpanelManager().setUserProperty('Notifications Enabled',
+            SharedPreferencesUtil().notificationsEnabled);
       }
-      if (SharedPreferencesUtil().locationEnabled != await Permission.location.isGranted) {
-        SharedPreferencesUtil().locationEnabled = await Permission.location.isGranted;
-        MixpanelManager().setUserProperty('Location Enabled', SharedPreferencesUtil().locationEnabled);
+      if (SharedPreferencesUtil().locationEnabled !=
+          await Permission.location.isGranted) {
+        SharedPreferencesUtil().locationEnabled =
+            await Permission.location.isGranted;
+        MixpanelManager().setUserProperty(
+            'Location Enabled', SharedPreferencesUtil().locationEnabled);
       }
-      context.read<DeviceProvider>().periodicConnect('coming from HomePageWrapper');
+      context
+          .read<DeviceProvider>()
+          .periodicConnect('coming from HomePageWrapper');
       await context.read<mp.MemoryProvider>().getInitialMemories();
       context.read<PluginProvider>().setSelectedChatPluginId(null);
     });
@@ -76,9 +84,15 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> with WidgetsBindingObserver, TickerProviderStateMixin {
+class _HomePageState extends State<HomePage>
+    with WidgetsBindingObserver, TickerProviderStateMixin {
   ForegroundUtil foregroundUtil = ForegroundUtil();
-  List<Widget> screens = [Container(), const SizedBox(), const SizedBox(), const SizedBox()];
+  List<Widget> screens = [
+    Container(),
+    const SizedBox(),
+    const SizedBox(),
+    const SizedBox()
+  ];
 
   GlobalKey<ChatPageState> chatPageKey = GlobalKey();
 
@@ -122,7 +136,9 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver, Ticker
   }
 
   ///Screens with respect to subpage
-  final Map<String, Widget> screensWithRespectToPath = {'/settings': const SettingsPage()};
+  final Map<String, Widget> screensWithRespectToPath = {
+    '/settings': const SettingsPage()
+  };
   bool? previousConnection;
 
   @override
@@ -141,7 +157,8 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver, Ticker
 
         // Start stream recording
         await Provider.of<CaptureProvider>(context, listen: false)
-            .streamDeviceRecording(device: context.read<DeviceProvider>().connectedDevice);
+            .streamDeviceRecording(
+                device: context.read<DeviceProvider>().connectedDevice);
       }
     });
 
@@ -150,11 +167,13 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver, Ticker
 
     _listenToMessagesFromNotification();
     if (SharedPreferencesUtil().subPageToShowFromNotification != '') {
-      final subPageRoute = SharedPreferencesUtil().subPageToShowFromNotification;
+      final subPageRoute =
+          SharedPreferencesUtil().subPageToShowFromNotification;
       WidgetsBinding.instance.addPostFrameCallback((_) async {
         MyApp.navigatorKey.currentState?.push(
           MaterialPageRoute(
-            builder: (context) => screensWithRespectToPath[subPageRoute] as Widget,
+            builder: (context) =>
+                screensWithRespectToPath[subPageRoute] as Widget,
           ),
         );
       });
@@ -174,8 +193,11 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver, Ticker
   Widget build(BuildContext context) {
     return MyUpgradeAlert(
       upgrader: _upgrader,
-      dialogStyle: Platform.isIOS ? UpgradeDialogStyle.cupertino : UpgradeDialogStyle.material,
-      child: Consumer<ConnectivityProvider>(builder: (ctx, connectivityProvider, child) {
+      dialogStyle: Platform.isIOS
+          ? UpgradeDialogStyle.cupertino
+          : UpgradeDialogStyle.material,
+      child: Consumer<ConnectivityProvider>(
+          builder: (ctx, connectivityProvider, child) {
         bool isConnected = connectivityProvider.isConnected;
         previousConnection ??= false;
         if (previousConnection != isConnected) {
@@ -185,7 +207,8 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver, Ticker
               if (mounted) {
                 ScaffoldMessenger.of(ctx).showMaterialBanner(
                   MaterialBanner(
-                    content: const Text('No internet connection. Please check your connection.'),
+                    content: const Text(
+                        'No internet connection. Please check your connection.'),
                     backgroundColor: Colors.red,
                     actions: [
                       TextButton(
@@ -211,13 +234,15 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver, Ticker
                       TextButton(
                         onPressed: () {
                           if (mounted) {
-                            ScaffoldMessenger.of(ctx).hideCurrentMaterialBanner();
+                            ScaffoldMessenger.of(ctx)
+                                .hideCurrentMaterialBanner();
                           }
                         },
                         child: const Text('Dismiss'),
                       ),
                     ],
-                    onVisible: () => Future.delayed(const Duration(seconds: 3), () {
+                    onVisible: () =>
+                        Future.delayed(const Duration(seconds: 3), () {
                       ScaffoldMessenger.of(ctx).hideCurrentMaterialBanner();
                     }),
                   ),
@@ -281,15 +306,19 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver, Ticker
                           return TabBar(
                             padding: const EdgeInsets.only(top: 4, bottom: 16),
                             onTap: (index) {
-                              MixpanelManager().bottomNavigationTabClicked(['Memories', 'Diary', 'Chat'][index]);
+                              MixpanelManager().bottomNavigationTabClicked(
+                                  ['Memories', 'Diary', 'Chat'][index]);
                               primaryFocus?.unfocus();
                               home.setIndex(index);
                             },
                             indicatorColor: Colors.white,
                             tabs: [
-                              _buildTab(Icons.memory, S.current.Memories, home.selectedIndex == 0),
-                              _buildTab(Icons.book, S.current.Diary, home.selectedIndex == 1),
-                              _buildTab(Icons.chat, S.current.Chat, home.selectedIndex == 2),
+                              _buildTab(Icons.memory, S.current.Memories,
+                                  home.selectedIndex == 0),
+                              _buildTab(Icons.book, S.current.Diary,
+                                  home.selectedIndex == 1),
+                              _buildTab(Icons.chat, S.current.Chat,
+                                  home.selectedIndex == 2),
                             ],
                           );
                         },
@@ -311,13 +340,15 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver, Ticker
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             CircularProgressIndicator(
-                              valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                              valueColor:
+                                  AlwaysStoppedAnimation<Color>(Colors.white),
                             ),
                             SizedBox(height: 16),
                             Center(
                                 child: Text(
                               'Running migration, please wait! 🚨',
-                              style: TextStyle(color: Colors.white, fontSize: 16),
+                              style:
+                                  TextStyle(color: Colors.white, fontSize: 16),
                               textAlign: TextAlign.center,
                             )),
                           ],
@@ -337,7 +368,8 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver, Ticker
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Consumer2<DeviceProvider, HomeProvider>(builder: (context, deviceProvider, home, child) {
+                Consumer2<DeviceProvider, HomeProvider>(
+                    builder: (context, deviceProvider, home, child) {
                   bool isMemoriesPage = home.selectedIndex == 0;
 
                   var deviceText = "Audio Foxxy";
@@ -347,7 +379,8 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver, Ticker
                   //   //     SharedPreferencesUtil().btDeviceStruct.getShortId();
                   //   deviceText = deviceName;
                   // }
-                  if (deviceProvider.connectedDevice != null && deviceProvider.batteryLevel != -1) {
+                  if (deviceProvider.connectedDevice != null &&
+                      deviceProvider.batteryLevel != -1) {
                     return GestureDetector(
                       onTap: deviceProvider.connectedDevice == null
                           ? null
@@ -362,7 +395,8 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver, Ticker
                               MixpanelManager().batteryIndicatorClicked();
                             },
                       child: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 14, vertical: 10),
                           decoration: BoxDecoration(
                             color: Colors.transparent,
                             borderRadius: BorderRadius.circular(10),
@@ -391,13 +425,19 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver, Ticker
                               isMemoriesPage
                                   ? Text(
                                       deviceText,
-                                      style: const TextStyle(color: Colors.white, fontSize: 14),
+                                      style: const TextStyle(
+                                          color: Colors.white, fontSize: 14),
                                     )
                                   : const SizedBox.shrink(),
-                              isMemoriesPage ? const SizedBox(width: 8) : const SizedBox.shrink(),
+                              isMemoriesPage
+                                  ? const SizedBox(width: 8)
+                                  : const SizedBox.shrink(),
                               Text(
                                 '${deviceProvider.batteryLevel.toString()}%',
-                                style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold),
+                                style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.bold),
                               ),
                             ],
                           )),
@@ -412,12 +452,14 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver, Ticker
                           await routeToPage(
                               context,
                               ConnectedDevice(
-                                  device: deviceProvider.connectedDevice, batteryLevel: deviceProvider.batteryLevel));
+                                  device: deviceProvider.connectedDevice,
+                                  batteryLevel: deviceProvider.batteryLevel));
                         }
                         // setState(() {});
                       },
                       child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 12, vertical: 8),
                         // backgroundColor: Colors.transparent,
                         decoration: BoxDecoration(
                           color: Colors.transparent,
@@ -426,17 +468,26 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver, Ticker
                         ),
                         child: Row(
                           children: [
-                            Image.asset('assets/images/logo_transparent.png', width: 25, height: 25),
-                            isMemoriesPage ? const SizedBox(width: 8) : const SizedBox.shrink(),
+                            Image.asset('assets/images/logo_transparent.png',
+                                width: 25, height: 25),
+                            isMemoriesPage
+                                ? const SizedBox(width: 8)
+                                : const SizedBox.shrink(),
                             deviceProvider.isConnecting && isMemoriesPage
                                 ? Text(
                                     "Connecting",
-                                    style: Theme.of(context).textTheme.bodyMedium!.copyWith(color: Colors.white),
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .bodyMedium!
+                                        .copyWith(color: Colors.white),
                                   )
                                 : isMemoriesPage
                                     ? Text(
                                         S.current.NoDeviceFound,
-                                        style: Theme.of(context).textTheme.bodyMedium!.copyWith(color: Colors.white),
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .bodyMedium!
+                                            .copyWith(color: Colors.white),
                                       )
                                     : const SizedBox.shrink(),
                           ],
@@ -504,19 +555,27 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver, Ticker
                 // ),
                 const SizedBox(width: 16),
                 IconButton(
-                  icon: const Icon(Icons.settings, color: Colors.white, size: 30),
+                  icon:
+                      const Icon(Icons.settings, color: Colors.white, size: 30),
                   onPressed: () async {
                     MixpanelManager().pageOpened('Settings');
-                    String language = SharedPreferencesUtil().recordingsLanguage;
+                    String language =
+                        SharedPreferencesUtil().recordingsLanguage;
                     bool hasSpeech = SharedPreferencesUtil().hasSpeakerProfile;
-                    String transcriptModel = SharedPreferencesUtil().transcriptionModel;
+                    String transcriptModel =
+                        SharedPreferencesUtil().transcriptionModel;
                     await routeToPage(context, const SettingsPage());
 
-                    if (language != SharedPreferencesUtil().recordingsLanguage ||
-                        hasSpeech != SharedPreferencesUtil().hasSpeakerProfile ||
-                        transcriptModel != SharedPreferencesUtil().transcriptionModel) {
+                    if (language !=
+                            SharedPreferencesUtil().recordingsLanguage ||
+                        hasSpeech !=
+                            SharedPreferencesUtil().hasSpeakerProfile ||
+                        transcriptModel !=
+                            SharedPreferencesUtil().transcriptionModel) {
                       if (context.mounted) {
-                        context.read<CaptureProvider>().onRecordProfileSettingChanged();
+                        context
+                            .read<CaptureProvider>()
+                            .onRecordProfileSettingChanged();
                       }
                     }
                   },
@@ -541,14 +600,21 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver, Ticker
                 const Icon(size: 20, Icons.chat, color: Colors.white),
                 const SizedBox(width: 10),
                 Text(
-                  provider.plugins.where((p) => p.enabled).isEmpty ? '${S.current.EnablePlugins}   ' : 'Select a plugin',
-                  style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w500, fontSize: 16),
+                  provider.plugins.where((p) => p.enabled).isEmpty
+                      ? '${S.current.EnablePlugins}   '
+                      : 'Select a plugin',
+                  style: const TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w500,
+                      fontSize: 16),
                 )
               ],
             ),
           )
         ] +
-        provider.plugins.where((p) => p.enabled && p.worksWithChat()).map<DropdownMenuItem<String>>((Plugin plugin) {
+        provider.plugins
+            .where((p) => p.enabled && p.worksWithChat())
+            .map<DropdownMenuItem<String>>((Plugin plugin) {
           return DropdownMenuItem<String>(
             value: plugin.id,
             child: Row(
@@ -571,12 +637,14 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver, Ticker
                       child: Icon(Icons.error_outline_rounded),
                     );
                   },
-                  progressIndicatorBuilder: (context, url, progress) => CircleAvatar(
+                  progressIndicatorBuilder: (context, url, progress) =>
+                      CircleAvatar(
                     backgroundColor: Colors.white,
                     radius: 12,
                     child: CircularProgressIndicator(
                       value: progress.progress,
-                      valueColor: const AlwaysStoppedAnimation<Color>(Colors.white),
+                      valueColor:
+                          const AlwaysStoppedAnimation<Color>(Colors.white),
                     ),
                   ),
                 ),
@@ -585,7 +653,10 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver, Ticker
                   plugin.name.length > 18
                       ? '${plugin.name.substring(0, 18)}...'
                       : plugin.name + ' ' * (18 - plugin.name.length),
-                  style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w500, fontSize: 16),
+                  style: const TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w500,
+                      fontSize: 16),
                 )
               ],
             ),
@@ -603,7 +674,11 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver, Ticker
               child: Icon(Icons.star, color: Colors.purpleAccent),
             ),
             const SizedBox(width: 8),
-            Text('${S.current.EnablePlugins}   ', style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w500, fontSize: 16))
+            Text('${S.current.EnablePlugins}   ',
+                style: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w500,
+                    fontSize: 16))
           ],
         ),
       ));

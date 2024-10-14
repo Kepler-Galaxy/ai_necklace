@@ -4,12 +4,12 @@ import 'dart:io';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:friend_private/backend/preferences.dart';
-import 'package:friend_private/backend/schema/bt_device.dart';
-import 'package:friend_private/backend/schema/message_event.dart';
-import 'package:friend_private/backend/schema/transcript_segment.dart';
-import 'package:friend_private/env/env.dart';
-import 'package:friend_private/services/notification_service.dart';
+import 'package:foxxy_package/backend/preferences.dart';
+import 'package:foxxy_package/backend/schema/bt_device.dart';
+import 'package:foxxy_package/backend/schema/message_event.dart';
+import 'package:foxxy_package/backend/schema/transcript_segment.dart';
+import 'package:foxxy_package/env/env.dart';
+import 'package:foxxy_package/services/notification_service.dart';
 import 'package:instabug_flutter/instabug_flutter.dart';
 import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
 import 'package:web_socket_channel/io.dart';
@@ -94,7 +94,10 @@ class PureSocket implements IPureSocket {
   String url;
 
   PureSocket(this.url) {
-    _internetStatusListener = PureCore().internetConnection.onStatusChange.listen((InternetStatus status) {
+    _internetStatusListener = PureCore()
+        .internetConnection
+        .onStatusChange
+        .listen((InternetStatus status) {
       onInternetSatusChanged(status);
     });
   }
@@ -109,7 +112,8 @@ class PureSocket implements IPureSocket {
   }
 
   Future<bool> _connect() async {
-    if (_status == PureSocketStatus.connecting || _status == PureSocketStatus.connected) {
+    if (_status == PureSocketStatus.connecting ||
+        _status == PureSocketStatus.connected) {
       return false;
     }
 
@@ -192,7 +196,8 @@ class PureSocket implements IPureSocket {
 
     _listener?.onError(err, trace);
 
-    CrashReporting.reportHandledCrash(err, trace, level: NonFatalExceptionLevel.error);
+    CrashReporting.reportHandledCrash(err, trace,
+        level: NonFatalExceptionLevel.error);
   }
 
   @override
@@ -212,7 +217,8 @@ class PureSocket implements IPureSocket {
     const double multiplier = 1.5;
     const int maxRetries = 7;
 
-    if (_status == PureSocketStatus.connecting || _status == PureSocketStatus.connected) {
+    if (_status == PureSocketStatus.connecting ||
+        _status == PureSocketStatus.connected) {
       debugPrint("[Socket] Can not reconnect, because socket is $_status");
       return;
     }
@@ -225,7 +231,8 @@ class PureSocket implements IPureSocket {
     }
 
     // retry
-    int waitInMilliseconds = pow(multiplier, _retries).toInt() * initialBackoffTimeMs;
+    int waitInMilliseconds =
+        pow(multiplier, _retries).toInt() * initialBackoffTimeMs;
     await Future.delayed(Duration(milliseconds: waitInMilliseconds));
     _retries++;
     if (_retries >= maxRetries) {
@@ -242,7 +249,8 @@ class PureSocket implements IPureSocket {
     _internetStatus = status;
     switch (status) {
       case InternetStatus.connected:
-        if (_status == PureSocketStatus.connected || _status == PureSocketStatus.connecting) {
+        if (_status == PureSocketStatus.connected ||
+            _status == PureSocketStatus.connecting) {
           return;
         }
         _reconnect();
@@ -271,12 +279,15 @@ abstract interface class ITransctipSegmentSocketServiceListener {
   void onClosed();
 }
 
-class SpeechProfileTranscripSegmentSocketService extends TranscripSegmentSocketService {
-  SpeechProfileTranscripSegmentSocketService.create(super.sampleRate, super.codec)
+class SpeechProfileTranscripSegmentSocketService
+    extends TranscripSegmentSocketService {
+  SpeechProfileTranscripSegmentSocketService.create(
+      super.sampleRate, super.codec)
       : super.create(includeSpeechProfile: false, newMemoryWatch: false);
 }
 
-class MemoryTranscripSegmentSocketService extends TranscripSegmentSocketService {
+class MemoryTranscripSegmentSocketService
+    extends TranscripSegmentSocketService {
   MemoryTranscripSegmentSocketService.create(super.sampleRate, super.codec)
       : super.create(includeSpeechProfile: true, newMemoryWatch: true);
 }
@@ -290,8 +301,9 @@ class TranscripSegmentSocketService implements IPureSocketListener {
   late PureSocket _socket;
   final Map<Object, ITransctipSegmentSocketServiceListener> _listeners = {};
 
-  SocketServiceState get state =>
-      _socket.status == PureSocketStatus.connected ? SocketServiceState.connected : SocketServiceState.disconnected;
+  SocketServiceState get state => _socket.status == PureSocketStatus.connected
+      ? SocketServiceState.connected
+      : SocketServiceState.disconnected;
 
   int sampleRate;
   BleAudioCodec codec;
@@ -305,7 +317,8 @@ class TranscripSegmentSocketService implements IPureSocketListener {
     this.newMemoryWatch = true,
   }) {
     final recordingsLanguage = SharedPreferencesUtil().recordingsLanguage;
-    var params = '?language=$recordingsLanguage&sample_rate=$sampleRate&codec=$codec&uid=${SharedPreferencesUtil().uid}'
+    var params =
+        '?language=$recordingsLanguage&sample_rate=$sampleRate&codec=$codec&uid=${SharedPreferencesUtil().uid}'
         '&include_speech_profile=$includeSpeechProfile&new_memory_watch=$newMemoryWatch&stt_service=${SharedPreferencesUtil().transcriptionModel}';
     String url = '${Env.apiBaseUrl!.replaceAll('https', 'wss')}listen$params';
 
@@ -313,7 +326,8 @@ class TranscripSegmentSocketService implements IPureSocketListener {
     _socket.setListener(this);
   }
 
-  void subscribe(Object context, ITransctipSegmentSocketServiceListener listener) {
+  void subscribe(
+      Object context, ITransctipSegmentSocketServiceListener listener) {
     _listeners.remove(context.hashCode);
     _listeners.putIfAbsent(context.hashCode, () => listener);
   }
@@ -381,7 +395,8 @@ class TranscripSegmentSocketService implements IPureSocketListener {
         return;
       }
       _listeners.forEach((k, v) {
-        v.onSegmentReceived(segments.map((e) => TranscriptSegment.fromJson(e)).toList());
+        v.onSegmentReceived(
+            segments.map((e) => TranscriptSegment.fromJson(e)).toList());
       });
       return;
     }
@@ -409,7 +424,8 @@ class TranscripSegmentSocketService implements IPureSocketListener {
     NotificationService.instance.createNotification(
       notificationId: 3,
       title: 'Internet Connection Lost',
-      body: 'Your device is offline. Transcription is paused until connection is restored.',
+      body:
+          'Your device is offline. Transcription is paused until connection is restored.',
     );
   }
 
