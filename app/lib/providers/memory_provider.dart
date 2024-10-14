@@ -38,7 +38,8 @@ class MemoryProvider extends ChangeNotifier {
         body: '',
       );
       if (response != null && response.statusCode == 200) {
-        return ServerMemory.fromJson(json.decode(response.body));
+        final jsonResponse = json.decode(utf8.decode(response.bodyBytes));
+        return ServerMemory.fromJson(jsonResponse);
       }
     } catch (e) {
       print("Error fetching memory: $e");
