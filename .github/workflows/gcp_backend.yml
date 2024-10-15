@@ -11,6 +11,8 @@ on:
 env:
   SERVICE: backend
   REGION: us-central1
+  BACKEND_IMAGE_NAME: foxxy
+
 
 jobs:
   deploy:
@@ -30,18 +32,39 @@ jobs:
         with:
           credentials_json: ${{ secrets.GCP_CREDENTIALS }}
       - run: gcloud auth configure-docker
+      - name: Set up Environment Variables
+        run: |
+          set -x;
+          if [[ "${GITHUB_REF_NAME}" == "main" ]]; then
+            for env_value in $(compgen -v |grep '.*_PRODUCTION$'); do
+              eval export ${env_value%_PRODUCTION}="${!env_value}"
+            done
+          elif [[ "${GITHUB_REF_NAME}" == "development" ]]; then
+            for env_value in $(compgen -v |grep '.*_DEVELOPMENT$'); do
+              eval export ${env_value%_DEVELOPMENT}="${!env_value}"
+            done
+          else
+            for env_value in $(compgen -v |grep '.*_DEVELOPMENT$'); do
+              eval export ${env_value%_DEVELOPMENT}="${!env_value}"
+            done
+          fi
       - name: Build and Push Docker image
         run: |
-          docker build -t gcr.io/${{ vars.GCP_PROJECT_ID }}/${{ env.SERVICE }} -f backend/Dockerfile ./backend/
-          docker push gcr.io/${{ vars.GCP_PROJECT_ID }}/${{ env.SERVICE }}
-      - name: Deploy to Cloud Run
-        id: deploy
-        uses: google-github-actions/deploy-cloudrun@v0
-        with:
-          service: ${{ env.SERVICE }}
-          region: ${{ env.REGION }}
-          image: gcr.io/${{ vars.GCP_PROJECT_ID }}/${{ env.SERVICE }}
+
+          IMAGE_TAG="0.0.${GITHUB_RUN_NUMBER}"
+          export IMAGE="krccr.ccs.tencentyun.com/${DOCKER_NAMESPACE}/${BACKEND_IMAGE_NAME}:${IMAGE_TAG}"
+          export IMAGE_LATEST="krccr.ccs.tencentyun.com/${DOCKER_NAMESPACE}/${BACKEND_IMAGE_NAME}:latest"
+          docker build -t krccr.ccs.tencentyun.com/${DOCKER_NAMESPACE}/${BACKEND_IMAGE_NAME} -f backend/Dockerfile ./backend/
+          docker push ${IMAGE}
+          docker push ${IMAGE_LATEST}
+      # - name: Deploy to Cloud Run
+      #   id: deploy
+      #   uses: google-github-actions/deploy-cloudrun@v0
+      #   with:
+      #     service: ${{ env.SERVICE }}
+      #     region: ${{ env.REGION }}
+      #     image: gcr.io/${{ vars.GCP_PROJECT_ID }}/${{ env.SERVICE }}
 
       # If required, use the Cloud Run url output in later steps
-      - name: Show Output
-        run: echo ${{ steps.deploy.outputs.url }}
+      # - name: Show Output
+      #   run: echo ${{ steps.deploy.outputs.url }}
