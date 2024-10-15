@@ -44,17 +44,18 @@ jobs:
             export DOCKER_NAMESPACE=${{vars.DOCKER_NAMESPACE_DEVELOPMENT}}
           fi
           echo "DOCKER_NAMESPACE=${DOCKER_NAMESPACE}" >> $GITHUB_ENV
-      - name: Install Tencent CLI (tccli) and jq
-        run: |
-          pip install tccli
-          sudo apt-get install -y jq
-          tccli configure set secretId ${{ secrets.TENCENTCLOUD_SECRET_ID }}
-          tccli configure set secretKey ${{ secrets.TENCENTCLOUD_SECRET_KEY }}
-          tccli configure set region ap-seoul # 设置你使用的区域
+      # - name: Install Tencent CLI (tccli) and jq
+      #   run: |
+      #     pip install tccli
+      #     sudo apt-get install -y jq
+      #     tccli configure set secretId ${{ secrets.TENCENTCLOUD_SECRET_ID }}
+      #     tccli configure set secretKey ${{ secrets.TENCENTCLOUD_SECRET_KEY }}
+      #     tccli configure set region ap-seoul # 设置你使用的区域
       - name: Docker login to Tencent TCR
         run: |
-          AUTH_TOKEN=$(tccli tcr GetAuthorizationToken --output json | jq -r .authorizationToken)
-          docker login -u TCR -p $AUTH_TOKEN krccr.ccs.tencentyun.com
+          # AUTH_TOKEN=$(tccli tcr GetAuthorizationToken --output json | jq -r .authorizationToken)
+          # docker login -u TCR -p $AUTH_TOKEN krccr.ccs.tencentyun.com
+          docker login -u ${{ secrets.TENCENTCLOUD_SECRET_ID }} -p ${{ secrets.TENCENTCLOUD_SECRET_KEY }} krccr.ccs.tencentyun.com
       - name: Build and Push Docker image
         run: |
 
