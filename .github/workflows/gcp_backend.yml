@@ -36,6 +36,8 @@ jobs:
       - name: Set up Environment Variables
         run: |
           set -x;
+          env;
+          echo ${DOCKER_NAMESPACE_DEVELOPMENT}
           if [[ "${GITHUB_REF_NAME}" == "main" ]]; then
             for env_value in $(compgen -v |grep '.*_PRODUCTION$'); do
               eval export ${env_value%_PRODUCTION}="${!env_value}"
