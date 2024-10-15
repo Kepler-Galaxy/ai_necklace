@@ -1,16 +1,11 @@
-import requests
+import aiohttp
 from bs4 import BeautifulSoup
 import re
-from pydantic import BaseModel
 from readability import Document
 import html2text
 from urllib.parse import urlparse
-
-class WebContentResponse(BaseModel):
-    success: bool
-    title: str
-    main_content: str
-    url: str
+from raw_data.little_red_book import extract_little_red_book_content
+from raw_data.web_content_response import WebContentResponseV2, WeChatContentResponse, GeneralWebContentResponse
 
 class CustomHTML2Text(html2text.HTML2Text):
     def __init__(self, *args, **kwargs):
@@ -30,12 +25,14 @@ class CustomHTML2Text(html2text.HTML2Text):
         return super().handle_tag(tag, attrs, start)
     
 
-def extract_general_web_content(url: str) -> WebContentResponse:
+async def extract_general_web_content(url: str) -> WebContentResponseV2:
     try:
-        response = requests.get(url)
-        response.raise_for_status()
+        async with aiohttp.ClientSession() as session:
+            async with session.get(url, headers={'User-Agent': 'Mozilla/5.0'}) as response:
+                response.raise_for_status()
+                content = await response.content
         
-        doc = Document(response.content)
+        doc = Document(content)
         main_content_html = doc.summary()
         h = CustomHTML2Text()
         h.ignore_links = False
@@ -47,29 +44,36 @@ def extract_general_web_content(url: str) -> WebContentResponse:
         # Input: "Check out [this link](http://example.com) for more info."
         # Output: "Check out this link for more info."
         structured_content = re.sub(r'\[(.*?)\]\(.*?\)', r'\1', structured_content)
-        return WebContentResponse(  
-            success=True,
-            title=doc.title(),
-            main_content=structured_content,
-            url=url
+        return WebContentResponseV2(
+            response=GeneralWebContentResponse(
+                success=True,
+                url=url,
+                title=doc.title(),
+                content_type="general",
+                main_content=structured_content
+            ),
+            raw_data={}
         )
     except Exception as e:
-        return WebContentResponse(
-            success=False,
-            title="",
-            main_content="fetch article content failed, maybe the url is not valid or permission denied",
-            url=url
+        return WebContentResponseV2(
+            response=GeneralWebContentResponse(
+                success=False,
+                url=url,
+                title="",
+                content_type="general",
+                main_content="fetch article content failed, maybe the url is not valid or permission denied"
+            ),
+            raw_data={}
         )
     
-def extract_wechat_content(url: str) -> WebContentResponse:
+async def extract_wechat_content(url: str) -> WebContentResponseV2:
     try:
-        headers = {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
-        }
-        response = requests.get(url, headers=headers)
-        response.raise_for_status()
-        
-        soup = BeautifulSoup(response.content, 'html.parser')
+        async with aiohttp.ClientSession() as session:
+            async with session.get(url, headers={'User-Agent': 'Mozilla/5.0'}) as response:
+                response.raise_for_status()
+                content = await response.content
+
+        soup = BeautifulSoup(content, 'html.parser')
         
         title = soup.find('h1', class_='rich_media_title').text.strip()
         
@@ -89,16 +93,37 @@ def extract_wechat_content(url: str) -> WebContentResponse:
         else:
             main_content = "Content extraction failed."
         
-        return WebContentResponse(success=True, title=title, main_content=main_content, url=url)
+        return WebContentResponseV2(
+            response=WeChatContentResponse(
+                success=True,
+                url=url,
+                title=title,
+                content_type="wechat",
+                main_content=main_content
+            ),
+            raw_data={}
+        )
     except Exception as e:
-        return WebContentResponse(success=False, title="", main_content=f"Failed to extract WeChat content: {str(e)}", url=url)
+        return WebContentResponseV2(
+            response=WeChatContentResponse(
+                success=False,
+                url=url,
+                title="",
+                content_type="wechat",
+                main_content=f"Failed to extract WeChat content: {str(e)}"
+            ),
+            raw_data={}
+        )
 
-def extract_web_content(url: str) -> WebContentResponse:
+async def extract_web_content(url: str) -> WebContentResponseV2:
     parsed_url = urlparse(url)
+    
     if parsed_url.netloc == "mp.weixin.qq.com":
         print("Extracting WeChat content...")
-        return extract_wechat_content(url)
+        return await extract_wechat_content(url)
+    elif parsed_url.netloc in ["www.xiaohongshu.com", "xiaohongshu.com", "xhslink.com"]:
+        print("Extracting Little Red Book content...")
+        return await extract_little_red_book_content(url)
     else:
         print("Extracting general web content...")
-        return extract_general_web_content(url)
-  
+        return await extract_general_web_content(url)

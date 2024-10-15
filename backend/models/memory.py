@@ -2,11 +2,11 @@ from datetime import datetime
 from enum import Enum
 from typing import List, Optional, Dict
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, validator
 
 from models.chat import Message
 from models.transcript_segment import TranscriptSegment
-from utils.memories.web_content import WebContentResponse
+from utils.memories.web_content import WebContentResponseV2
 
 
 class CategoryEnum(str, Enum):
@@ -125,7 +125,16 @@ class ExternalLinkDescription(BaseModel):
 
 class ExternalLink(BaseModel):
     external_link_description: ExternalLinkDescription
-    web_content_response: Optional[WebContentResponse] = None
+    web_content_response: Optional[WebContentResponseV2] = None
+
+    @validator('web_content_response', pre=True)
+    def validate_web_content_response(cls, v):
+        if isinstance(v, dict):
+            if 'content_type' in v:
+                return WebContentResponseV2(**v)
+            else:
+                return WebContentResponseV2.from_v1(v)
+        return v
 
 class MemoryVisibility(str, Enum):
     private = 'private'

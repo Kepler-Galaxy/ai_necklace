@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import List, Optional
+from typing import List, Optional, Union
 from loguru import logger
 
 import tiktoken
@@ -17,8 +17,7 @@ from models.trend import TrendEnum, ceo_options, company_options, software_produ
     ai_product_options, TrendType
 from utils.memories.facts import get_prompt_facts
 from utils.string import words_count
-from utils.memories.web_content import WebContentResponse
-from openai import RateLimitError
+from raw_data.web_content_response import WeChatContentResponse, LittleRedBookContentResponse, GeneralWebContentResponse
 
 llm_mini = ChatOpenAI(model='gpt-4o-mini')
 embeddings = OpenAIEmbeddings(model="text-embedding-3-large")
@@ -179,6 +178,7 @@ def get_memory_summary(uid: str, memories: List[Memory]) -> str:
     The following are a list of {user_name}'s conversations from today, with the transcripts and a slight summary of each, that {user_name} had during his day.
     {user_name} wants to get a summary of the key action items {user_name} has to take based on today's conversations.
 
+    Guess the language involded in recent experiences, and write summary in the same language.
     Remember {user_name} is busy so this has to be very efficient and concise.
     Respond in at most 50 words.
   
@@ -591,7 +591,7 @@ async def obtain_recent_summary(conversation_history: str, articles_read: str, r
 # **************************************************
 # ************* WECHAT ARTICLE SUMMARIZATION ********
 # **************************************************
-def summarize_article(web_content_response: WebContentResponse) -> Structured:
+def summarize_article(web_content: Union[WeChatContentResponse, GeneralWebContentResponse]) -> Structured:
     parser = PydanticOutputParser(pydantic_object=Structured)
     prompt = ChatPromptTemplate.from_messages([(
         'system',
@@ -614,9 +614,56 @@ def summarize_article(web_content_response: WebContentResponse) -> Structured:
     chain = prompt | llm_mini | parser
 
     response = chain.invoke({
-        'title': web_content_response.title,
-        'article_content': web_content_response.main_content,
+        'title': web_content.title,
+        'article_content': web_content.main_content,
         'format_instructions': parser.get_format_instructions(),
+    })
+
+    return Structured(
+        title=response.title,
+        overview=response.overview,
+        emoji=response.emoji,
+        category=response.category,
+        key_points=response.key_points,
+        action_items=[],
+        events=[]
+    )
+
+
+def summarize_content_with_context(web_content: LittleRedBookContentResponse) -> Structured:
+    parser = PydanticOutputParser(pydantic_object=Structured)
+    
+    prompt = ChatPromptTemplate.from_messages([
+        ("system", "You are an expert content analyzer and summarizer. Your task is to analyze the given article and images, and provide a structured summary."),
+        ("human", """
+            Please provide the following:
+            1. For the title, use a concise and engaging title that captures the essence of the article.
+            2. For the overview, use 3-5 sentences to summarize the main points of the article. If necessary, use at most 10 sentences.
+            3. For the emoji, use a beautiful emoji to match the article's content.
+            4. For the category, classify the content into one of the available categories.
+            5. For the keypoints, extract a few original sentences that need to be highlighted from the article. If images are provided below, 
+         pay close attention to those images that can use OCR to extract text, these images are in concequtive order for text. Extract as many keypoints as possible.
+
+            Article content: ```{article_content}```
+
+            {tags_str}
+
+            {image_prompts}
+
+            Please use the same language as the main content in the article for your response.
+            You should leave the events and action items as empty lists.
+
+            {format_instructions}
+        """)
+    ])
+    
+    chain = prompt | llm_mini | parser
+    #{"type": "image_url", "image_url": f"data:image/png;base64,{img_str}"}
+    response = chain.invoke({
+        'article_content': web_content.text_content,
+        'tags_str': f"Tags: {', '.join(web_content.tags)}" if web_content.tags else "",
+        'image_prompts': "\n".join([f"Image {i+1}: [A base64 encoded image is attached]" for i in range(len(web_content.image_base64_pngs))]) if web_content.image_base64_pngs else "",
+        'format_instructions': parser.get_format_instructions()
     })
 
     return Structured(
