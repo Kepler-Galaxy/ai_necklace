@@ -7,6 +7,7 @@ on:
     branches: [ "main", "development", "ft/cicd" ]
     paths:
       - 'backend/**'
+      - '.github/workflows/gcp_backend.yml'
 
 env:
   SERVICE: backend
