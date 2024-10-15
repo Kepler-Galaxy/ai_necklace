@@ -62,7 +62,7 @@ jobs:
           IMAGE_TAG="0.0.${GITHUB_RUN_NUMBER}"
           export IMAGE="krccr.ccs.tencentyun.com/${DOCKER_NAMESPACE}/${BACKEND_IMAGE_NAME}:${IMAGE_TAG}"
           export IMAGE_LATEST="krccr.ccs.tencentyun.com/${DOCKER_NAMESPACE}/${BACKEND_IMAGE_NAME}:latest"
-          docker build -t ${IMAGE_TAG} -t ${IMAGE_LATEST} -f backend/Dockerfile ./backend/
+          docker build -t ${IMAGE} -t ${IMAGE_LATEST} -f backend/Dockerfile ./backend/
           docker push ${IMAGE}
           docker push ${IMAGE_LATEST}
       # - name: Deploy to Cloud Run
