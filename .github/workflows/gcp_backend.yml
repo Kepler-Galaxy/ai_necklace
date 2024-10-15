@@ -39,17 +39,11 @@ jobs:
           env;
           echo ${DOCKER_NAMESPACE_DEVELOPMENT}
           if [[ "${GITHUB_REF_NAME}" == "main" ]]; then
-            for env_value in $(compgen -v |grep '.*_PRODUCTION$'); do
-              eval export ${env_value%_PRODUCTION}="${!env_value}"
-            done
+            export DOCKER_NAMESPACE=${{var.DOCKER_NAMESPACE_PRODUCTION}}
           elif [[ "${GITHUB_REF_NAME}" == "development" ]]; then
-            for env_value in $(compgen -v |grep '.*_DEVELOPMENT$'); do
-              eval export ${env_value%_DEVELOPMENT}="${!env_value}"
-            done
+            export DOCKER_NAMESPACE=${{var.DOCKER_NAMESPACE_DEVELOPMENT}}
           else
-            for env_value in $(compgen -v |grep '.*_DEVELOPMENT$'); do
-              eval export ${env_value%_DEVELOPMENT}="${!env_value}"
-            done
+            export DOCKER_NAMESPACE=${{var.DOCKER_NAMESPACE_DEVELOPMENT}}
           fi
       - name: Build and Push Docker image
         run: |
