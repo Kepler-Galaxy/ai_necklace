@@ -36,13 +36,12 @@ jobs:
       - name: Set up Environment Variables
         run: |
           set -x;
-          echo ${DOCKER_NAMESPACE_DEVELOPMENT}
           if [[ "${GITHUB_REF_NAME}" == "main" ]]; then
-            export DOCKER_NAMESPACE=${{var.DOCKER_NAMESPACE_PRODUCTION}}
+            export DOCKER_NAMESPACE=${{vars.DOCKER_NAMESPACE_PRODUCTION}}
           elif [[ "${GITHUB_REF_NAME}" == "development" ]]; then
-            export DOCKER_NAMESPACE=${{var.DOCKER_NAMESPACE_DEVELOPMENT}}
+            export DOCKER_NAMESPACE=${{vars.DOCKER_NAMESPACE_DEVELOPMENT}}
           else
-            export DOCKER_NAMESPACE=${{var.DOCKER_NAMESPACE_DEVELOPMENT}}
+            export DOCKER_NAMESPACE=${{vars.DOCKER_NAMESPACE_DEVELOPMENT}}
           fi
       - name: Build and Push Docker image
         run: |
