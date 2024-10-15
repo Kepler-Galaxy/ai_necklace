@@ -36,7 +36,6 @@ jobs:
       - name: Set up Environment Variables
         run: |
           set -x;
-          env;
           echo ${DOCKER_NAMESPACE_DEVELOPMENT}
           if [[ "${GITHUB_REF_NAME}" == "main" ]]; then
             export DOCKER_NAMESPACE=${{var.DOCKER_NAMESPACE_PRODUCTION}}
