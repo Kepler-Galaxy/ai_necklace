@@ -258,7 +258,8 @@ Future<Map<String, dynamic>> getMemoryConnectionsGraph(
     }
 
     if (response.statusCode == 200) {
-      return jsonDecode(response.body) as Map<String, dynamic>;
+      var body = utf8.decode(response.bodyBytes);
+      return jsonDecode(body) as Map<String, dynamic>;
     } else {
       throw Exception(
           'Failed to get memory connections graph: ${response.statusCode}');
