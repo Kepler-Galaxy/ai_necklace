@@ -4,7 +4,7 @@ name: Deploy Backend to Cloud RUN
 
 on:
   push:
-    branches: [ "main", "development" ]
+    branches: [ "master", "main" ]
     paths:
       - 'backend/**'
       - '.github/workflows/gcp_backend.yml'
@@ -17,7 +17,7 @@ env:
 
 jobs:
   deploy:
-    environment: ${{ (github.ref == 'refs/heads/development' && 'development') || (github.ref == 'refs/heads/main' && 'prod') }}
+    environment: ${{ (github.ref == 'refs/heads/main' && 'development') || (github.ref == 'refs/heads/master' && 'prod') }}
     permissions:
       contents: 'read'
       id-token: 'write'
@@ -36,9 +36,9 @@ jobs:
       - name: Set up Environment Variables
         run: |
           set -x;
-          if [[ "${GITHUB_REF_NAME}" == "main" ]]; then
+          if [[ "${GITHUB_REF_NAME}" == "master" ]]; then
             export DOCKER_NAMESPACE=${{vars.DOCKER_NAMESPACE_PRODUCTION}}
-          elif [[ "${GITHUB_REF_NAME}" == "development" ]]; then
+          elif [[ "${GITHUB_REF_NAME}" == "main" ]]; then
             export DOCKER_NAMESPACE=${{vars.DOCKER_NAMESPACE_DEVELOPMENT}}
           else
             export DOCKER_NAMESPACE=${{vars.DOCKER_NAMESPACE_DEVELOPMENT}}
