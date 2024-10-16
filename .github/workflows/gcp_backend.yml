@@ -4,7 +4,7 @@ name: Deploy Backend to Cloud RUN
 
 on:
   push:
-    branches: [ "main", "development", "ft/cicd" ]
+    branches: [ "main", "development" ]
     paths:
       - 'backend/**'
       - '.github/workflows/gcp_backend.yml'
