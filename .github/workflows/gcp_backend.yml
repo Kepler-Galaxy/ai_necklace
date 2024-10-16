@@ -4,17 +4,20 @@ name: Deploy Backend to Cloud RUN
 
 on:
   push:
-    branches: [ "main", "development" ]
+    branches: [ "master", "main" ]
     paths:
       - 'backend/**'
+      - '.github/workflows/gcp_backend.yml'
 
 env:
   SERVICE: backend
   REGION: us-central1
+  BACKEND_IMAGE_NAME: foxxy-backend
+
 
 jobs:
   deploy:
-    environment: ${{ (github.ref == 'refs/heads/development' && 'development') || (github.ref == 'refs/heads/main' && 'prod') }}
+    environment: ${{ (github.ref == 'refs/heads/main' && 'development') || (github.ref == 'refs/heads/master' && 'prod') }}
     permissions:
       contents: 'read'
       id-token: 'write'
@@ -30,18 +33,46 @@ jobs:
         with:
           credentials_json: ${{ secrets.GCP_CREDENTIALS }}
       - run: gcloud auth configure-docker
+      - name: Set up Environment Variables
+        run: |
+          set -x;
+          if [[ "${GITHUB_REF_NAME}" == "master" ]]; then
+            export DOCKER_NAMESPACE=${{vars.DOCKER_NAMESPACE_PRODUCTION}}
+          elif [[ "${GITHUB_REF_NAME}" == "main" ]]; then
+            export DOCKER_NAMESPACE=${{vars.DOCKER_NAMESPACE_DEVELOPMENT}}
+          else
+            export DOCKER_NAMESPACE=${{vars.DOCKER_NAMESPACE_DEVELOPMENT}}
+          fi
+          echo "DOCKER_NAMESPACE=${DOCKER_NAMESPACE}" >> $GITHUB_ENV
+      # - name: Install Tencent CLI (tccli) and jq
+      #   run: |
+      #     pip install tccli
+      #     sudo apt-get install -y jq
+      #     tccli configure set secretId ${{ secrets.TENCENTCLOUD_SECRET_ID }}
+      #     tccli configure set secretKey ${{ secrets.TENCENTCLOUD_SECRET_KEY }}
+      #     tccli configure set region ap-seoul # 设置你使用的区域
+      - name: Docker login to Tencent TCR
+        run: |
+          # AUTH_TOKEN=$(tccli tcr GetAuthorizationToken --output json | jq -r .authorizationToken)
+          # docker login -u TCR -p $AUTH_TOKEN krccr.ccs.tencentyun.com
+          docker login -u ${{ secrets.TENCENTCLOUD_SECRET_ID }} -p ${{ secrets.TENCENTCLOUD_SECRET_KEY }} krccr.ccs.tencentyun.com
       - name: Build and Push Docker image
         run: |
-          docker build -t gcr.io/${{ vars.GCP_PROJECT_ID }}/${{ env.SERVICE }} -f backend/Dockerfile .
-          docker push gcr.io/${{ vars.GCP_PROJECT_ID }}/${{ env.SERVICE }}
-      - name: Deploy to Cloud Run
-        id: deploy
-        uses: google-github-actions/deploy-cloudrun@v0
-        with:
-          service: ${{ env.SERVICE }}
-          region: ${{ env.REGION }}
-          image: gcr.io/${{ vars.GCP_PROJECT_ID }}/${{ env.SERVICE }}
+
+          IMAGE_TAG="0.0.${GITHUB_RUN_NUMBER}"
+          export IMAGE="krccr.ccs.tencentyun.com/${DOCKER_NAMESPACE}/${BACKEND_IMAGE_NAME}:${IMAGE_TAG}"
+          export IMAGE_LATEST="krccr.ccs.tencentyun.com/${DOCKER_NAMESPACE}/${BACKEND_IMAGE_NAME}:latest"
+          docker build -t ${IMAGE} -t ${IMAGE_LATEST} -f backend/Dockerfile ./backend/
+          docker push ${IMAGE}
+          docker push ${IMAGE_LATEST}
+      # - name: Deploy to Cloud Run
+      #   id: deploy
+      #   uses: google-github-actions/deploy-cloudrun@v0
+      #   with:
+      #     service: ${{ env.SERVICE }}
+      #     region: ${{ env.REGION }}
+      #     image: gcr.io/${{ vars.GCP_PROJECT_ID }}/${{ env.SERVICE }}
 
       # If required, use the Cloud Run url output in later steps
-      - name: Show Output
-        run: echo ${{ steps.deploy.outputs.url }}
+      # - name: Show Output
+      #   run: echo ${{ steps.deploy.outputs.url }}
