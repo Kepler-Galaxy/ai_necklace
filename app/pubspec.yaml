@@ -193,10 +193,11 @@ flutter_native_splash:
   android_gravity: fill
 
   android_12:
-    color: "#000000"
-    image: assets/images/foxxy_splash.png
-    fullscreen: true
-    android_gravity: fill
+#    branding: assets/images/foxxy_splash.png
+#    color: "#000000"
+    image: assets/images/foxxy_splash_12.png
+#    fullscreen: true
+#    android_gravity: fill
 
   android: true
   ios: true
