@@ -236,7 +236,7 @@ class Memory(BaseModel):
     
     def get_web_article(self) -> Optional[str]:
         if self.external_link and self.external_link.web_content_response:
-            return f"Title: {self.external_link.web_content_response.title}\nContent: {self.external_link.web_content_response.main_content}"
+            return f"Title: {self.external_link.web_content_response.response.title}\nContent: {self.external_link.web_content_response.response.main_content}"
         return None
     
 class CreateMemory(BaseModel):

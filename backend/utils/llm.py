@@ -633,38 +633,46 @@ def summarize_article(web_content: Union[WeChatContentResponse, GeneralWebConten
 def summarize_content_with_context(web_content: LittleRedBookContentResponse) -> Structured:
     parser = PydanticOutputParser(pydantic_object=Structured)
     
-    prompt = ChatPromptTemplate.from_messages([
-        ("system", "You are an expert content analyzer and summarizer. Your task is to analyze the given article and images, and provide a structured summary."),
-        ("human", """
-            Please provide the following:
-            1. For the title, use a concise and engaging title that captures the essence of the article.
-            2. For the overview, use 3-5 sentences to summarize the main points of the article. If necessary, use at most 10 sentences.
-            3. For the emoji, use a beautiful emoji to match the article's content.
+    content = [
+        {
+            "type": "text",
+            "text": f"""Please provide the following:
+            1. For the title, use a concise and engaging title that captures the essence of the article and images.
+            2. For the overview, use at most 10 sentences to summarize the main points of the article and images.
+            3. For the emoji, use a beautiful emoji to match the article's content and images.
             4. For the category, classify the content into one of the available categories.
-            5. For the keypoints, extract a few original sentences that need to be highlighted from the article. If images are provided below, 
-         pay close attention to those images that can use OCR to extract text, these images are in concequtive order for text. Extract as many keypoints as possible.
+            5. For the keypoints, extract a few original sentences that need to be highlighted from the article. Also, describe key visual elements from the images that support or add to the article's content.
 
-            Article content: ```{article_content}```
+            Article content: {web_content.text_content}
 
-            {tags_str}
-
-            {image_prompts}
+            Tags: {', '.join(web_content.tags) if web_content.tags else ""}
 
             Please use the same language as the main content in the article for your response.
             You should leave the events and action items as empty lists.
 
-            {format_instructions}
-        """)
+            {parser.get_format_instructions()}"""
+        }
+    ]
+    
+    for image_url in web_content.image_urls:
+        content.append({
+            "type": "image_url",
+            "image_url": {
+                "url": image_url,
+            },
+        })
+
+    print("content is: ", content)
+
+    prompt = ChatPromptTemplate.from_messages([
+        ("system", "You are an expert content analyzer and summarizer. Your task is to analyze the given article, images, and provide a structured summary."),
+        ("human", {"content": content})
     ])
+    print(prompt)
     
     chain = prompt | llm_mini | parser
-    #{"type": "image_url", "image_url": f"data:image/png;base64,{img_str}"}
-    response = chain.invoke({
-        'article_content': web_content.text_content,
-        'tags_str': f"Tags: {', '.join(web_content.tags)}" if web_content.tags else "",
-        'image_prompts': "\n".join([f"Image {i+1}: [A base64 encoded image is attached]" for i in range(len(web_content.image_base64_pngs))]) if web_content.image_base64_pngs else "",
-        'format_instructions': parser.get_format_instructions()
-    })
+    
+    response = chain.invoke({})
 
     return Structured(
         title=response.title,

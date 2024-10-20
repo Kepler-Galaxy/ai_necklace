@@ -70,8 +70,10 @@ async def extract_wechat_content(url: str) -> WebContentResponseV2:
     try:
         async with aiohttp.ClientSession() as session:
             async with session.get(url, headers={'User-Agent': 'Mozilla/5.0'}) as response:
+                print("test")
                 response.raise_for_status()
-                content = await response.content
+                content = await response.read()
+                print(content)
 
         soup = BeautifulSoup(content, 'html.parser')
         

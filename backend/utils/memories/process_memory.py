@@ -29,6 +29,7 @@ from utils.retrieval.rag import retrieve_rag_memory_context
 from utils.llm import summarize_article, summarize_content_with_context
 from utils.memories.web_content import extract_web_content
 from utils.memories.memory_connection import explain_related_memories
+from raw_data.web_content_response import WeChatContentResponse, LittleRedBookContentResponse, GeneralWebContentResponse
 
 async def _get_structured(
         uid: str, language_code: str, memory: Union[Memory, CreateMemory, WorkflowCreateMemory],
@@ -56,7 +57,7 @@ async def _get_structured(
         if memory.external_link:
             web_content_response = await extract_web_content(memory.external_link.external_link_description.link)
             memory.external_link.web_content_response = web_content_response
-            if web_content_response.success:
+            if web_content_response.response.success:
                 if isinstance(web_content_response.response, WeChatContentResponse):
                     logger.info(f"Extracted {web_content_response.response.title} from WeChat with "
                                 f"{len(web_content_response.response.main_content)} characters")
@@ -71,7 +72,7 @@ async def _get_structured(
                                 f"{len(web_content_response.response.main_content)} characters")
                     return summarize_article(web_content_response.response), False
             else:
-                logger.error(f"Failed to extract web content: {web_content_response.url}")
+                logger.error(f"Failed to extract web content: {web_content_response.response.url}")
                 return Structured(emoji=random.choice(['🧠', '🎉'])), True
 
         # from Friend
