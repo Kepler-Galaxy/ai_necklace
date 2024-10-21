@@ -93,7 +93,7 @@ async def _get_structured(
         if retries == 2:
             logger.error(uid, f"Error processing memory, retrying {retries} times, please try again later")
             raise HTTPException(status_code=500, detail="Error processing memory, please try again later")
-        return _get_structured(uid, language_code, memory, force_process, retries + 1)
+        return await _get_structured(uid, language_code, memory, force_process, retries + 1)
 
 
 def _get_memory_obj(uid: str, structured: Structured, memory: Union[Memory, CreateMemory, WorkflowCreateMemory]):

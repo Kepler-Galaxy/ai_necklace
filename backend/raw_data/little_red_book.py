@@ -123,13 +123,25 @@ async def extract_original_and_low_res_jpegs_from_urls(image_urls: List[str]) ->
                 img.save(original_buffered, format="JPEG", quality=85)
                 original_img_str = base64.b64encode(original_buffered.getvalue()).decode()
                 original_base64_jpegs.append(original_img_str)
-                
-                if img.width > img.height:
-                    new_width = 512
-                    new_height = int(512 * img.height / img.width)
+
+                # https://platform.openai.com/docs/guides/vision/calculating-costs
+                # This special handling prevents OpenAI from cropping images and ensures full OCR extraction
+                MAX_DIMENSION = 1024
+                OPENAI_MAX_SMALLER_DIMENSION = 768
+
+                if img.width >= img.height:
+                    new_width = min(img.width, MAX_DIMENSION)
+                    new_height = int(new_width * img.height / img.width)
+                    if new_height > OPENAI_MAX_SMALLER_DIMENSION:
+                        new_height = OPENAI_MAX_SMALLER_DIMENSION
+                        new_width = int(new_height * img.width / img.height)
                 else:
-                    new_height = 512
-                    new_width = int(512 * img.width / img.height)
+                    new_height = min(img.height, MAX_DIMENSION)
+                    new_width = int(new_height * img.width / img.height)
+                    if new_width > OPENAI_MAX_SMALLER_DIMENSION:
+                        new_width = OPENAI_MAX_SMALLER_DIMENSION
+                        new_height = int(new_width * img.height / img.width)
+                
                 low_res_img = img.resize((new_width, new_height), Image.LANCZOS)
                 
                 low_res_buffered = BytesIO()

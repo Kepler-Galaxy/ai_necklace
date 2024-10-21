@@ -647,8 +647,8 @@ def summarize_content_with_image_context(web_content: LittleRedBookContentRespon
 
             For each image, provide:
             1. Whether the image is primarily text (OCR). return a boolean value.
-            2. If it's OCR, extract full text from the image. Set ocr_content to the extracted text. Use the same language as shown in the image. Otherwise, set ocr_content to an empty string.
-            3. Describe the image content in the context of the article. Use three sentences maximum. use the same language as the article.
+            2. If it's OCR, include all the text in the image, don't miss any details, then fix obvious text mistakes. Set ocr_content to the extracted text. Otherwise, set ocr_content to an empty string.
+            3. For the description field, describe the image content in one sentence in the context of the article. Use the same language as the article.
             Important: You must provide exactly {len(web_content.low_res_image_base64_jpegs)} image descriptions, one for each image.
 
             Article content: {web_content.text_content}
@@ -666,7 +666,7 @@ def summarize_content_with_image_context(web_content: LittleRedBookContentRespon
             "type": "image_url",
             "image_url": {
                 "url": f"data:image/jpeg;base64,{base64_image}",
-                "detail": "low"
+                "detail": "high"
             }
         })
     if image_contents:
