@@ -3,7 +3,7 @@ from bs4 import BeautifulSoup
 import json
 import re
 from datetime import datetime
-from typing import List
+from typing import List, Tuple
 from urllib.parse import urlparse
 
 from raw_data.web_content_response import WebContentResponseV2, LittleRedBookContentResponse
@@ -55,7 +55,7 @@ async def extract_little_red_book_content(url: str) -> WebContentResponseV2:
                 raise KeyError(f"Missing '{field}' in note data")
         
         image_urls = [img['urlDefault'] for img in note_data.get('imageList', []) if 'urlDefault' in img]
-        image_base64_pngs = await extract_png_from_urls(image_urls)
+        image_base64_jpegs, low_res_image_base64_jpegs = await extract_original_and_low_res_jpegs_from_urls(image_urls)
         
         little_red_book_response = LittleRedBookContentResponse(
             success=True,
@@ -72,7 +72,8 @@ async def extract_little_red_book_content(url: str) -> WebContentResponseV2:
             tags=[tag.get('name', '') for tag in note_data.get('tagList', [])],
             text_content=note_data.get('desc', ''),
             image_urls=image_urls,
-            image_base64_pngs=image_base64_pngs
+            image_base64_jpegs=image_base64_jpegs,
+            low_res_image_base64_jpegs=low_res_image_base64_jpegs
         )
         
         return WebContentResponseV2(
@@ -98,14 +99,16 @@ async def extract_little_red_book_content(url: str) -> WebContentResponseV2:
                 tags=[],
                 text_content=f"Failed to extract Xiaohongshu content: {str(e)}",
                 image_urls=[],
-                image_base64_pngs=[]
+                image_base64_jpegs=[],
+                low_res_image_base64_jpegs=[]
             ),
             raw_data={},
             version=2
         )
 
-async def extract_png_from_urls(image_urls: List[str]) -> List[str]:
-    base64_pngs = []
+async def extract_original_and_low_res_jpegs_from_urls(image_urls: List[str]) -> Tuple[List[str], List[str]]:
+    original_base64_jpegs = []
+    low_res_base64_jpegs = []
     async with aiohttp.ClientSession() as session:
         for url in image_urls:
             try:
@@ -115,11 +118,26 @@ async def extract_png_from_urls(image_urls: List[str]) -> List[str]:
                 
                 img = Image.open(BytesIO(content))
                 img = img.convert('RGB')
-                buffered = BytesIO()
-                img.save(buffered, format="PNG")
-                img_str = base64.b64encode(buffered.getvalue()).decode()
-                base64_pngs.append(img_str)
+                
+                original_buffered = BytesIO()
+                img.save(original_buffered, format="JPEG", quality=85)
+                original_img_str = base64.b64encode(original_buffered.getvalue()).decode()
+                original_base64_jpegs.append(original_img_str)
+                
+                if img.width > img.height:
+                    new_width = 512
+                    new_height = int(512 * img.height / img.width)
+                else:
+                    new_height = 512
+                    new_width = int(512 * img.width / img.height)
+                low_res_img = img.resize((new_width, new_height), Image.LANCZOS)
+                
+                low_res_buffered = BytesIO()
+                low_res_img.save(low_res_buffered, format="JPEG", quality=85)
+                low_res_img_str = base64.b64encode(low_res_buffered.getvalue()).decode()
+                low_res_base64_jpegs.append(low_res_img_str)
+                
             except Exception as e:
-                logger.error(f"Failed to extract PNG from {url}: {str(e)}")
+                logger.error(f"Failed to extract JPEG from {url}: {str(e)}, skipping image")
     
-    return base64_pngs
+    return original_base64_jpegs, low_res_base64_jpegs

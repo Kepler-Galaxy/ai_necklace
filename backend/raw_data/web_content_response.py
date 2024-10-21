@@ -36,7 +36,8 @@ class LittleRedBookContentResponse(BaseWebContentResponse):
     tags: List[str]
     text_content: str
     image_urls: List[str]
-    image_base64_pngs: list[str]
+    image_base64_jpegs: list[str]
+    low_res_image_base64_jpegs: list[str]
 
 class GeneralWebContentResponse(BaseWebContentResponse):
     content_type: Literal["general"] = "general"

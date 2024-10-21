@@ -65,7 +65,7 @@ async def _get_structured(
                 elif isinstance(web_content_response.response, LittleRedBookContentResponse):
                     logger.info(f"Extracted {web_content_response.response.title} from Little Red Book with "
                                 f"{len(web_content_response.response.text_content)} characters and "
-                                f"{len(web_content_response.response.image_base64_pngs)} images")
+                                f"{len(web_content_response.response.image_base64_jpegs)} images")
                     return summarize_content_with_context(web_content_response.response), False
                 elif isinstance(web_content_response.response, GeneralWebContentResponse):
                     logger.info(f"Extracted {web_content_response.response.title} from general web content with "

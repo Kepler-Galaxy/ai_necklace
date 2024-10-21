@@ -651,21 +651,19 @@ def summarize_content_with_context(web_content: LittleRedBookContentResponse) ->
     ]
     
     image_contents = []
-    for base64_image in web_content.image_base64_pngs:
+    for base64_image in web_content.low_res_image_base64_jpegs:
         image_contents.append({
             "type": "image_url",
             "image_url": {
-                "url": f"data:image/png;base64,{base64_image}"
+                "url": f"data:image/jpeg;base64,{base64_image}",
+                "detail": "low"
             }
         })
-
     if image_contents:
         prompt.append({
             "role": "user",
             "content": image_contents
         })
-
-    print("base64 lens is: ", len(web_content.image_base64_pngs))
 
     with_parser = llm_mini.with_structured_output(Structured)
     response: Structured = with_parser.invoke(prompt)
@@ -704,5 +702,4 @@ def explain_relationship(memory: Memory, related_memory: Memory) -> ExplainRelat
         'format_instructions': parser.get_format_instructions()})
 
     return response
-
 
