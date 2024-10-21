@@ -224,8 +224,8 @@ class Memory(BaseModel):
                     memory_str += "Transcript Segments:\n"
                     memory_str += memory.get_transcript(include_timestamps=True) + "\n"
                 elif memory.external_link and memory.external_link.web_content_response:
-                    memory_str += "Web Article:\n"
-                    memory_str += f"{memory.get_web_article()}\n"
+                    memory_str += "Web Article and related image descriptions:\n"
+                    memory_str += f"{memory.get_web_content()}\n"
 
             if include_connections and memory.connections:
                 memory_str += "Connections:\n"
@@ -240,9 +240,19 @@ class Memory(BaseModel):
         # Warn: missing transcript for workflow source
         return TranscriptSegment.segments_as_string(self.transcript_segments, include_timestamps=include_timestamps)
     
-    def get_web_article(self) -> Optional[str]:
+    def get_web_content(self) -> Optional[str]:
         if self.external_link and self.external_link.web_content_response:
-            return f"Title: {self.external_link.web_content_response.response.title}\nContent: {self.external_link.web_content_response.response.main_content}"
+            content = f"Title: {self.external_link.web_content_response.response.title}\n"
+            content += f"Content: {self.external_link.web_content_response.response.main_content}\n"
+            
+            if self.external_link.web_photo_understanding:
+                for i, image_desc in enumerate(self.external_link.web_photo_understanding, 1):
+                    content += f"\nImage {i}:\n"
+                    if image_desc.is_ocr:
+                        content += f"OCR Content: {image_desc.ocr_content}\n"
+                    content += f"Description: {image_desc.description}\n"
+            
+            return content.strip()
         return None
     
 class CreateMemory(BaseModel):
