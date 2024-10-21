@@ -629,14 +629,12 @@ def summarize_article(web_content: Union[WeChatContentResponse, GeneralWebConten
         events=[]
     )
 
-
 def summarize_content_with_context(web_content: LittleRedBookContentResponse) -> Structured:
-    parser = PydanticOutputParser(pydantic_object=Structured)
-    
-    content = [
+    prompt = [
         {
-            "type": "text",
-            "text": f"""Please provide the following:
+            "role": "system",
+            "content": f"""You are an expert content analyzer and summarizer. Your task is to analyze the given article, images, and provide a structured summary.
+            Please provide the following:
             1. For the title, use a concise and engaging title that captures the essence of the article and images.
             2. For the overview, use at most 10 sentences to summarize the main points of the article and images.
             3. For the emoji, use a beautiful emoji to match the article's content and images.
@@ -648,41 +646,32 @@ def summarize_content_with_context(web_content: LittleRedBookContentResponse) ->
             Tags: {', '.join(web_content.tags) if web_content.tags else ""}
 
             Please use the same language as the main content in the article for your response.
-            You should leave the events and action items as empty lists.
-
-            {parser.get_format_instructions()}"""
+            You should leave the events and action items as empty lists."""
         }
     ]
     
-    for image_url in web_content.image_urls:
-        content.append({
+    image_contents = []
+    for base64_image in web_content.image_base64_pngs:
+        image_contents.append({
             "type": "image_url",
             "image_url": {
-                "url": image_url,
-            },
+                "url": f"data:image/png;base64,{base64_image}"
+            }
         })
 
-    print("content is: ", content)
+    if image_contents:
+        prompt.append({
+            "role": "user",
+            "content": image_contents
+        })
 
-    prompt = ChatPromptTemplate.from_messages([
-        ("system", "You are an expert content analyzer and summarizer. Your task is to analyze the given article, images, and provide a structured summary."),
-        ("human", {"content": content})
-    ])
-    print(prompt)
-    
-    chain = prompt | llm_mini | parser
-    
-    response = chain.invoke({})
+    print("base64 lens is: ", len(web_content.image_base64_pngs))
 
-    return Structured(
-        title=response.title,
-        overview=response.overview,
-        emoji=response.emoji,
-        category=response.category,
-        key_points=response.key_points,
-        action_items=[],
-        events=[]
-    )
+    with_parser = llm_mini.with_structured_output(Structured)
+    response: Structured = with_parser.invoke(prompt)
+    return response
+
+
 
 # **************************************************
 # ************* MEMORY RELATIONSHIP **************
@@ -715,3 +704,5 @@ def explain_relationship(memory: Memory, related_memory: Memory) -> ExplainRelat
         'format_instructions': parser.get_format_instructions()})
 
     return response
+
+
