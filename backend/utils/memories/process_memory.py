@@ -26,7 +26,7 @@ from utils.notifications import send_notification
 from utils.other.hume import get_hume, HumeJobCallbackModel, HumeJobModelPredictionResponseModel
 from utils.plugins import get_plugins_data
 from utils.retrieval.rag import retrieve_rag_memory_context
-from utils.llm import summarize_article, summarize_content_with_context
+from utils.llm import summarize_article, summarize_content_with_image_context
 from utils.memories.web_content import extract_web_content
 from utils.memories.memory_connection import explain_related_memories
 from raw_data.web_content_response import WeChatContentResponse, LittleRedBookContentResponse, GeneralWebContentResponse
@@ -66,7 +66,10 @@ async def _get_structured(
                     logger.info(f"Extracted {web_content_response.response.title} from Little Red Book with "
                                 f"{len(web_content_response.response.text_content)} characters and "
                                 f"{len(web_content_response.response.image_base64_jpegs)} images")
-                    return summarize_content_with_context(web_content_response.response), False
+                    content_with_summary = summarize_content_with_image_context(web_content_response.response)
+                    
+                    memory.external_link.web_photo_understanding = content_with_summary.image_descriptions
+                    return content_with_summary.structured, False
                 elif isinstance(web_content_response.response, GeneralWebContentResponse):
                     logger.info(f"Extracted {web_content_response.response.title} from general web content with "
                                 f"{len(web_content_response.response.main_content)} characters")

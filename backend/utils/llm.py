@@ -6,11 +6,11 @@ import tiktoken
 from langchain_core.output_parsers import PydanticOutputParser
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_openai import ChatOpenAI, OpenAIEmbeddings
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, validator
 
 from models.chat import Message
 from models.facts import Fact
-from models.memory import Structured, MemoryPhoto, CategoryEnum, Memory
+from models.memory import Structured, MemoryPhoto, CategoryEnum, Memory, ImageDescription
 from models.plugin import Plugin
 from models.transcript_segment import TranscriptSegment
 from models.trend import TrendEnum, ceo_options, company_options, software_product_options, hardware_product_options, \
@@ -629,7 +629,11 @@ def summarize_article(web_content: Union[WeChatContentResponse, GeneralWebConten
         events=[]
     )
 
-def summarize_content_with_context(web_content: LittleRedBookContentResponse) -> Structured:
+class ContentSummaryWithImages(BaseModel):
+    structured: Structured
+    image_descriptions: List[ImageDescription]
+
+def summarize_content_with_image_context(web_content: LittleRedBookContentResponse) -> ContentSummaryWithImages:
     prompt = [
         {
             "role": "system",
@@ -640,6 +644,12 @@ def summarize_content_with_context(web_content: LittleRedBookContentResponse) ->
             3. For the emoji, use a beautiful emoji to match the article's content and images.
             4. For the category, classify the content into one of the available categories.
             5. For the keypoints, extract a few original sentences that need to be highlighted from the article. Also, describe key visual elements from the images that support or add to the article's content.
+
+            For each image, provide:
+            1. Whether the image is primarily text (OCR). return a boolean value.
+            2. If it's OCR, extract full text from the image. Set ocr_content to the extracted text. Use the same language as shown in the image. Otherwise, set ocr_content to an empty string.
+            3. Describe the image content in the context of the article. Use three sentences maximum. use the same language as the article.
+            Important: You must provide exactly {len(web_content.low_res_image_base64_jpegs)} image descriptions, one for each image.
 
             Article content: {web_content.text_content}
 
@@ -665,9 +675,10 @@ def summarize_content_with_context(web_content: LittleRedBookContentResponse) ->
             "content": image_contents
         })
 
-    with_parser = llm_mini.with_structured_output(Structured)
-    response: Structured = with_parser.invoke(prompt)
-    return response
+    with_parser = llm_mini.with_structured_output(ContentSummaryWithImages)
+    response: ContentSummaryWithImages = with_parser.invoke(prompt)
+    
+    return ContentSummaryWithImages(**response.dict())
 
 
 
@@ -702,4 +713,5 @@ def explain_relationship(memory: Memory, related_memory: Memory) -> ExplainRelat
         'format_instructions': parser.get_format_instructions()})
 
     return response
+
 

@@ -122,10 +122,16 @@ class ExternalLinkDescription(BaseModel):
     # currently only support article extraction from web links
     def from_web_article(article_link: str):
         return ExternalLinkDescription(link=article_link, metadata={"source": "web_article"})
+    
+class ImageDescription(BaseModel):
+    is_ocr: bool = Field(description="Whether the image primarily contains text (OCR)")
+    ocr_content: str = Field(description="Text extracted from OCR")
+    description: str = Field(description="One-sentence description of the image")
 
 class ExternalLink(BaseModel):
     external_link_description: ExternalLinkDescription
     web_content_response: Optional[WebContentResponseV2] = None
+    web_photo_understanding: Optional[List[ImageDescription]] = None
 
     @validator('web_content_response', pre=True)
     def validate_web_content_response(cls, v):
