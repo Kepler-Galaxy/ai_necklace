@@ -15,6 +15,7 @@
     "NoDeviceFound": "未连接任何音狐",
     "ArticleLinkWeChatArticleorOthers": "从微信文章或者其他网址获取记忆",
     "PasteArticleLinkHere": "粘贴链接",
+    "NoValidURLFound": "无效的链接",
     "CreateMemory": "创建记忆",
     "ConnectYourAudioFairy": "连接你的音狐",
     "SearchingForDevices": "正在搜索音狐...",

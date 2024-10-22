@@ -84,6 +84,8 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("No memories generated yet."),
         "NoMessagesYet":
             MessageLookupByLibrary.simpleMessage("No messages yet!"),
+        "NoValidURLFound":
+            MessageLookupByLibrary.simpleMessage("No valid URL found"),
         "Ok": MessageLookupByLibrary.simpleMessage("OK"),
         "OkIUnderstand":
             MessageLookupByLibrary.simpleMessage("Ok, I understand"),

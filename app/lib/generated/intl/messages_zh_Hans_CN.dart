@@ -73,6 +73,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "NoMemoriesGeneratedYet":
             MessageLookupByLibrary.simpleMessage("暂时没有生成任何记忆"),
         "NoMessagesYet": MessageLookupByLibrary.simpleMessage("暂时没有对话内容"),
+        "NoValidURLFound": MessageLookupByLibrary.simpleMessage("无效的链接"),
         "Ok": MessageLookupByLibrary.simpleMessage("确定"),
         "OkIUnderstand": MessageLookupByLibrary.simpleMessage("已了解"),
         "OneWordIntro": MessageLookupByLibrary.simpleMessage(

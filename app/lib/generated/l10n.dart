@@ -210,6 +210,16 @@ class S {
     );
   }
 
+  /// `No valid URL found`
+  String get NoValidURLFound {
+    return Intl.message(
+      'No valid URL found',
+      name: 'NoValidURLFound',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Create Memory`
   String get CreateMemory {
     return Intl.message(
