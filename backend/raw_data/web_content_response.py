@@ -36,8 +36,13 @@ class LittleRedBookContentResponse(BaseWebContentResponse):
     tags: List[str]
     text_content: str
     image_urls: List[str]
-    image_base64_jpegs: list[str]
-    low_res_image_base64_jpegs: list[str]
+    # don't store these fields now, since our mongodb is limited.
+    image_base64_jpegs: List[str] = Field(..., exclude=True)
+    low_res_image_base64_jpegs: List[str] = Field(..., exclude=True)
+
+    @property
+    def main_content(self):
+        return self.text_content
 
 class GeneralWebContentResponse(BaseWebContentResponse):
     content_type: Literal["general"] = "general"

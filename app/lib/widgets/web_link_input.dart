@@ -65,7 +65,6 @@ class _WebLinkArticleInputWidgetState extends State<WebLinkArticleInputWidget> {
       await Provider.of<MemoryProvider>(context, listen: false)
           .addWebLinkMemory(extractedUrl);
     } else {
-      // Show an error message if no valid URL is found
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(S.current.NoValidURLFound)),
       );

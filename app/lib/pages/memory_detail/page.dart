@@ -253,21 +253,28 @@ class _MemoryDetailPageState extends State<MemoryDetailPage>
                       return TabBarView(
                         physics: const NeverScrollableScrollPhysics(),
                         children: [
-                          Selector<MemoryDetailProvider, MemorySource?>(
-                            selector: (context, provider) =>
-                                provider.memory.source,
-                            builder: (context, source, child) {
+                          Selector<MemoryDetailProvider, ServerMemory>(
+                            selector: (context, provider) => provider.memory,
+                            builder: (context, memory, child) {
+                              debugPrint('Response type: ${memory.externalLink?.webContentResponse?.response.runtimeType}');
+                              debugPrint(memory.externalLink?.webContentResponse?.response.toJson().toString());
                               return ListView(
                                 shrinkWrap: true,
-                                children: source == MemorySource.openglass
-                                    ? [
-                                        const PhotosGridComponent(),
-                                        const SizedBox(height: 32)
-                                      ]
-                                    : widget.memory.source ==
-                                            MemorySource.web_link
-                                        ? [const WebContentWidgets()]
-                                        : [const TranscriptWidgets()],
+                                children: [
+                                  if (memory.source == MemorySource.openglass) ...[
+                                    const PhotosGridComponent(),
+                                    const SizedBox(height: 32),
+                                  ]
+                                  else if (memory.source == MemorySource.web_link) ...[
+                                    if (memory.externalLink?.webContentResponse?.response is LittleRedBookContentResponse) 
+                                      const LittleRedBookWidget()
+                                    else 
+                                      const WebContentWidgets(),
+                                  ]
+                                  else ...[
+                                    const TranscriptWidgets(),
+                                  ],
+                                ],
                               );
                             },
                           ),
@@ -651,3 +658,94 @@ class EditSegmentWidget extends StatelessWidget {
     });
   }
 }
+
+
+class LittleRedBookWidget extends StatelessWidget {
+  const LittleRedBookWidget({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Selector<MemoryDetailProvider, MemoryExternalLink?>(
+      selector: (context, provider) => provider.memory.externalLink,
+      builder: (context, memoryExternalLink, child) {
+        if (memoryExternalLink?.webContentResponse?.response is! LittleRedBookContentResponse) {
+          return const SizedBox.shrink();
+        }
+
+        final littleRedBookContent = memoryExternalLink!.webContentResponse!.response as LittleRedBookContentResponse;
+        final imageDescriptions = memoryExternalLink.webPhotoUnderstanding ?? [];
+
+        return GridView.builder(
+          padding: EdgeInsets.zero,
+          shrinkWrap: true,
+          scrollDirection: Axis.vertical,
+          itemCount: littleRedBookContent.imageUrls.length,
+          physics: const NeverScrollableScrollPhysics(),
+          itemBuilder: (context, idx) {
+            return GestureDetector(
+              onTap: () {
+                showDialog(
+                  context: context,
+                  builder: (c) {
+                    return getDialog(
+                      context,
+                      () => Navigator.pop(context),
+                      () => Navigator.pop(context),
+                      'Description',
+                      idx < imageDescriptions.length ? imageDescriptions[idx].description : 'No description available',
+                      singleButton: true,
+                    );
+                  },
+                );
+              },
+              child: Stack(
+                fit: StackFit.expand,
+                children: [
+                  Image.network(
+                    littleRedBookContent.imageUrls[idx],
+                    fit: BoxFit.cover,
+                    loadingBuilder: (context, child, loadingProgress) {
+                      if (loadingProgress == null) return child;
+                      return Center(
+                        child: CircularProgressIndicator(
+                          value: loadingProgress.expectedTotalBytes != null
+                              ? loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes!
+                              : null,
+                        ),
+                      );
+                    },
+                    errorBuilder: (context, error, stackTrace) {
+                      return const Center(child: Icon(Icons.error));
+                    },
+                  ),
+                  Positioned(
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    child: Container(
+                      padding: const EdgeInsets.all(8),
+                      color: Colors.black.withOpacity(0.5),
+                      child: Text(
+                        idx < imageDescriptions.length ? imageDescriptions[idx].description : 'No description',
+                        style: const TextStyle(color: Colors.white),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 3,
+            crossAxisSpacing: 8,
+            mainAxisSpacing: 8,
+          ),
+        );
+      },
+    );
+  }
+}
+
+

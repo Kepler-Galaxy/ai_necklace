@@ -335,8 +335,8 @@ class LittleRedBookContentResponse extends WebContentResponseUnion {
   final List<String> tags;
   final String textContent;
   final List<String> imageUrls;
-  final List<String> imageBase64Jpegs;
-  final List<String> lowResImageBase64Jpegs;
+  // final List<String> imageBase64Jpegs;
+  // final List<String> lowResImageBase64Jpegs;
 
   LittleRedBookContentResponse({
     required String contentType,
@@ -353,8 +353,8 @@ class LittleRedBookContentResponse extends WebContentResponseUnion {
     required this.tags,
     required this.textContent,
     required this.imageUrls,
-    required this.imageBase64Jpegs,
-    required this.lowResImageBase64Jpegs,
+    // required this.imageBase64Jpegs,
+    // required this.lowResImageBase64Jpegs,
   }) : super(contentType: contentType, success: success, url: url, title: title);
 
   factory LittleRedBookContentResponse.fromJson(Map<String, dynamic> json) {
@@ -373,8 +373,8 @@ class LittleRedBookContentResponse extends WebContentResponseUnion {
       tags: List<String>.from(json['tags']),
       textContent: json['text_content'],
       imageUrls: List<String>.from(json['image_urls']),
-      imageBase64Jpegs: List<String>.from(json['image_base64_jpegs']),
-      lowResImageBase64Jpegs: List<String>.from(json['low_res_image_base64_jpegs']),
+      // imageBase64Jpegs: List<String>.from(json['image_base64_jpegs']),
+      // lowResImageBase64Jpegs: List<String>.from(json['low_res_image_base64_jpegs']),
     );
   }
 
@@ -395,8 +395,8 @@ class LittleRedBookContentResponse extends WebContentResponseUnion {
       'tags': tags,
       'text_content': textContent,
       'image_urls': imageUrls,
-      'image_base64_jpegs': imageBase64Jpegs,
-      'low_res_image_base64_jpegs': lowResImageBase64Jpegs,
+      // 'image_base64_jpegs': imageBase64Jpegs,
+      // 'low_res_image_base64_jpegs': lowResImageBase64Jpegs,
     };
   }
 }

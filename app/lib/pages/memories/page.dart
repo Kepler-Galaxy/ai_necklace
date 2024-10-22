@@ -47,7 +47,6 @@ class _MemoriesPageState extends State<MemoriesPage>
 
   @override
   Widget build(BuildContext context) {
-    print('building memories page');
     super.build(context);
     return Consumer<MemoryProvider>(builder: (context, memoryProvider, child) {
       return RefreshIndicator(

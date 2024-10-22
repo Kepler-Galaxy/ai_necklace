@@ -7,6 +7,7 @@ from pydantic import BaseModel, Field, validator
 from models.chat import Message
 from models.transcript_segment import TranscriptSegment
 from utils.memories.web_content import WebContentResponseV2
+from loguru import logger
 
 
 class CategoryEnum(str, Enum):
@@ -136,7 +137,7 @@ class ExternalLink(BaseModel):
     @validator('web_content_response', pre=True)
     def validate_web_content_response(cls, v):
         if isinstance(v, dict):
-            if 'content_type' in v:
+            if 'version' in v and v['version'] == 2:
                 return WebContentResponseV2(**v)
             else:
                 return WebContentResponseV2.from_v1(v)

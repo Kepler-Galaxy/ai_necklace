@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:foxxy_package/backend/preferences.dart';
 import 'package:foxxy_package/backend/schema/bt_device.dart';
@@ -24,6 +26,8 @@ import 'package:tuple/tuple.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:foxxy_package/generated/l10n.dart';
+import 'package:foxxy_package/backend/schema/memory.dart';
+import 'package:foxxy_package/pages/memory_detail/memory_detail_provider.dart';
 
 getConnectionStateWidgets(
   BuildContext context,
