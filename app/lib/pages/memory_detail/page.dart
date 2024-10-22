@@ -397,12 +397,10 @@ class WebContentWidgets extends StatelessWidget {
   Widget build(BuildContext context) {
     return Consumer<MemoryDetailProvider>(
       builder: (context, provider, child) {
-        final webContentResponse =
-            provider.memory.externalLink?.webContentResponse;
-        final String webContent =
-            webContentResponse?.mainContent ?? 'No content available';
-        final String title = webContentResponse?.title ?? 'No title available';
-        final String url = webContentResponse?.url ?? '';
+        final webContentResponse = provider.memory.externalLink?.webContentResponse;
+        final String webContent = webContentResponse?.response.mainContent ?? 'No content available';
+        final String title = webContentResponse?.response.title ?? 'No title available';
+        final String url = webContentResponse?.response.url ?? '';
 
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,

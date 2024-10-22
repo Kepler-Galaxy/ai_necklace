@@ -143,13 +143,43 @@ class UpdateProcessingMemoryResponse {
   }
 }
 
+class ImageDescription {
+  final bool isOcr;
+  final String ocrContent;
+  final String description;
+
+  ImageDescription({
+    required this.isOcr,
+    required this.ocrContent,
+    required this.description,
+  });
+
+  factory ImageDescription.fromJson(Map<String, dynamic> json) {
+    return ImageDescription(
+      isOcr: json['is_ocr'],
+      ocrContent: json['ocr_content'],
+      description: json['description'],
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'is_ocr': isOcr,
+      'ocr_content': ocrContent,
+      'description': description,
+    };
+  }
+}
+
 class MemoryExternalLink {
   final ExternalLinkDescription? externalLinkDescription;
-  final WebContentResponse? webContentResponse;
+  final WebContentResponseV2? webContentResponse;
+  final List<ImageDescription>? webPhotoUnderstanding;
 
   MemoryExternalLink({
     this.externalLinkDescription,
     this.webContentResponse,
+    this.webPhotoUnderstanding,
   });
 
   factory MemoryExternalLink.fromJson(Map<String, dynamic>? json) {
@@ -159,7 +189,12 @@ class MemoryExternalLink {
           ? ExternalLinkDescription.fromJson(json['external_link_description'])
           : null,
       webContentResponse: json['web_content_response'] != null
-          ? WebContentResponse.fromJson(json['web_content_response'])
+          ? WebContentResponseV2.fromJson(json['web_content_response'])
+          : null,
+      webPhotoUnderstanding: json['web_photo_understanding'] != null
+          ? (json['web_photo_understanding'] as List)
+              .map((item) => ImageDescription.fromJson(item))
+              .toList()
           : null,
     );
   }
@@ -168,6 +203,7 @@ class MemoryExternalLink {
     return {
       'external_link_description': externalLinkDescription?.toJson(),
       'web_content_response': webContentResponse?.toJson(),
+      'web_photo_understanding': webPhotoUnderstanding?.map((item) => item.toJson()).toList(),
     };
   }
 }
@@ -196,34 +232,204 @@ class ExternalLinkDescription {
   }
 }
 
-class WebContentResponse {
-  final bool success;
-  final String title;
-  final String mainContent;
-  final String url;
+class WebContentResponseV2 {
+  final WebContentResponseUnion response;
+  final Map<String, dynamic> rawData;
+  final int version;
 
-  WebContentResponse({
-    required this.success,
-    required this.title,
-    required this.mainContent,
-    required this.url,
+  WebContentResponseV2({
+    required this.response,
+    required this.rawData,
+    this.version = 2,
   });
 
-  factory WebContentResponse.fromJson(Map<String, dynamic> json) {
-    return WebContentResponse(
-      success: json['success'],
-      title: json['title'],
-      mainContent: json['main_content'],
-      url: json['url'],
+  factory WebContentResponseV2.fromJson(Map<String, dynamic> json) {
+    return WebContentResponseV2(
+      response: WebContentResponseUnion.fromJson(json['response']),
+      rawData: json['raw_data'],
+      version: json['version'] ?? 2,
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
+      'response': response.toJson(),
+      'raw_data': rawData,
+      'version': version,
+    };
+  }
+}
+
+mixin MainContentProvider {
+  String get mainContent => (this as dynamic).mainContent ?? (this as dynamic).textContent ?? '';
+}
+
+abstract class WebContentResponseUnion with MainContentProvider {
+  final String contentType;
+  final bool success;
+  final String url;
+  final String title;
+
+  WebContentResponseUnion({
+    required this.contentType,
+    required this.success,
+    required this.url,
+    required this.title,
+  });
+
+  factory WebContentResponseUnion.fromJson(Map<String, dynamic> json) {
+    switch (json['content_type']) {
+      case 'wechat':
+        return WeChatContentResponse.fromJson(json);
+      case 'little_red_book':
+        return LittleRedBookContentResponse.fromJson(json);
+      default:
+        return GeneralWebContentResponse.fromJson(json);
+    }
+  }
+
+  Map<String, dynamic> toJson();
+}
+
+class WeChatContentResponse extends WebContentResponseUnion {
+  final String mainContent;
+
+  WeChatContentResponse({
+    required String contentType,
+    required bool success,
+    required String url,
+    required String title,
+    required this.mainContent,
+  }) : super(contentType: contentType, success: success, url: url, title: title);
+
+  factory WeChatContentResponse.fromJson(Map<String, dynamic> json) {
+    return WeChatContentResponse(
+      contentType: json['content_type'],
+      success: json['success'],
+      url: json['url'],
+      title: json['title'],
+      mainContent: json['main_content'],
+    );
+  }
+
+  @override
+  Map<String, dynamic> toJson() {
+    return {
+      'content_type': contentType,
       'success': success,
+      'url': url,
       'title': title,
       'main_content': mainContent,
+    };
+  }
+}
+
+class LittleRedBookContentResponse extends WebContentResponseUnion {
+  final String author;
+  final String uid;
+  final String noteId;
+  final DateTime time;
+  final DateTime lastUpdateTime;
+  final String ipLocation;
+  final String description;
+  final List<String> tags;
+  final String textContent;
+  final List<String> imageUrls;
+  final List<String> imageBase64Jpegs;
+  final List<String> lowResImageBase64Jpegs;
+
+  LittleRedBookContentResponse({
+    required String contentType,
+    required bool success,
+    required String url,
+    required String title,
+    required this.author,
+    required this.uid,
+    required this.noteId,
+    required this.time,
+    required this.lastUpdateTime,
+    required this.ipLocation,
+    required this.description,
+    required this.tags,
+    required this.textContent,
+    required this.imageUrls,
+    required this.imageBase64Jpegs,
+    required this.lowResImageBase64Jpegs,
+  }) : super(contentType: contentType, success: success, url: url, title: title);
+
+  factory LittleRedBookContentResponse.fromJson(Map<String, dynamic> json) {
+    return LittleRedBookContentResponse(
+      contentType: json['content_type'],
+      success: json['success'],
+      url: json['url'],
+      title: json['title'],
+      author: json['author'],
+      uid: json['uid'],
+      noteId: json['note_id'],
+      time: DateTime.parse(json['time']),
+      lastUpdateTime: DateTime.parse(json['last_update_time']),
+      ipLocation: json['ip_location'],
+      description: json['description'],
+      tags: List<String>.from(json['tags']),
+      textContent: json['text_content'],
+      imageUrls: List<String>.from(json['image_urls']),
+      imageBase64Jpegs: List<String>.from(json['image_base64_jpegs']),
+      lowResImageBase64Jpegs: List<String>.from(json['low_res_image_base64_jpegs']),
+    );
+  }
+
+  @override
+  Map<String, dynamic> toJson() {
+    return {
+      'content_type': contentType,
+      'success': success,
       'url': url,
+      'title': title,
+      'author': author,
+      'uid': uid,
+      'note_id': noteId,
+      'time': time.toIso8601String(),
+      'last_update_time': lastUpdateTime.toIso8601String(),
+      'ip_location': ipLocation,
+      'description': description,
+      'tags': tags,
+      'text_content': textContent,
+      'image_urls': imageUrls,
+      'image_base64_jpegs': imageBase64Jpegs,
+      'low_res_image_base64_jpegs': lowResImageBase64Jpegs,
+    };
+  }
+}
+
+class GeneralWebContentResponse extends WebContentResponseUnion {
+  final String mainContent;
+
+  GeneralWebContentResponse({
+    required String contentType,
+    required bool success,
+    required String url,
+    required String title,
+    required this.mainContent,
+  }) : super(contentType: contentType, success: success, url: url, title: title);
+
+  factory GeneralWebContentResponse.fromJson(Map<String, dynamic> json) {
+    return GeneralWebContentResponse(
+      contentType: json['content_type'],
+      success: json['success'],
+      url: json['url'],
+      title: json['title'],
+      mainContent: json['main_content'],
+    );
+  }
+
+  @override
+  Map<String, dynamic> toJson() {
+    return {
+      'content_type': contentType,
+      'success': success,
+      'url': url,
+      'title': title,
+      'main_content': mainContent,
     };
   }
 }
@@ -407,3 +613,4 @@ class ServerMemory {
     }
   }
 }
+

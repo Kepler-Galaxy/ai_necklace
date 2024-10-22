@@ -126,7 +126,7 @@ class ExternalLinkDescription(BaseModel):
 class ImageDescription(BaseModel):
     is_ocr: bool = Field(description="Whether the image primarily contains text (OCR)")
     ocr_content: str = Field(description="Text extracted from OCR")
-    description: str = Field(description="description of the image")
+    description: str = Field(description="Description of the image")
 
 class ExternalLink(BaseModel):
     external_link_description: ExternalLinkDescription

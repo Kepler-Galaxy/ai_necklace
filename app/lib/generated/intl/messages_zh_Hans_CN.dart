@@ -61,7 +61,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "HideDiscarded": MessageLookupByLibrary.simpleMessage("隐藏被丢弃记忆"),
         "HowShouldAudioFairyCallYou":
             MessageLookupByLibrary.simpleMessage("Foxxy应该如何称呼您?"),
-        "ImportArticle": MessageLookupByLibrary.simpleMessage("从文章导入记忆"),
+        "ImportArticle": MessageLookupByLibrary.simpleMessage("从文章(图片)导入记忆"),
         "KeyPoints": MessageLookupByLibrary.simpleMessage("重点"),
         "LimitedCapabilities": MessageLookupByLibrary.simpleMessage("录音限制"),
         "Memories": MessageLookupByLibrary.simpleMessage("追忆"),
