@@ -633,11 +633,37 @@ class ContentSummaryWithImages(BaseModel):
     structured: Structured
     image_descriptions: List[ImageDescription]
 
+
+#TODO(yiqi): The prompt contains the exact json format, which is not flexible and needs to be improved.
+# Currently, openai is bad at returning the correct json format for nested json objects, resulting pydantic validation error.
+# Try https://platform.openai.com/docs/guides/structured-outputs instead, using "response_format=ContentSummaryWithImages"
+# We can use this strategy throughout other functions as well. In this way, we can remove the retry logic during memory
+# generation and other places.
 def summarize_content_with_image_context(web_content: LittleRedBookContentResponse) -> ContentSummaryWithImages:
     prompt = [
         {
             "role": "system",
             "content": f"""You are an expert content analyzer and summarizer. Your task is to analyze the given article, images, and provide a structured summary.
+            Your response must be in the following format:
+            {{
+                "structured": {{
+                    "title": "...",
+                    "overview": "...",
+                    "emoji": "...",
+                    "category": "...",
+                    "key_points": [...],
+                    "action_items": [],
+                    "events": []
+                }},
+                "image_descriptions": [
+                    {{
+                        "is_ocr": true/false,
+                        "ocr_content": "...",
+                        "description": "..."
+                    }},
+                    ...
+                ]
+            }}
             Please provide the following:
             1. For the title, use a concise and engaging title that captures the essence of the article and images.
             2. For the overview, use at most 10 sentences to summarize the main points of the article and images.
