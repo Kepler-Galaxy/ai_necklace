@@ -22,9 +22,10 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:foxxy_package/generated/l10n.dart';
 
 import 'memory_detail_provider.dart';
-import 'package:tuple/tuple.dart';
-import 'dart:convert';
 import 'package:url_launcher/url_launcher.dart';
+import 'dart:async';
+import 'package:photo_view/photo_view.dart';
+import 'package:photo_view/photo_view_gallery.dart';
 
 class MemoryDetailPage extends StatefulWidget {
   final ServerMemory memory;
@@ -673,77 +674,102 @@ class LittleRedBookWidget extends StatelessWidget {
         final littleRedBookContent = memoryExternalLink!.webContentResponse!.response as LittleRedBookContentResponse;
         final imageDescriptions = memoryExternalLink.webPhotoUnderstanding ?? [];
 
-        return GridView.builder(
+        return ListView.builder(
           padding: EdgeInsets.zero,
           shrinkWrap: true,
-          scrollDirection: Axis.vertical,
-          itemCount: littleRedBookContent.imageUrls.length,
           physics: const NeverScrollableScrollPhysics(),
+          itemCount: littleRedBookContent.imageUrls.length,
           itemBuilder: (context, idx) {
-            return GestureDetector(
-              onTap: () {
-                showDialog(
-                  context: context,
-                  builder: (c) {
-                    return getDialog(
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8.0),
+                  child: Text(
+                    idx < imageDescriptions.length ? imageDescriptions[idx].description : 'No description available',
+                    style: Theme.of(context).textTheme.titleSmall,
+                  ),
+                ),
+                GestureDetector(
+                  onTap: () {
+                    Navigator.push(
                       context,
-                      () => Navigator.pop(context),
-                      () => Navigator.pop(context),
-                      'Description',
-                      idx < imageDescriptions.length ? imageDescriptions[idx].description : 'No description available',
-                      singleButton: true,
+                      MaterialPageRoute(
+                        builder: (context) => FullScreenImageView(
+                          imageUrl: littleRedBookContent.imageUrls[idx],
+                          tag: 'image_$idx',
+                        ),
+                      ),
                     );
                   },
-                );
-              },
-              child: Stack(
-                fit: StackFit.expand,
-                children: [
-                  Image.network(
-                    littleRedBookContent.imageUrls[idx],
-                    fit: BoxFit.cover,
-                    loadingBuilder: (context, child, loadingProgress) {
-                      if (loadingProgress == null) return child;
-                      return Center(
-                        child: CircularProgressIndicator(
-                          value: loadingProgress.expectedTotalBytes != null
-                              ? loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes!
-                              : null,
-                        ),
-                      );
-                    },
-                    errorBuilder: (context, error, stackTrace) {
-                      return const Center(child: Icon(Icons.error));
-                    },
-                  ),
-                  Positioned(
-                    top: 0,
-                    left: 0,
-                    right: 0,
-                    child: Container(
-                      padding: const EdgeInsets.all(8),
-                      color: Colors.black.withOpacity(0.5),
-                      child: Text(
-                        idx < imageDescriptions.length ? imageDescriptions[idx].description : 'No description',
-                        style: const TextStyle(color: Colors.white),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                      ),
+                  child: Hero(
+                    tag: 'image_$idx',
+                    child: FutureBuilder<ImageInfo>(
+                      future: _getImageInfo(littleRedBookContent.imageUrls[idx]),
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState == ConnectionState.done && snapshot.hasData) {
+                          final aspectRatio = snapshot.data!.image.width / snapshot.data!.image.height;
+                          return AspectRatio(
+                            aspectRatio: aspectRatio,
+                            child: Image.network(
+                              littleRedBookContent.imageUrls[idx],
+                              fit: BoxFit.cover,
+                            ),
+                          );
+                        } else {
+                          return const Center(child: CircularProgressIndicator());
+                        }
+                      },
                     ),
                   ),
-                ],
-              ),
+                ),
+                const SizedBox(height: 16),
+              ],
             );
           },
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 3,
-            crossAxisSpacing: 8,
-            mainAxisSpacing: 8,
-          ),
         );
       },
     );
   }
+
+  Future<ImageInfo> _getImageInfo(String imageUrl) async {
+    final Completer<ImageInfo> completer = Completer();
+    final ImageStream stream = NetworkImage(imageUrl).resolve(ImageConfiguration.empty);
+    final listener = ImageStreamListener((ImageInfo info, bool _) {
+      completer.complete(info);
+    });
+    stream.addListener(listener);
+    final ImageInfo imageInfo = await completer.future;
+    stream.removeListener(listener);
+    return imageInfo;
+  }
 }
 
+class FullScreenImageView extends StatelessWidget {
+  final String imageUrl;
+  final String tag;
 
+  const FullScreenImageView({Key? key, required this.imageUrl, required this.tag}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.black,
+      body: GestureDetector(
+        onTap: () => Navigator.pop(context),
+        child: Center(
+          child: Hero(
+            tag: tag,
+            child: PhotoView(
+              imageProvider: NetworkImage(imageUrl),
+              minScale: PhotoViewComputedScale.contained,
+              maxScale: PhotoViewComputedScale.covered * 2,
+              initialScale: PhotoViewComputedScale.contained,
+              backgroundDecoration: const BoxDecoration(color: Colors.black),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
