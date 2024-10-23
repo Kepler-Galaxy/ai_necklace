@@ -26,11 +26,12 @@ from utils.notifications import send_notification
 from utils.other.hume import get_hume, HumeJobCallbackModel, HumeJobModelPredictionResponseModel
 from utils.plugins import get_plugins_data
 from utils.retrieval.rag import retrieve_rag_memory_context
-from utils.llm import summarize_article
+from utils.llm import summarize_article, summarize_content_with_image_context
 from utils.memories.web_content import extract_web_content
 from utils.memories.memory_connection import explain_related_memories
+from raw_data.web_content_response import WeChatContentResponse, LittleRedBookContentResponse, GeneralWebContentResponse
 
-def _get_structured(
+async def _get_structured(
         uid: str, language_code: str, memory: Union[Memory, CreateMemory, WorkflowCreateMemory],
         force_process: bool = False, retries: int = 1
 ) -> Tuple[Structured, bool]:
@@ -54,13 +55,27 @@ def _get_structured(
         
         # from third party link
         if memory.external_link:
-            memory.external_link.web_content_response = extract_web_content(memory.external_link.external_link_description.link)
-            if memory.external_link.web_content_response.success:    
-                logger.info(f"extracted {memory.external_link.web_content_response.title} with " +
-                            f"{len(memory.external_link.web_content_response.main_content)} characters")
-                return summarize_article(memory.external_link.web_content_response), False
+            web_content_response = await extract_web_content(memory.external_link.external_link_description.link)
+            memory.external_link.web_content_response = web_content_response
+            if web_content_response.response.success:
+                if isinstance(web_content_response.response, WeChatContentResponse):
+                    logger.info(f"Extracted {web_content_response.response.title} from WeChat with "
+                                f"{len(web_content_response.response.main_content)} characters")
+                    return summarize_article(web_content_response.response), False
+                elif isinstance(web_content_response.response, LittleRedBookContentResponse):
+                    logger.info(f"Extracted {web_content_response.response.title} from Little Red Book with "
+                                f"{len(web_content_response.response.text_content)} characters and "
+                                f"{len(web_content_response.response.image_base64_jpegs)} images")
+                    content_with_summary = summarize_content_with_image_context(web_content_response.response)
+                    
+                    memory.external_link.web_photo_understanding = content_with_summary.image_descriptions
+                    return content_with_summary.structured, False
+                elif isinstance(web_content_response.response, GeneralWebContentResponse):
+                    logger.info(f"Extracted {web_content_response.response.title} from general web content with "
+                                f"{len(web_content_response.response.main_content)} characters")
+                    return summarize_article(web_content_response.response), False
             else:
-                logger.error(f"Failed to extract web content: {memory.external_link.web_content_response.url}")
+                logger.error(f"Failed to extract web content: {web_content_response.response.url}")
                 return Structured(emoji=random.choice(['🧠', '🎉'])), True
 
         # from Friend
@@ -78,7 +93,7 @@ def _get_structured(
         if retries == 2:
             logger.error(uid, f"Error processing memory, retrying {retries} times, please try again later")
             raise HTTPException(status_code=500, detail="Error processing memory, please try again later")
-        return _get_structured(uid, language_code, memory, force_process, retries + 1)
+        return await _get_structured(uid, language_code, memory, force_process, retries + 1)
 
 
 def _get_memory_obj(uid: str, structured: Structured, memory: Union[Memory, CreateMemory, WorkflowCreateMemory]):
@@ -149,9 +164,9 @@ def _extract_trends(memory: Memory):
     trends_db.save_trends(memory, parsed)
 
 
-def process_memory(uid: str, language_code: str, memory: Union[Memory, CreateMemory, WorkflowCreateMemory],
+async def process_memory(uid: str, language_code: str, memory: Union[Memory, CreateMemory, WorkflowCreateMemory],
                    force_process: bool = False) -> Memory:
-    structured, discarded = _get_structured(uid, language_code, memory, force_process)
+    structured, discarded = await _get_structured(uid, language_code, memory, force_process)
     memory = _get_memory_obj(uid, structured, memory)
 
     if not discarded:

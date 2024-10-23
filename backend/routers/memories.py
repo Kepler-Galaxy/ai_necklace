@@ -294,7 +294,7 @@ async def upload_memory_audio_recording(
         raise HTTPException(status_code=500, detail="Failed to upload audio file")
 
 @router.post("/v1/memories/wechat-article", response_model=Memory, tags=['memories'])
-def create_memory_from_wechat_article(
+async def create_memory_from_wechat_article(
     article_link: str = Body(..., embed=True),
     uid: str = Depends(auth.get_current_user_uid)
 ):
@@ -316,7 +316,7 @@ def create_memory_from_wechat_article(
             language="zh",  # It only affects the conversation, the CreateMemory and Structured should be refactored to separate all sources completely.
         )
 
-        memory = process_memory(uid, "zh", create_memory, force_process=True)
+        memory = await process_memory(uid, "zh", create_memory, force_process=True)
         return memory
 
     except Exception as e:

@@ -22,9 +22,10 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:foxxy_package/generated/l10n.dart';
 
 import 'memory_detail_provider.dart';
-import 'package:tuple/tuple.dart';
-import 'dart:convert';
 import 'package:url_launcher/url_launcher.dart';
+import 'dart:async';
+import 'package:photo_view/photo_view.dart';
+import 'package:photo_view/photo_view_gallery.dart';
 
 class MemoryDetailPage extends StatefulWidget {
   final ServerMemory memory;
@@ -226,18 +227,11 @@ class _MemoryDetailPageState extends State<MemoryDetailPage>
                       .titleLarge!
                       .copyWith(fontSize: 18),
                   tabs: [
-                    Selector<MemoryDetailProvider, MemorySource?>(
-                        selector: (context, provider) => provider.memory.source,
-                        builder: (context, memorySource, child) {
+                    Selector<MemoryDetailProvider, ServerMemory>(
+                        selector: (context, provider) => provider.memory,
+                        builder: (context, memory, child) {
                           return Tab(
-                            text: memorySource == MemorySource.openglass
-                                ? 'Photos'
-                                : memorySource == MemorySource.screenpipe
-                                    ? 'Raw Data'
-                                    : widget.memory.source ==
-                                            MemorySource.web_link
-                                        ? 'Web Content'
-                                        : S.current.Transcript,
+                            text: _getTabText(memory),
                           );
                         }),
                     Tab(text: S.current.Summary)
@@ -253,21 +247,26 @@ class _MemoryDetailPageState extends State<MemoryDetailPage>
                       return TabBarView(
                         physics: const NeverScrollableScrollPhysics(),
                         children: [
-                          Selector<MemoryDetailProvider, MemorySource?>(
-                            selector: (context, provider) =>
-                                provider.memory.source,
-                            builder: (context, source, child) {
+                          Selector<MemoryDetailProvider, ServerMemory>(
+                            selector: (context, provider) => provider.memory,
+                            builder: (context, memory, child) {
                               return ListView(
                                 shrinkWrap: true,
-                                children: source == MemorySource.openglass
-                                    ? [
-                                        const PhotosGridComponent(),
-                                        const SizedBox(height: 32)
-                                      ]
-                                    : widget.memory.source ==
-                                            MemorySource.web_link
-                                        ? [const WebContentWidgets()]
-                                        : [const TranscriptWidgets()],
+                                children: [
+                                  if (memory.source == MemorySource.openglass) ...[
+                                    const PhotosGridComponent(),
+                                    const SizedBox(height: 32),
+                                  ]
+                                  else if (memory.source == MemorySource.web_link) ...[
+                                    if (memory.externalLink?.webContentResponse?.response is LittleRedBookContentResponse) 
+                                      const LittleRedBookWidget()
+                                    else 
+                                      const WebContentWidgets(),
+                                  ]
+                                  else ...[
+                                    const TranscriptWidgets(),
+                                  ],
+                                ],
                               );
                             },
                           ),
@@ -283,6 +282,26 @@ class _MemoryDetailPageState extends State<MemoryDetailPage>
         ),
       ),
     );
+  }
+
+  String _getTabText(ServerMemory memory) {
+    if (memory.source == MemorySource.openglass) {
+      return 'Photos';
+    } else if (memory.source == MemorySource.screenpipe) {
+      return 'Raw Data';
+    } else if (memory.source == MemorySource.web_link) {
+      if (memory.externalLink?.webContentResponse?.response is LittleRedBookContentResponse) {
+        return S.current.LittleRedBook;
+      } else if (memory.externalLink?.webContentResponse?.response is WeChatContentResponse) {
+        return S.current.WeChat;
+      } else if (memory.externalLink?.webContentResponse?.response is GeneralWebContentResponse) {
+        return S.current.GeneralWebContent;
+      } else {
+        return S.current.GeneralWebContent;
+      }
+    } else {
+      return S.current.Transcript;
+    }
   }
 }
 
@@ -397,12 +416,10 @@ class WebContentWidgets extends StatelessWidget {
   Widget build(BuildContext context) {
     return Consumer<MemoryDetailProvider>(
       builder: (context, provider, child) {
-        final webContentResponse =
-            provider.memory.externalLink?.webContentResponse;
-        final String webContent =
-            webContentResponse?.mainContent ?? 'No content available';
-        final String title = webContentResponse?.title ?? 'No title available';
-        final String url = webContentResponse?.url ?? '';
+        final webContentResponse = provider.memory.externalLink?.webContentResponse;
+        final String webContent = webContentResponse?.response.mainContent ?? 'No content available';
+        final String title = webContentResponse?.response.title ?? 'No title available';
+        final String url = webContentResponse?.response.url ?? '';
 
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -653,3 +670,121 @@ class EditSegmentWidget extends StatelessWidget {
     });
   }
 }
+
+
+class LittleRedBookWidget extends StatelessWidget {
+  const LittleRedBookWidget({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Selector<MemoryDetailProvider, MemoryExternalLink?>(
+      selector: (context, provider) => provider.memory.externalLink,
+      builder: (context, memoryExternalLink, child) {
+        if (memoryExternalLink?.webContentResponse?.response is! LittleRedBookContentResponse) {
+          return const SizedBox.shrink();
+        }
+
+        final littleRedBookContent = memoryExternalLink!.webContentResponse!.response as LittleRedBookContentResponse;
+        final imageDescriptions = memoryExternalLink.webPhotoUnderstanding ?? [];
+
+        return ListView.builder(
+          padding: EdgeInsets.zero,
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          itemCount: littleRedBookContent.imageUrls.length,
+          itemBuilder: (context, idx) {
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8.0),
+                  child: Text(
+                    idx < imageDescriptions.length ? imageDescriptions[idx].description : 'No description available',
+                    style: Theme.of(context).textTheme.titleSmall,
+                  ),
+                ),
+                GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => FullScreenImageView(
+                          imageUrl: littleRedBookContent.imageUrls[idx],
+                          tag: 'image_$idx',
+                        ),
+                      ),
+                    );
+                  },
+                  child: Hero(
+                    tag: 'image_$idx',
+                    child: FutureBuilder<ImageInfo>(
+                      future: _getImageInfo(littleRedBookContent.imageUrls[idx]),
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState == ConnectionState.done && snapshot.hasData) {
+                          final aspectRatio = snapshot.data!.image.width / snapshot.data!.image.height;
+                          return AspectRatio(
+                            aspectRatio: aspectRatio,
+                            child: Image.network(
+                              littleRedBookContent.imageUrls[idx],
+                              fit: BoxFit.cover,
+                            ),
+                          );
+                        } else {
+                          return const Center(child: CircularProgressIndicator());
+                        }
+                      },
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 16),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
+
+  Future<ImageInfo> _getImageInfo(String imageUrl) async {
+    final Completer<ImageInfo> completer = Completer();
+    final ImageStream stream = NetworkImage(imageUrl).resolve(ImageConfiguration.empty);
+    final listener = ImageStreamListener((ImageInfo info, bool _) {
+      completer.complete(info);
+    });
+    stream.addListener(listener);
+    final ImageInfo imageInfo = await completer.future;
+    stream.removeListener(listener);
+    return imageInfo;
+  }
+}
+
+class FullScreenImageView extends StatelessWidget {
+  final String imageUrl;
+  final String tag;
+
+  const FullScreenImageView({Key? key, required this.imageUrl, required this.tag}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.black,
+      body: GestureDetector(
+        onTap: () => Navigator.pop(context),
+        child: Center(
+          child: Hero(
+            tag: tag,
+            child: PhotoView(
+              imageProvider: NetworkImage(imageUrl),
+              minScale: PhotoViewComputedScale.contained,
+              maxScale: PhotoViewComputedScale.covered * 2,
+              initialScale: PhotoViewComputedScale.contained,
+              backgroundDecoration: const BoxDecoration(color: Colors.black),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+

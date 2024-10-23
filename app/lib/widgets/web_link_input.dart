@@ -57,8 +57,27 @@ class _WebLinkArticleInputWidgetState extends State<WebLinkArticleInputWidget> {
   }
 
   void _submitLink() async {
-    Navigator.of(context).pop();
-    await Provider.of<MemoryProvider>(context, listen: false)
-        .addWebLinkMemory(_linkController.text);
+    String inputText = _linkController.text.trim();
+    String? extractedUrl = _extractUrl(inputText);
+
+    if (extractedUrl != null) {
+      Navigator.of(context).pop();
+      await Provider.of<MemoryProvider>(context, listen: false)
+          .addWebLinkMemory(extractedUrl);
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(S.current.NoValidURLFound)),
+      );
+    }
+  }
+
+  String? _extractUrl(String text) {
+    final urlRegExp = RegExp(
+      r'https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)',
+      caseSensitive: false,
+    );
+
+    final match = urlRegExp.firstMatch(text);
+    return match?.group(0);
   }
 }

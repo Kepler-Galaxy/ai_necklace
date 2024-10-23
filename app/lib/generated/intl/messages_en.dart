@@ -65,6 +65,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "ExternalApps": MessageLookupByLibrary.simpleMessage("External Apps"),
         "FailedSignIn":
             MessageLookupByLibrary.simpleMessage("Failed to sign in"),
+        "GeneralWebContent":
+            MessageLookupByLibrary.simpleMessage("General Web Content"),
         "HideDiscarded": MessageLookupByLibrary.simpleMessage("Hide Discarded"),
         "HowShouldAudioFairyCallYou": MessageLookupByLibrary.simpleMessage(
             "How should AudioFoxxy call you?"),
@@ -72,6 +74,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "KeyPoints": MessageLookupByLibrary.simpleMessage("Key Points"),
         "LimitedCapabilities":
             MessageLookupByLibrary.simpleMessage("Limited Capabilities"),
+        "LittleRedBook":
+            MessageLookupByLibrary.simpleMessage("Little Red Book"),
         "Memories": MessageLookupByLibrary.simpleMessage("Memories"),
         "MemoryChains": MessageLookupByLibrary.simpleMessage("Memory Chains"),
         "MemoryContents":
@@ -84,6 +88,8 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("No memories generated yet."),
         "NoMessagesYet":
             MessageLookupByLibrary.simpleMessage("No messages yet!"),
+        "NoValidURLFound":
+            MessageLookupByLibrary.simpleMessage("No valid URL found"),
         "Ok": MessageLookupByLibrary.simpleMessage("OK"),
         "OkIUnderstand":
             MessageLookupByLibrary.simpleMessage("Ok, I understand"),
@@ -126,6 +132,7 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Verification Code"),
         "VerificationCodeSent":
             MessageLookupByLibrary.simpleMessage("Verification code sent."),
+        "WeChat": MessageLookupByLibrary.simpleMessage("WeChat"),
         "WhyDontConversation": MessageLookupByLibrary.simpleMessage(
             "Why don\'t you start a conversation?"),
         "hello": MessageLookupByLibrary.simpleMessage("hello")

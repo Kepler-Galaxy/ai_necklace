@@ -25,7 +25,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "AppName": MessageLookupByLibrary.simpleMessage("Foxxy"),
         "AreYouSureSignOut": MessageLookupByLibrary.simpleMessage("确定是否退出登录？"),
         "ArticleLinkWeChatArticleorOthers":
-            MessageLookupByLibrary.simpleMessage("从微信文章或者其他网址获取记忆"),
+            MessageLookupByLibrary.simpleMessage("微信公众号/小红书链接100%成功，其他网址有概率失败"),
         "AskYourAudioFairyAnything":
             MessageLookupByLibrary.simpleMessage("和你的Foxxy对话"),
         "Cancel": MessageLookupByLibrary.simpleMessage("取消"),
@@ -36,7 +36,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "ConnectYourAudioFairy": MessageLookupByLibrary.simpleMessage("连接你的音狐"),
         "Continue": MessageLookupByLibrary.simpleMessage("下一步"),
         "CreateMemory": MessageLookupByLibrary.simpleMessage("创建记忆"),
-        "CreatingMemory": MessageLookupByLibrary.simpleMessage("记忆构建中"),
+        "CreatingMemory": MessageLookupByLibrary.simpleMessage("记忆构建中(图片处理较慢)"),
         "DescriptionOfRecordingWithPhoneMicrophone":
             MessageLookupByLibrary.simpleMessage(
                 "使用手机麦克风录音存在一些限制，包括但不限于音色特性和背景噪音的干扰"),
@@ -58,12 +58,14 @@ class MessageLookup extends MessageLookupByLibrary {
         "ExplanationText": MessageLookupByLibrary.simpleMessage("因缘"),
         "ExternalApps": MessageLookupByLibrary.simpleMessage("拓展应用"),
         "FailedSignIn": MessageLookupByLibrary.simpleMessage("登录失败"),
+        "GeneralWebContent": MessageLookupByLibrary.simpleMessage("通用网页"),
         "HideDiscarded": MessageLookupByLibrary.simpleMessage("隐藏被丢弃记忆"),
         "HowShouldAudioFairyCallYou":
             MessageLookupByLibrary.simpleMessage("Foxxy应该如何称呼您?"),
-        "ImportArticle": MessageLookupByLibrary.simpleMessage("从文章导入记忆"),
+        "ImportArticle": MessageLookupByLibrary.simpleMessage("导入文章/图片记忆"),
         "KeyPoints": MessageLookupByLibrary.simpleMessage("重点"),
         "LimitedCapabilities": MessageLookupByLibrary.simpleMessage("录音限制"),
+        "LittleRedBook": MessageLookupByLibrary.simpleMessage("小红书"),
         "Memories": MessageLookupByLibrary.simpleMessage("追忆"),
         "MemoryChains": MessageLookupByLibrary.simpleMessage("前缘旧梦"),
         "MemoryContents": MessageLookupByLibrary.simpleMessage("今日小记"),
@@ -73,6 +75,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "NoMemoriesGeneratedYet":
             MessageLookupByLibrary.simpleMessage("暂时没有生成任何记忆"),
         "NoMessagesYet": MessageLookupByLibrary.simpleMessage("暂时没有对话内容"),
+        "NoValidURLFound": MessageLookupByLibrary.simpleMessage("无效的链接"),
         "Ok": MessageLookupByLibrary.simpleMessage("确定"),
         "OkIUnderstand": MessageLookupByLibrary.simpleMessage("已了解"),
         "OneWordIntro": MessageLookupByLibrary.simpleMessage(
@@ -104,6 +107,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "TryWithPhoneMic": MessageLookupByLibrary.simpleMessage("手机收音"),
         "VerificationCode": MessageLookupByLibrary.simpleMessage("验证码"),
         "VerificationCodeSent": MessageLookupByLibrary.simpleMessage("验证码已发送"),
+        "WeChat": MessageLookupByLibrary.simpleMessage("微信"),
         "WhyDontConversation":
             MessageLookupByLibrary.simpleMessage("您可以快速开始一段对话"),
         "hello": MessageLookupByLibrary.simpleMessage("你好")

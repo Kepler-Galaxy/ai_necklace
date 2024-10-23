@@ -1,24 +1,23 @@
 from datetime import datetime
-from typing import List, Optional
+from typing import List, Optional, Union
 from loguru import logger
 
 import tiktoken
 from langchain_core.output_parsers import PydanticOutputParser
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_openai import ChatOpenAI, OpenAIEmbeddings
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, validator
 
 from models.chat import Message
 from models.facts import Fact
-from models.memory import Structured, MemoryPhoto, CategoryEnum, Memory
+from models.memory import Structured, MemoryPhoto, CategoryEnum, Memory, ImageDescription
 from models.plugin import Plugin
 from models.transcript_segment import TranscriptSegment
 from models.trend import TrendEnum, ceo_options, company_options, software_product_options, hardware_product_options, \
     ai_product_options, TrendType
 from utils.memories.facts import get_prompt_facts
 from utils.string import words_count
-from utils.memories.web_content import WebContentResponse
-from openai import RateLimitError
+from raw_data.web_content_response import WeChatContentResponse, LittleRedBookContentResponse, GeneralWebContentResponse
 
 llm_mini = ChatOpenAI(model='gpt-4o-mini')
 embeddings = OpenAIEmbeddings(model="text-embedding-3-large")
@@ -179,6 +178,7 @@ def get_memory_summary(uid: str, memories: List[Memory]) -> str:
     The following are a list of {user_name}'s conversations from today, with the transcripts and a slight summary of each, that {user_name} had during his day.
     {user_name} wants to get a summary of the key action items {user_name} has to take based on today's conversations.
 
+    Guess the language involded in recent experiences, and write summary in the same language.
     Remember {user_name} is busy so this has to be very efficient and concise.
     Respond in at most 50 words.
   
@@ -591,7 +591,7 @@ async def obtain_recent_summary(conversation_history: str, articles_read: str, r
 # **************************************************
 # ************* WECHAT ARTICLE SUMMARIZATION ********
 # **************************************************
-def summarize_article(web_content_response: WebContentResponse) -> Structured:
+def summarize_article(web_content: Union[WeChatContentResponse, GeneralWebContentResponse]) -> Structured:
     parser = PydanticOutputParser(pydantic_object=Structured)
     prompt = ChatPromptTemplate.from_messages([(
         'system',
@@ -614,8 +614,8 @@ def summarize_article(web_content_response: WebContentResponse) -> Structured:
     chain = prompt | llm_mini | parser
 
     response = chain.invoke({
-        'title': web_content_response.title,
-        'article_content': web_content_response.main_content,
+        'title': web_content.title,
+        'article_content': web_content.main_content,
         'format_instructions': parser.get_format_instructions(),
     })
 
@@ -628,6 +628,85 @@ def summarize_article(web_content_response: WebContentResponse) -> Structured:
         action_items=[],
         events=[]
     )
+
+class ContentSummaryWithImages(BaseModel):
+    structured: Structured
+    image_descriptions: List[ImageDescription]
+
+
+#TODO(yiqi): The prompt contains the exact json format, which is not flexible and needs to be improved.
+# Currently, openai is bad at returning the correct json format for nested json objects, resulting pydantic validation error.
+# Try https://platform.openai.com/docs/guides/structured-outputs instead, using "response_format=ContentSummaryWithImages"
+# We can use this strategy throughout other functions as well. In this way, we can remove the retry logic during memory
+# generation and other places.
+def summarize_content_with_image_context(web_content: LittleRedBookContentResponse) -> ContentSummaryWithImages:
+    prompt = [
+        {
+            "role": "system",
+            "content": f"""You are an expert content analyzer and summarizer. Your task is to analyze the given article, images, and provide a structured summary.
+            Your response must be in the following format:
+            {{
+                "structured": {{
+                    "title": "...",
+                    "overview": "...",
+                    "emoji": "...",
+                    "category": "...",
+                    "key_points": [...],
+                    "action_items": [],
+                    "events": []
+                }},
+                "image_descriptions": [
+                    {{
+                        "is_ocr": true/false,
+                        "ocr_content": "...",
+                        "description": "..."
+                    }},
+                    ...
+                ]
+            }}
+            Please provide the following:
+            1. For the title, use a concise and engaging title that captures the essence of the article and images.
+            2. For the overview, use at most 10 sentences to summarize the main points of the article and images.
+            3. For the emoji, use a beautiful emoji to match the article's content and images.
+            4. For the category, classify the content into one of the available categories.
+            5. For the keypoints, extract a few original sentences that need to be highlighted from the article. Also, describe key visual elements from the images that support or add to the article's content.
+
+            For each image, provide:
+            1. Whether the image is primarily text (OCR). return a boolean value.
+            2. If it's OCR, include all the text in the image, don't miss any details, then fix obvious text mistakes. Set ocr_content to the extracted text. Otherwise, set ocr_content to an empty string.
+            3. For the description field, describe the image content in one sentence in the context of the article. Use the same language as the article.
+            Important: You must provide exactly {len(web_content.low_res_image_base64_jpegs)} image descriptions, one for each image.
+
+            Article content: {web_content.text_content}
+
+            Tags: {', '.join(web_content.tags) if web_content.tags else ""}
+
+            Please use the same language as the main content in the article for your response.
+            You should leave the events and action items as empty lists."""
+        }
+    ]
+    
+    image_contents = []
+    for base64_image in web_content.low_res_image_base64_jpegs:
+        image_contents.append({
+            "type": "image_url",
+            "image_url": {
+                "url": f"data:image/jpeg;base64,{base64_image}",
+                "detail": "high"
+            }
+        })
+    if image_contents:
+        prompt.append({
+            "role": "user",
+            "content": image_contents
+        })
+
+    with_parser = llm_mini.with_structured_output(ContentSummaryWithImages)
+    response: ContentSummaryWithImages = with_parser.invoke(prompt)
+    
+    return ContentSummaryWithImages(**response.dict())
+
+
 
 # **************************************************
 # ************* MEMORY RELATIONSHIP **************
@@ -660,3 +739,5 @@ def explain_relationship(memory: Memory, related_memory: Memory) -> ExplainRelat
         'format_instructions': parser.get_format_instructions()})
 
     return response
+
+

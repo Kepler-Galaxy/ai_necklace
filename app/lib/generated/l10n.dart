@@ -210,6 +210,16 @@ class S {
     );
   }
 
+  /// `No valid URL found`
+  String get NoValidURLFound {
+    return Intl.message(
+      'No valid URL found',
+      name: 'NoValidURLFound',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Create Memory`
   String get CreateMemory {
     return Intl.message(
@@ -475,6 +485,36 @@ class S {
     return Intl.message(
       'Transcript',
       name: 'Transcript',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `WeChat`
+  String get WeChat {
+    return Intl.message(
+      'WeChat',
+      name: 'WeChat',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Little Red Book`
+  String get LittleRedBook {
+    return Intl.message(
+      'Little Red Book',
+      name: 'LittleRedBook',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `General Web Content`
+  String get GeneralWebContent {
+    return Intl.message(
+      'General Web Content',
+      name: 'GeneralWebContent',
       desc: '',
       args: [],
     );
