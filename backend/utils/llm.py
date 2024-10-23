@@ -178,7 +178,9 @@ def get_memory_summary(uid: str, memories: List[Memory]) -> str:
     The following are a list of {user_name}'s conversations from today, with the transcripts and a slight summary of each, that {user_name} had during his day.
     {user_name} wants to get a summary of the key action items {user_name} has to take based on today's conversations.
 
-    Guess the language involded in recent experiences, and write summary in the same language.
+    User's language is the majority of the languages used during all memory's overview. 
+    Write summary in the same language as user's language.
+    
     Remember {user_name} is busy so this has to be very efficient and concise.
     Respond in at most 50 words.
   
@@ -596,6 +598,7 @@ def summarize_article(web_content: Union[WeChatContentResponse, GeneralWebConten
     prompt = ChatPromptTemplate.from_messages([(
         'system',
         '''You are an expert content analyzer and summarizer. Your task is to analyze the given article and provide a structured summary.
+        For all str fields related to the article, please answer with exactly the same language as the article:
 
         Please provide the following:
         1. For the title, if the original title doesn't make sense, use a concise and engaging title that captures the essence of the article.
@@ -607,7 +610,6 @@ def summarize_article(web_content: Union[WeChatContentResponse, GeneralWebConten
         Article title: ```{title}```
         Article content: ```{article_content}```
         
-        Please use the same language of the main content in the article for your response.
         You should leave the events and action items as empty lists.
         {format_instructions}'''.replace('    ', '').strip()
     )])
@@ -639,12 +641,13 @@ class ContentSummaryWithImages(BaseModel):
 # Try https://platform.openai.com/docs/guides/structured-outputs instead, using "response_format=ContentSummaryWithImages"
 # We can use this strategy throughout other functions as well. In this way, we can remove the retry logic during memory
 # generation and other places.
+# Note: structured.events.start is a datetime object, but Structured Outputs doesn't support datetime objects.``
 def summarize_content_with_image_context(web_content: LittleRedBookContentResponse) -> ContentSummaryWithImages:
     prompt = [
         {
             "role": "system",
             "content": f"""You are an expert content analyzer and summarizer. Your task is to analyze the given article, images, and provide a structured summary.
-            Your response must be in the following format:
+            Your response must be in the following format. For all str fields related to the article/images, please answer with exactly the same language as the article/images:
             {{
                 "structured": {{
                     "title": "...",
@@ -681,7 +684,6 @@ def summarize_content_with_image_context(web_content: LittleRedBookContentRespon
 
             Tags: {', '.join(web_content.tags) if web_content.tags else ""}
 
-            Please use the same language as the main content in the article for your response.
             You should leave the events and action items as empty lists."""
         }
     ]
