@@ -490,6 +490,36 @@ class S {
     );
   }
 
+  /// `WeChat`
+  String get WeChat {
+    return Intl.message(
+      'WeChat',
+      name: 'WeChat',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Little Red Book`
+  String get LittleRedBook {
+    return Intl.message(
+      'Little Red Book',
+      name: 'LittleRedBook',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `General Web Content`
+  String get GeneralWebContent {
+    return Intl.message(
+      'General Web Content',
+      name: 'GeneralWebContent',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Overview`
   String get Overview {
     return Intl.message(

@@ -227,18 +227,11 @@ class _MemoryDetailPageState extends State<MemoryDetailPage>
                       .titleLarge!
                       .copyWith(fontSize: 18),
                   tabs: [
-                    Selector<MemoryDetailProvider, MemorySource?>(
-                        selector: (context, provider) => provider.memory.source,
-                        builder: (context, memorySource, child) {
+                    Selector<MemoryDetailProvider, ServerMemory>(
+                        selector: (context, provider) => provider.memory,
+                        builder: (context, memory, child) {
                           return Tab(
-                            text: memorySource == MemorySource.openglass
-                                ? 'Photos'
-                                : memorySource == MemorySource.screenpipe
-                                    ? 'Raw Data'
-                                    : widget.memory.source ==
-                                            MemorySource.web_link
-                                        ? 'Web Content'
-                                        : S.current.Transcript,
+                            text: _getTabText(memory),
                           );
                         }),
                     Tab(text: S.current.Summary)
@@ -289,6 +282,26 @@ class _MemoryDetailPageState extends State<MemoryDetailPage>
         ),
       ),
     );
+  }
+
+  String _getTabText(ServerMemory memory) {
+    if (memory.source == MemorySource.openglass) {
+      return 'Photos';
+    } else if (memory.source == MemorySource.screenpipe) {
+      return 'Raw Data';
+    } else if (memory.source == MemorySource.web_link) {
+      if (memory.externalLink?.webContentResponse?.response is LittleRedBookContentResponse) {
+        return S.current.LittleRedBook;
+      } else if (memory.externalLink?.webContentResponse?.response is WeChatContentResponse) {
+        return S.current.WeChat;
+      } else if (memory.externalLink?.webContentResponse?.response is GeneralWebContentResponse) {
+        return S.current.GeneralWebContent;
+      } else {
+        return S.current.GeneralWebContent;
+      }
+    } else {
+      return S.current.Transcript;
+    }
   }
 }
 
@@ -773,3 +786,5 @@ class FullScreenImageView extends StatelessWidget {
     );
   }
 }
+
+
