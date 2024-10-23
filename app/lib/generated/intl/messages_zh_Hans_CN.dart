@@ -25,7 +25,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "AppName": MessageLookupByLibrary.simpleMessage("Foxxy"),
         "AreYouSureSignOut": MessageLookupByLibrary.simpleMessage("确定是否退出登录？"),
         "ArticleLinkWeChatArticleorOthers":
-            MessageLookupByLibrary.simpleMessage("从微信文章或者其他网址获取记忆"),
+            MessageLookupByLibrary.simpleMessage("微信公众号/小红书链接100%成功，其他网址有概率失败"),
         "AskYourAudioFairyAnything":
             MessageLookupByLibrary.simpleMessage("和你的Foxxy对话"),
         "Cancel": MessageLookupByLibrary.simpleMessage("取消"),
@@ -61,7 +61,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "HideDiscarded": MessageLookupByLibrary.simpleMessage("隐藏被丢弃记忆"),
         "HowShouldAudioFairyCallYou":
             MessageLookupByLibrary.simpleMessage("Foxxy应该如何称呼您?"),
-        "ImportArticle": MessageLookupByLibrary.simpleMessage("从文章(图片)导入记忆"),
+        "ImportArticle": MessageLookupByLibrary.simpleMessage("导入文章/图片记忆"),
         "KeyPoints": MessageLookupByLibrary.simpleMessage("重点"),
         "LimitedCapabilities": MessageLookupByLibrary.simpleMessage("录音限制"),
         "Memories": MessageLookupByLibrary.simpleMessage("追忆"),

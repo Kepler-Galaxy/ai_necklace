@@ -26,12 +26,6 @@ class LittleRedBookContentResponse(BaseWebContentResponse):
     last_update_time: datetime
     ip_location: str
 
-    #TODO: scrape these fields or not?
-    # likes: int
-    # comments: int
-    # collect_count: int
-    # share_count: int
-
     description: str
     tags: List[str]
     text_content: str
@@ -65,8 +59,6 @@ class WebContentResponseV2(BaseModel):
 
     @classmethod
     def from_v1(cls, v1_response: Dict[str, Any]):
-        #print(v1_response)
-        
         url = v1_response.get('url', '')
         success = v1_response.get('success', False)
         title = v1_response.get('title', '')

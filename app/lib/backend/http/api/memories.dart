@@ -92,8 +92,6 @@ Future<List<ServerMemory>> getMemories({int limit = 50, int offset = 0}) async {
         .toList();
     debugPrint('getMemories length: ${memories.length}');
     return memories;
-  } else {
-    debugPrint('getMemories error: ${response.body}');
   }
   return [];
 }

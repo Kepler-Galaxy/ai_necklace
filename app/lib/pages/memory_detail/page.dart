@@ -256,8 +256,6 @@ class _MemoryDetailPageState extends State<MemoryDetailPage>
                           Selector<MemoryDetailProvider, ServerMemory>(
                             selector: (context, provider) => provider.memory,
                             builder: (context, memory, child) {
-                              debugPrint('Response type: ${memory.externalLink?.webContentResponse?.response.runtimeType}');
-                              debugPrint(memory.externalLink?.webContentResponse?.response.toJson().toString());
                               return ListView(
                                 shrinkWrap: true,
                                 children: [
