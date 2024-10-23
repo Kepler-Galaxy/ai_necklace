@@ -82,10 +82,7 @@ class _AIMessageState extends State<AIMessage> {
               )
             : Container(
                 decoration: const BoxDecoration(
-                  image: DecorationImage(
-                    image: AssetImage("assets/images/background.png"),
-                    fit: BoxFit.cover,
-                  ),
+                  color: Colors.white,
                   borderRadius: BorderRadius.all(Radius.circular(16.0)),
                 ),
                 height: 32,
@@ -94,7 +91,7 @@ class _AIMessageState extends State<AIMessage> {
                   alignment: Alignment.center,
                   children: [
                     Image.asset(
-                      "assets/images/herologo.png",
+                      "assets/images/chat_icon.png",
                       height: 24,
                       width: 24,
                     ),
