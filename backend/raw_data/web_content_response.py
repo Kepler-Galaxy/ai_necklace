@@ -1,5 +1,5 @@
 from pydantic import BaseModel, Field
-from typing import Union, Dict, Any, List, Literal
+from typing import Union, Dict, Any, List, Literal, Optional
 from datetime import datetime
 from urllib.parse import urlparse
 
@@ -31,8 +31,8 @@ class LittleRedBookContentResponse(BaseWebContentResponse):
     text_content: str
     image_urls: List[str]
     # don't store these fields now, since our mongodb is limited.
-    image_base64_jpegs: List[str] = Field(..., exclude=True)
-    low_res_image_base64_jpegs: List[str] = Field(..., exclude=True)
+    image_base64_jpegs: Optional[List[str]] = Field(default=None, exclude=True)
+    low_res_image_base64_jpegs: Optional[List[str]] = Field(default=None, exclude=True)
 
     @property
     def main_content(self):
