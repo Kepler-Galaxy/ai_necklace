@@ -455,7 +455,7 @@ async def _websocket_util(
             memories_db.update_memory_finished_at(uid, memory.id, memory.finished_at)
 
             # Process
-            memory = process_memory(uid, memory.language, memory, force_process=True)
+            memory = await process_memory(uid, memory.language, memory, force_process=True)
 
         # Message: completed
         msg = NewMemoryCreated(
