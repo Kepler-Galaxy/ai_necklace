@@ -316,7 +316,7 @@ async def create_memory_from_wechat_article(
             language="zh",  # It only affects the conversation, the CreateMemory and Structured should be refactored to separate all sources completely.
         )
 
-        memory = await process_memory(uid, "zh", create_memory, force_process=True)
+        memory = process_memory(uid, "zh", create_memory, force_process=True)
         return memory
 
     except Exception as e:
