@@ -12,6 +12,16 @@ class MessageEvent(BaseModel):
         j = self.model_dump(mode="json")
         j["type"] = self.event_type
         return j
+    
+
+class MemoryEvent(MessageEvent):
+    memory: Memory
+    messages: Optional[List[Message]] = []
+
+    def to_json(self):
+        j = self.model_dump(mode="json")
+        j["type"] = self.event_type
+        return j
 
 
 class NewMemoryCreated(MessageEvent):

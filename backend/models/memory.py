@@ -156,6 +156,12 @@ class PostProcessingStatus(str, Enum):
     canceled = 'canceled'
     failed = 'failed'
 
+class MemoryStatus(str, Enum):
+    in_progress = 'in_progress'
+    processing = 'processing'
+    completed = 'completed'
+    failed = 'failed'
+
 
 class PostProcessingModel(str, Enum):
     fal_whisperx = 'fal_whisperx'
