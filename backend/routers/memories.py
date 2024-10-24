@@ -31,7 +31,7 @@ def _get_memory_by_id(uid: str, memory_id: str) -> dict:
 
 
 @router.post("/v1/memories", response_model=CreateMemoryResponse, tags=['memories'])
-def create_memory(
+async def create_memory(
         create_memory: CreateMemory, trigger_integrations: bool, language_code: Optional[str] = None,
         source: Optional[str] = None, uid: str = Depends(auth.get_current_user_uid)
 ):
@@ -63,7 +63,7 @@ def create_memory(
         logger.warning(
             f"warn: split-brain in memory (maybe) by forcing new memory creation during processing. uid: {uid}, processing_memory_id: {create_memory.processing_memory_id}")
 
-    memory = process_memory(uid, language_code, create_memory, force_process=source == 'speech_profile_onboarding')
+    memory = await process_memory(uid, language_code, create_memory, force_process=source == 'speech_profile_onboarding')
     if not trigger_integrations:
         return CreateMemoryResponse(memory=memory, messages=[])
 
@@ -78,7 +78,7 @@ def create_memory(
 
 
 @router.post('/v1/memories/{memory_id}/reprocess', response_model=Memory, tags=['memories'])
-def reprocess_memory(
+async def reprocess_memory(
         memory_id: str, language_code: Optional[str] = None, uid: str = Depends(auth.get_current_user_uid)
 ):
     """
@@ -93,7 +93,7 @@ def reprocess_memory(
     if not language_code:
         language_code = memory.language or 'en'
 
-    return process_memory(uid, language_code, memory, force_process=True)
+    return await process_memory(uid, language_code, memory, force_process=True)
 
 
 @router.get('/v1/memories', response_model=List[Memory], tags=['memories'])
@@ -316,7 +316,7 @@ async def create_memory_from_wechat_article(
             language="zh",  # It only affects the conversation, the CreateMemory and Structured should be refactored to separate all sources completely.
         )
 
-        memory = process_memory(uid, "zh", create_memory, force_process=True)
+        memory = await process_memory(uid, "zh", create_memory, force_process=True)
         return memory
 
     except Exception as e:

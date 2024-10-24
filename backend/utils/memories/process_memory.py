@@ -165,10 +165,9 @@ def _extract_trends(memory: Memory):
     trends_db.save_trends(memory, parsed)
 
 
-def process_memory(uid: str, language_code: str, memory: Union[Memory, CreateMemory, WorkflowCreateMemory],
+async def process_memory(uid: str, language_code: str, memory: Union[Memory, CreateMemory, WorkflowCreateMemory],
                    force_process: bool = False) -> Memory:
-    #structured, discarded = await _get_structured(uid, language_code, memory, force_process)
-    structured, discarded = async_to_sync(_get_structured)(uid, language_code, memory, force_process)
+    structured, discarded = await _get_structured(uid, language_code, memory, force_process)
     memory = _get_memory_obj(uid, structured, memory)
 
     if not discarded:

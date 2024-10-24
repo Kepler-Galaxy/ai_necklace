@@ -77,7 +77,7 @@ async def download_wav(
             transcript_segments = partitions,
             language = 'en'
             )
-            result: Memory = process_memory(uid , temp_memory.language, temp_memory, force_process=True)
+            result: Memory = await process_memory(uid , temp_memory.language, temp_memory, force_process=True)
             print(temp_memory.transcript_segments)
 
             memory_list.append(result)

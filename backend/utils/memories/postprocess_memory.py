@@ -18,7 +18,7 @@ from utils.stt.vad import vad_is_empty
 
 # TODO: this pipeline vs groq+pyannote diarization 3.1, probably the latter is better.
 # TODO: should consider storing non beautified segments, and beautify on read?
-def postprocess_memory(memory_id: str, file_path: str, uid: str, emotional_feedback: bool, streaming_model: str):
+async def postprocess_memory(memory_id: str, file_path: str, uid: str, emotional_feedback: bool, streaming_model: str):
     memory_data = _get_memory_by_id(uid, memory_id)
     if not memory_data:
         return 404, "Memory not found"
@@ -96,7 +96,7 @@ def postprocess_memory(memory_id: str, file_path: str, uid: str, emotional_feedb
             return 200, memory
 
         # Reprocess memory with improved transcription
-        result: Memory = process_memory(uid, memory.language, memory, force_process=True)
+        result: Memory = await process_memory(uid, memory.language, memory, force_process=True)
 
         # Process users emotion, async
         if emotional_feedback:
