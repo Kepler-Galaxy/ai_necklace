@@ -1,8 +1,9 @@
+import base64
+import json
 import os
 from datetime import datetime, timezone
-from typing import List
+from typing import List, Union
 from loguru import logger
-
 import redis
 
 
@@ -46,6 +47,32 @@ def try_catch_decorator(func):
             return None
 
     return wrapper
+
+
+@try_catch_decorator
+def get_generic_cache(path: str):
+    key = base64.b64encode(f'{path}'.encode('utf-8'))
+    key = key.decode('utf-8')
+
+    data = r.get(f'cache:{key}')
+    return json.loads(data) if data else None
+
+
+@try_catch_decorator
+def set_generic_cache(path: str, data: Union[dict, list], ttl: int = None):
+    key = base64.b64encode(f'{path}'.encode('utf-8'))
+    key = key.decode('utf-8')
+
+    r.set(f'cache:{key}', json.dumps(data, default=str))
+    if ttl:
+        r.expire(f'cache:{key}', ttl)
+
+
+@try_catch_decorator
+def delete_generic_cache(path: str):
+    key = base64.b64encode(f'{path}'.encode('utf-8'))
+    key = key.decode('utf-8')
+    r.delete(f'cache:{key}')
 
 
 def set_plugin_review(plugin_id: str, uid: str, score: float, review: str = ''):
@@ -105,28 +132,6 @@ def remove_user_soniox_speech_profile(uid: str):
     r.delete(f'users:{uid}:has_soniox_speech_profile')
 
 
-def store_user_speech_profile(uid: str, data: List[List[int]]):
-    r.set(f'users:{uid}:speech_profile', str(data))
-
-
-def get_user_speech_profile(uid: str) -> List[List[int]]:
-    data = r.get(f'users:{uid}:speech_profile')
-    if not data:
-        return []
-    return eval(data)
-
-
-def store_user_speech_profile_duration(uid: str, duration: int):
-    r.set(f'users:{uid}:speech_profile_duration', duration)
-
-
-def get_user_speech_profile_duration(uid: str) -> int:
-    data = r.get(f'users:{uid}:speech_profile_duration')
-    if not data:
-        return 0
-    return int(data)
-
-
 def cache_user_name(uid: str, name: str, ttl: int = 60 * 60 * 24 * 7):
     r.set(f'users:{uid}:name', name)
     r.expire(f'users:{uid}:name', ttl)
@@ -164,6 +169,18 @@ def get_cached_signed_url(blob_path: str) -> str:
     return signed_url.decode()
 
 
+def cache_user_geolocation(uid: str, geolocation: dict):
+    r.set(f'users:{uid}:geolocation', str(geolocation))
+    r.expire(f'users:{uid}:geolocation', 60 * 30)  # FIXME: too much?
+
+
+def get_cached_user_geolocation(uid: str):
+    geolocation = r.get(f'users:{uid}:geolocation')
+    if not geolocation:
+        return None
+    return eval(geolocation)
+
+
 # VISIIBILTIY OF MEMORIES
 def store_memory_to_uid(memory_id: str, uid: str):
     r.set(f'memories-visibility:{memory_id}', uid)
@@ -193,3 +210,30 @@ def get_public_memories() -> List[str]:
     if not val:
         return []
     return [x.decode() for x in val]
+
+
+def set_in_progress_memory_id(uid: str, memory_id: str, ttl: int = 150):
+    r.set(f'users:{uid}:in_progress_memory_id', memory_id)
+    r.expire(f'users:{uid}:in_progress_memory_id', ttl)
+
+
+def remove_in_progress_memory_id(uid: str):
+    r.delete(f'users:{uid}:in_progress_memory_id')
+
+
+def get_in_progress_memory_id(uid: str) -> str:
+    memory_id = r.get(f'users:{uid}:in_progress_memory_id')
+    if not memory_id:
+        return ''
+    return memory_id.decode()
+
+
+def set_user_webhook_db(uid: str, wtype: str, url: str):
+    r.set(f'users:{uid}:developer:webhook:{wtype}', url)
+
+
+def get_user_webhook_db(uid: str, wtype: str) -> str:
+    url = r.get(f'users:{uid}:developer:webhook:{wtype}')
+    if not url:
+        return ''
+    return url.decode()

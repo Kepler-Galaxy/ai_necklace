@@ -256,6 +256,14 @@ class Memory(BaseModel):
             return content.strip()
         return None
     
+    def as_dict_cleaned_dates(self):
+        self.structured.events = [event.as_dict_cleaned_dates() for event in self.structured.events]
+        memory_dict = self.dict()
+        memory_dict['created_at'] = memory_dict['created_at'].isoformat()
+        memory_dict['started_at'] = memory_dict['started_at'].isoformat() if memory_dict['started_at'] else None
+        memory_dict['finished_at'] = memory_dict['finished_at'].isoformat() if memory_dict['finished_at'] else None
+        return memory_dict
+    
 class CreateMemory(BaseModel):
     started_at: datetime
     finished_at: datetime

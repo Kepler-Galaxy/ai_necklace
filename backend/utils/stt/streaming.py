@@ -1,5 +1,6 @@
 import asyncio
 import os
+import random
 import time
 from typing import List
 from loguru import logger
@@ -143,7 +144,29 @@ async def process_audio_dg(
         logger.error(error)
 
     logger.info("Connecting to Deepgram")  # Log before connection attempt
-    return connect_to_deepgram(on_message, on_error, language, sample_rate, channels)
+    return connect_to_deepgram_with_backoff(on_message, on_error, language, sample_rate, channels)
+
+
+def calculate_backoff_with_jitter(attempt, base_delay=1000, max_delay=32000):
+    jitter = random.random() * base_delay
+    backoff = min(((2 ** attempt) * base_delay) + jitter, max_delay)
+    return backoff
+
+
+def connect_to_deepgram_with_backoff(on_message, on_error, language: str, sample_rate: int, channels: int, retries=3):
+    logger.info("connect_to_deepgram_with_backoff")
+    for attempt in range(retries):
+        try:
+            return connect_to_deepgram(on_message, on_error, language, sample_rate, channels)
+        except Exception as error:
+            logger.error(f'An error occurred: {error}')
+            if attempt == retries - 1:  # Last attempt
+                raise
+        backoff_delay = calculate_backoff_with_jitter(attempt)
+        logger.info(f"Waiting {backoff_delay:.0f}ms before next retry...")
+        time.sleep(backoff_delay / 1000)  # Convert ms to seconds for sleep
+
+    raise Exception(f'Could not open socket: All retry attempts failed.')
 
 
 def process_segments(uid: str, segments: list[dict]):
