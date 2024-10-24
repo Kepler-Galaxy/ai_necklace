@@ -7,7 +7,6 @@ from typing import Union, Tuple, List, Dict
 
 from fastapi import HTTPException
 from loguru import logger
-from asgiref.sync import async_to_sync
 import database.facts as facts_db
 import database.memories as memories_db
 import database.notifications as notification_db
