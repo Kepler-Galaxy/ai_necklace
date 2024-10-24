@@ -7,6 +7,7 @@ from typing import Union, Tuple, List, Dict
 
 from fastapi import HTTPException
 from loguru import logger
+from asgiref.sync import async_to_sync
 import database.facts as facts_db
 import database.memories as memories_db
 import database.notifications as notification_db
@@ -164,9 +165,10 @@ def _extract_trends(memory: Memory):
     trends_db.save_trends(memory, parsed)
 
 
-async def process_memory(uid: str, language_code: str, memory: Union[Memory, CreateMemory, WorkflowCreateMemory],
+def process_memory(uid: str, language_code: str, memory: Union[Memory, CreateMemory, WorkflowCreateMemory],
                    force_process: bool = False) -> Memory:
-    structured, discarded = await _get_structured(uid, language_code, memory, force_process)
+    #structured, discarded = await _get_structured(uid, language_code, memory, force_process)
+    structured, discarded = async_to_sync(_get_structured)(uid, language_code, memory, force_process)
     memory = _get_memory_obj(uid, structured, memory)
 
     if not discarded:

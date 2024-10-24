@@ -38,7 +38,7 @@ async def create_memory_by_processing_memory(uid: str, processing_memory_id: str
         new_memory.geolocation = get_google_maps_location(geolocation.latitude, geolocation.longitude)
 
     language_code = new_memory.language
-    memory = await process_memory(uid, language_code, new_memory)
+    memory = process_memory(uid, language_code, new_memory)
 
     # if not memory.discarded:
     #     memories_db.set_postprocessing_status(uid, memory.id, PostProcessingStatus.not_started)
